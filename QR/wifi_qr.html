@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator QR Code WiFi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        dark: '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .password-container {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #64748b;
+        }
+        #qrcode canvas {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col">
+    <header class="bg-primary text-white py-6 shadow-md">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold text-center"><i class="fas fa-wifi mr-2"></i>Generator QR Code WiFi</h1>
+            <p class="text-center mt-2 opacity-90">Buat QR Code untuk berbagi akses WiFi dengan mudah</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="md:flex">
+                <!-- Form Input -->
+                <div class="md:w-1/2 p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Konfigurasi WiFi</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2 font-medium">SSID (Nama WiFi)</label>
+                        <input type="text" id="ssid" placeholder="Nama jaringan WiFi" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2 font-medium">Jenis Keamanan</label>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <input type="radio" name="security" id="wpa" value="WPA" class="mr-2" checked>
+                                <label for="wpa" class="cursor-pointer">WPA/WPA2</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" name="security" id="wep" value="WEP" class="mr-2">
+                                <label for="wep" class="cursor-pointer">WEP</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" name="security" id="none" value="nopass" class="mr-2">
+                                <label for="none" class="cursor-pointer">Tidak Ada Keamanan</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4" id="passwordField">
+                        <label class="block text-gray-700 mb-2 font-medium">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="password" placeholder="Password WiFi" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10">
+                            <span class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2 font-medium">Nama QR Code (Opsional)</label>
+                        <input type="text" id="qrName" placeholder="Nama untuk file QR" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <button id="generateBtn" class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-qrcode mr-2"></i> Generate QR Code
+                    </button>
+                </div>
+                
+                <!-- Hasil QR Code -->
+                <div class="md:w-1/2 bg-slate-50 p-6 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Hasil QR Code</h2>
+                    <div class="text-center mb-4">
+                        <div id="qrcode" class="flex justify-center mb-4"></div>
+                        <p class="text-gray-600 text-sm mt-2" id="wifiDetails">Masukkan detail WiFi untuk membuat QR Code</p>
+                    </div>
+                    
+                    <div class="mt-4 w-full max-w-xs hidden" id="downloadSection">
+                        <button id="downloadBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-download mr-2"></i> Download QR Code
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 w-full">
+                        <h3 class="font-bold mb-2"><i class="fas fa-info-circle mr-1"></i> Cara Penggunaan</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Isi detail jaringan WiFi Anda</li>
+                            <li>Klik tombol "Generate QR Code"</li>
+                            <li>Scan QR Code dengan perangkat lain</li>
+                            <li>Download untuk menyimpan QR Code</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2023 Generator QR Code WiFi. Semua hak dilindungi.</p>
+            <p class="mt-2 text-slate-300 text-sm">Buat QR Code untuk berbagi akses WiFi dengan mudah dan aman</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen DOM
+            const ssidInput = document.getElementById('ssid');
+            const passwordInput = document.getElementById('password');
+            const qrNameInput = document.getElementById('qrName');
+            const generateBtn = document.getElementById('generateBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const qrcodeDiv = document.getElementById('qrcode');
+            const downloadSection = document.getElementById('downloadSection');
+            const wifiDetails = document.getElementById('wifiDetails');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordField = document.getElementById('passwordField');
+            const securityRadios = document.querySelectorAll('input[name="security"]');
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Tampilkan/sembunyikan field password berdasarkan jenis keamanan
+            securityRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'nopass') {
+                        passwordField.classList.add('hidden');
+                    } else {
+                        passwordField.classList.remove('hidden');
+                    }
+                });
+            });
+            
+            // Generate QR Code
+            generateBtn.addEventListener('click', function() {
+                const ssid = ssidInput.value.trim();
+                const security = document.querySelector('input[name="security"]:checked').value;
+                const password = passwordInput.value.trim();
+                const qrName = qrNameInput.value.trim() || 'wifi_qr';
+                
+                // Validasi input
+                if (!ssid) {
+                    alert('Silakan masukkan SSID (Nama WiFi)');
+                    return;
+                }
+                
+                if (security !== 'nopass' && !password) {
+                    alert('Silakan masukkan password WiFi');
+                    return;
+                }
+                
+                // Format string untuk QR Code
+                const wifiString = `WIFI:S:${ssid};T:${security};P:${password};;`;
+                
+                // Hapus QR Code sebelumnya jika ada
+                qrcodeDiv.innerHTML = '';
+                
+                // Buat QR Code baru
+                new QRCode(qrcodeDiv, {
+                    text: wifiString,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Tampilkan detail WiFi
+                wifiDetails.innerHTML = `
+                    <span class="font-semibold">${ssid}</span><br>
+                    Keamanan: ${security === 'nopass' ? 'Tanpa Keamanan' : security}
+                `;
+                
+                // Tampilkan tombol download
+                downloadSection.classList.remove('hidden');
+                downloadSection.classList.add('fade-in');
+                
+                // Scroll ke hasil
+                qrcodeDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            
+            // Download QR Code
+            downloadBtn.addEventListener('click', function() {
+                const canvas = qrcodeDiv.querySelector('canvas');
+                if (!canvas) {
+                    alert('Harap generate QR Code terlebih dahulu');
+                    return;
+                }
+                
+                const qrName = qrNameInput.value.trim() || 'wifi_qr';
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `${qrName}.png`;
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
