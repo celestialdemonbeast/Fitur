@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator CSS Live Chat YouTube Modern</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a32834',
+                        secondary: '#932331',
+                        light: '#ffebe9',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --nameTextColor: #ffebe9;
+            --nameBackgroundColor: #a32834;
+            --nameFontSize: 14px;
+            --nameBoxPadding: 4px;
+            --chatTextColor: #932331;
+            --chatBackgroundColor: #ffffff;
+            --chatFontSize: 18px;
+            --chatBoxPadding: 8px;
+            --chatBoxPaddingSide: 12px;
+        }
+        
+        body {
+            font-family: 'Mitr', sans-serif;
+            background-color: #f3f4f6;
+        }
+        
+        .preview-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .chat-preview {
+            background-color: rgba(0, 0, 0, 0.03);
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .author-name {
+            display: block;
+            font-size: var(--nameFontSize);
+            padding: var(--nameBoxPadding);
+            border-radius: 5px;
+            background-color: var(--nameBackgroundColor);
+            color: var(--nameTextColor);
+            animation: float_in 1s ease;
+            box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
+            z-index: 3;
+            margin-bottom: 5px;
+            max-width: max-content;
+        }
+        
+        .chat-message {
+            font-family: 'Mitr', sans-serif;
+            border-radius: 10px;
+            position: relative;
+            font-size: var(--chatFontSize);
+            line-height: 32px;
+            display: block;
+            user-select: none;
+            color: var(--chatTextColor);
+            padding: var(--chatBoxPadding);
+            padding-left: var(--chatBoxPaddingSide);
+            padding-right: var(--chatBoxPaddingSide);
+            background-color: var(--chatBackgroundColor);
+            cursor: default;
+            margin: 0 0 15px 25px;
+            box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes float_in {
+            0% { transform: translate(0vw, 10px) rotate(-3deg) scale(0,1); }
+            30% { transform: translate(0vw, 10px) rotate(-0deg) scale(0,1); }
+            60% { transform: translate(0vw, 10px) rotate(-0deg) scale(0.9,1); }
+            100% { transform: translate(0vw, 10px) rotate(-0deg) scale(1,1); }
+        }
+        
+        .css-output {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            overflow: auto;
+            max-height: 300px;
+        }
+        
+        .highlight {
+            background-color: #fff8c5;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .creator-badge {
+            background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+            border: 2px solid #e6a400;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .copy-success {
+            animation: copyPulse 0.5s ease;
+        }
+        
+        @keyframes copyPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Generator CSS Live Chat YouTube</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Kustomisasi tampilan live chat YouTube dengan CSS modern menggunakan Tailwind</p>
+            
+            <div class="mt-4 flex justify-center">
+                <div class="creator-badge rounded-full py-2 px-6 flex items-center">
+                    <i class="fas fa-coffee text-amber-800 mr-2"></i>
+                    <span class="text-amber-900 font-medium">CSS dibuat oleh</span>
+                    <a href="https://buymeacoffee.com/acseldwarf" target="_blank" class="ml-2 text-amber-800 font-bold hover:underline">Acseldwarf</a>
+                </div>
+            </div>
+        </header>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Panel Kontrol -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b">Konfigurasi</h2>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                        <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">1</span>
+                        Konfigurasi Nama Penulis
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Warna Teks Nama</label>
+                            <div class="flex items-center">
+                                <input type="color" id="nameTextColor" value="#ffebe9" class="w-12 h-12 border-0 rounded cursor-pointer">
+                                <input type="text" id="nameTextColorText" value="#ffebe9" class="ml-3 px-4 py-2 border border-gray-300 rounded-lg w-full">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Warna Latar Nama</label>
+                            <div class="flex items-center">
+                                <input type="color" id="nameBackgroundColor" value="#a32834" class="w-12 h-12 border-0 rounded cursor-pointer">
+                                <input type="text" id="nameBackgroundColorText" value="#a32834" class="ml-3 px-4 py-2 border border-gray-300 rounded-lg w-full">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Ukuran Font Nama</label>
+                            <input type="range" id="nameFontSize" min="10" max="24" value="14" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>10px</span>
+                                <span id="nameFontSizeValue">14px</span>
+                                <span>24px</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Padding Kotak Nama</label>
+                            <input type="range" id="nameBoxPadding" min="2" max="20" value="4" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>2px</span>
+                                <span id="nameBoxPaddingValue">4px</span>
+                                <span>20px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                        <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">2</span>
+                        Konfigurasi Pesan Chat
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Warna Teks Pesan</label>
+                            <div class="flex items-center">
+                                <input type="color" id="chatTextColor" value="#932331" class="w-12 h-12 border-0 rounded cursor-pointer">
+                                <input type="text" id="chatTextColorText" value="#932331" class="ml-3 px-4 py-2 border border-gray-300 rounded-lg w-full">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Warna Latar Pesan</label>
+                            <div class="flex items-center">
+                                <input type="color" id="chatBackgroundColor" value="#ffffff" class="w-12 h-12 border-0 rounded cursor-pointer">
+                                <input type="text" id="chatBackgroundColorText" value="#ffffff" class="ml-3 px-4 py-2 border border-gray-300 rounded-lg w-full">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Ukuran Font Pesan</label>
+                            <input type="range" id="chatFontSize" min="12" max="28" value="18" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>12px</span>
+                                <span id="chatFontSizeValue">18px</span>
+                                <span>28px</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Padding Kotak Pesan (Atas/Bawah)</label>
+                            <input type="range" id="chatBoxPadding" min="4" max="24" value="8" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>4px</span>
+                                <span id="chatBoxPaddingValue">8px</span>
+                                <span>24px</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Padding Kotak Pesan (Samping)</label>
+                            <input type="range" id="chatBoxPaddingSide" min="4" max="24" value="12" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>4px</span>
+                                <span id="chatBoxPaddingSideValue">12px</span>
+                                <span>24px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button id="resetBtn" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors flex-1 flex items-center justify-center">
+                        <i class="fas fa-redo mr-2"></i> Reset Default
+                    </button>
+                    <button id="copyBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex-1 flex items-center justify-center">
+                        <i class="fas fa-copy mr-2"></i> Salin CSS
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600 text-sm">
+                        Dukung pembuat CSS asli: 
+                        <a href="https://buymeacoffee.com/acseldwarf" target="_blank" class="text-blue-600 hover:underline font-medium">
+                            <i class="fas fa-mug-hot mr-1"></i> Buy Me a Coffee
+                        </a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Panel Preview & Output -->
+            <div class="space-y-8">
+                <div class="preview-container bg-white rounded-xl shadow-lg">
+                    <div class="bg-gradient-to-r from-primary to-secondary py-4 px-6">
+                        <h2 class="text-xl font-bold text-white">Preview Live Chat</h2>
+                    </div>
+                    
+                    <div class="chat-preview">
+                        <div class="mb-6">
+                            <span class="author-name">Penonton Biasa</span>
+                            <div class="chat-message">Chat ini keren sekali! Terima kasih sudah membuatnya.</div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <span class="author-name">Moderator</span>
+                            <div class="chat-message">Selamat datang semua! Jangan lupa subscribe channel ini.</div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <span class="author-name">Pemilik Channel</span>
+                            <div class="chat-message">Hai semuanya! Terima kasih sudah menonton live streaming hari ini.</div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <span class="author-name">Member</span>
+                            <div class="chat-message">Generator CSS ini sangat membantu untuk kustomisasi live chat!</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-800 to-gray-900 py-4 px-6 flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-white">Output CSS</h2>
+                        <button id="copyOutputBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center">
+                            <i class="fas fa-copy mr-2"></i> Salin
+                        </button>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div id="cssOutput" class="css-output"></div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-amber-100 to-amber-200 py-3 px-6 border-t border-amber-300">
+                        <p class="text-amber-800 text-sm text-center">
+                            <i class="fas fa-heart text-red-500 mr-1"></i> 
+                            CSS asli dibuat oleh 
+                            <a href="https://buymeacoffee.com/acseldwarf" target="_blank" class="text-amber-900 font-bold hover:underline">Acseldwarf</a> 
+                            - dukung pembuatnya!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-12 text-center text-gray-600 text-sm">
+            <p>© 2023 Generator CSS Live Chat YouTube. CSS asli dibuat oleh Acseldwarf.</p>
+            <p class="mt-2">
+                <a href="https://buymeacoffee.com/acseldwarf" target="_blank" class="inline-flex items-center bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition-colors">
+                    <i class="fas fa-coffee mr-2"></i> Dukung Pembuat CSS
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Elemen input
+        const nameTextColor = document.getElementById('nameTextColor');
+        const nameTextColorText = document.getElementById('nameTextColorText');
+        const nameBackgroundColor = document.getElementById('nameBackgroundColor');
+        const nameBackgroundColorText = document.getElementById('nameBackgroundColorText');
+        const nameFontSize = document.getElementById('nameFontSize');
+        const nameFontSizeValue = document.getElementById('nameFontSizeValue');
+        const nameBoxPadding = document.getElementById('nameBoxPadding');
+        const nameBoxPaddingValue = document.getElementById('nameBoxPaddingValue');
+        const chatTextColor = document.getElementById('chatTextColor');
+        const chatTextColorText = document.getElementById('chatTextColorText');
+        const chatBackgroundColor = document.getElementById('chatBackgroundColor');
+        const chatBackgroundColorText = document.getElementById('chatBackgroundColorText');
+        const chatFontSize = document.getElementById('chatFontSize');
+        const chatFontSizeValue = document.getElementById('chatFontSizeValue');
+        const chatBoxPadding = document.getElementById('chatBoxPadding');
+        const chatBoxPaddingValue = document.getElementById('chatBoxPaddingValue');
+        const chatBoxPaddingSide = document.getElementById('chatBoxPaddingSide');
+        const chatBoxPaddingSideValue = document.getElementById('chatBoxPaddingSideValue');
+        
+        // Tombol aksi
+        const resetBtn = document.getElementById('resetBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyOutputBtn = document.getElementById('copyOutputBtn');
+        
+        // Fungsi untuk mengupdate preview
+        function updatePreview() {
+            // Update variabel CSS
+            document.documentElement.style.setProperty('--nameTextColor', nameTextColor.value);
+            document.documentElement.style.setProperty('--nameBackgroundColor', nameBackgroundColor.value);
+            document.documentElement.style.setProperty('--nameFontSize', nameFontSize.value + 'px');
+            document.documentElement.style.setProperty('--nameBoxPadding', nameBoxPadding.value + 'px');
+            document.documentElement.style.setProperty('--chatTextColor', chatTextColor.value);
+            document.documentElement.style.setProperty('--chatBackgroundColor', chatBackgroundColor.value);
+            document.documentElement.style.setProperty('--chatFontSize', chatFontSize.value + 'px');
+            document.documentElement.style.setProperty('--chatBoxPadding', chatBoxPadding.value + 'px');
+            document.documentElement.style.setProperty('--chatBoxPaddingSide', chatBoxPaddingSide.value + 'px');
+            
+            // Update nilai tampilan
+            nameTextColorText.value = nameTextColor.value;
+            nameBackgroundColorText.value = nameBackgroundColor.value;
+            nameFontSizeValue.textContent = nameFontSize.value + 'px';
+            nameBoxPaddingValue.textContent = nameBoxPadding.value + 'px';
+            chatTextColorText.value = chatTextColor.value;
+            chatBackgroundColorText.value = chatBackgroundColor.value;
+            chatFontSizeValue.textContent = chatFontSize.value + 'px';
+            chatBoxPaddingValue.textContent = chatBoxPadding.value + 'px';
+            chatBoxPaddingSideValue.textContent = chatBoxPaddingSide.value + 'px';
+            
+            // Update output CSS
+            updateCSSOutput();
+        }
+        
+        // Fungsi untuk mengupdate output CSS
+        function updateCSSOutput() {
+            const cssOutput = `/* Custom YouTube Live Chat by Acseldwarf - Generated by CSS Generator */
+@import url('https://fonts.googleapis.com/css2?family=Mitr&display=swap');
+
+:root {
+    /* Author name config */
+    --nameTextColor: ${nameTextColor.value};
+    --nameBackgroundColor: ${nameBackgroundColor.value};
+    --nameFontSize: ${nameFontSize.value}px;
+    --nameBoxPadding: ${nameBoxPadding.value}px;
+    
+    /* Chat message config */
+    --chatTextColor: ${chatTextColor.value};
+    --chatBackgroundColor: ${chatBackgroundColor.value};
+    --chatFontSize: ${chatFontSize.value}px;
+    --chatBoxPadding: ${chatBoxPadding.value}px;
+    --chatBoxPaddingSide: ${chatBoxPaddingSide.value}px;
+}
+
+body {overflow: hidden;background-color: rgba(0,0,0,0);}
+yt-live-chat-renderer {background-color: transparent !important;}
+yt-live-chat-text-message-renderer,yt-live-chat-text-message-renderer[is-highlighted] {background-color: transparent !important;}
+yt-live-chat-text-message-renderer[author-type="owner"],yt-live-chat-text-message-renderer[author-type="owner"][is-highlighted] {background-color: transparent !important;}
+yt-live-chat-text-message-renderer[author-type="moderator"],yt-live-chat-text-message-renderer[author-type="moderator"][is-highlighted] {background-color: transparent !important;}
+yt-live-chat-text-message-renderer[author-type="member"],yt-live-chat-text-message-renderer[author-type="member"][is-highlighted] {background-color: transparent !important;}
+yt-live-chat-author-chip #author-name {background-color: #000 !important;}
+yt-live-chat-renderer * {font-family: 'Mitr', sans-serif;font-size: 24px !important;line-height: 24px !important;}
+yt-live-chat-text-message-renderer #content,yt-live-chat-legacy-paid-message-renderer #content {overflow: initial !important;}
+yt-live-chat-item-list-renderer #items{overflow: hidden !important;}
+yt-live-chat-item-list-renderer #item-scroller{overflow: hidden !important;}
+yt-live-chat-header-renderer,yt-live-chat-message-input-renderer {display: none !important;}
+yt-live-chat-text-message-renderer,yt-live-chat-legacy-paid-message-renderer {padding-left: 4px !important;padding-right: 4px !important;}
+yt-live-chat-paid-message-renderer #header {padding-left: 4px !important;padding-right: 4px !important;}
+yt-live-chat-text-message-renderer #author-photo,yt-live-chat-paid-message-renderer #author-photo,yt-live-chat-legacy-paid-message-renderer #author-photo {display: none !important;}
+yt-live-chat-text-message-renderer #author-badges {display: none !important;vertical-align: text-top !important;}
+yt-live-chat-text-message-renderer #timestamp {display: none !important;}
+yt-live-chat-text-message-renderer yt-live-chat-author-badge-renderer[type="owner"] {display: none !important;}
+yt-live-chat-text-message-renderer yt-live-chat-author-badge-renderer[type="moderator"] {display: none !important;}
+yt-live-chat-text-message-renderer yt-live-chat-author-badge-renderer[type="member"]{display: none !important;}
+yt-live-chat-text-message-renderer #author-name {display: block !important;font-size: var(--nameFontSize) !important;transform: translate(0vw, 10px) rotate(0deg);z-index: 3 !important;padding: var(--nameBoxPadding) !important;border-radius: 5px !important;background-color: var(--nameBackgroundColor) !important;animation: float_in 1s ease;box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.2) !important;color: var(--nameTextColor) !important;}
+yt-live-chat-text-message-renderer #author-name::after {content: "";margin-left: 2px;}
+yt-live-chat-text-message-renderer #message{font-family: 'Mitr', sans-serif;border-radius: 10px;position: relative;font-size: var(--chatFontSize) !important;line-height: 32px !important;display: block;user-select: none;animation-name: reveal-text;color: var(--chatTextColor) !important;padding: var(--chatBoxPadding) !important;padding-left: var(--chatBoxPaddingSide) !important;padding-right: var(--chatBoxPaddingSide) !important;background-color: var(--chatBackgroundColor) !important;cursor: default;margin: 0;text-align: left;margin-left: 25px;box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.2) !important;}
+yt-live-chat-text-message-renderer #message[author-type="owner"]{font-family: 'Mitr', sans-serif;position: relative;font-size: var(--chatFontSize) !important;line-height: 32px !important;display: block;user-select: none;border-radius: 10px;color: var(--chatTextColor) !important;padding: var(--chatBoxPadding) !important;padding-left: var(--chatBoxPaddingSide) !important;padding-right: var(--chatBoxPaddingSide) !important;background-color: var(--chatBackgroundColor) !important;cursor: default;margin: 0;text-align: left;margin-left: 25px;box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.2) !important;}
+yt-live-chat-paid-message-renderer #content,yt-live-chat-paid-message-renderer #content * {color: #ffffff !important;font-family: 'Mitr', sans-serif;font-size: 18px !important;line-height: 18px !important;}
+yt-live-chat-paid-message-renderer {margin: 4px 0 !important;}
+yt-live-chat-legacy-paid-message-renderer {background-color: #0f9d58 !important;margin: 4px 0 !important;}
+yt-live-chat-text-message-renderer a,yt-live-chat-legacy-paid-message-renderer a {text-decoration: none !important;}
+yt-live-chat-text-message-renderer[is-deleted],yt-live-chat-legacy-paid-message-renderer[is-deleted] {display: none !important;}
+yt-live-chat-ticker-renderer {box-shadow: none !important;}
+yt-live-chat-ticker-renderer {display: none !important;}
+yt-live-chat-mode-change-message-renderer, yt-live-chat-viewer-engagement-message-renderer, yt-live-chat-restricted-participation-renderer {display: none !important;}
+yt-live-chat-action-panel-renderer, yt-live-chat-renderer #action-panel {display: none !important;}
+yt-live-chat-banner-manager{display: none !important;}
+
+@keyframes float_in {
+    0%{transform: translate(0vw, 10px) rotate(-3deg) scale(0,1);}
+    30%{transform: translate(0vw, 10px) rotate(-0deg) scale(0,1);}
+    60%{transform: translate(0vw, 10px) rotate(-0deg) scale(0.9,1);}
+    100%{transform: translate(0vw, 10px) rotate(-0deg) scale(1,1);}
+}`;
+            
+            document.getElementById('cssOutput').textContent = cssOutput;
+        }
+        
+        // Fungsi reset ke nilai default
+        function resetToDefault() {
+            nameTextColor.value = '#ffebe9';
+            nameBackgroundColor.value = '#a32834';
+            nameFontSize.value = 14;
+            nameBoxPadding.value = 4;
+            chatTextColor.value = '#932331';
+            chatBackgroundColor.value = '#ffffff';
+            chatFontSize.value = 18;
+            chatBoxPadding.value = 8;
+            chatBoxPaddingSide.value = 12;
+            
+            updatePreview();
+        }
+        
+        // Fungsi untuk menyalin CSS ke clipboard
+        function copyCSS() {
+            const cssOutput = document.getElementById('cssOutput');
+            const textarea = document.createElement('textarea');
+            textarea.value = cssOutput.textContent;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            // Tampilkan feedback
+            copyBtn.classList.add('copy-success', 'bg-green-600');
+            copyOutputBtn.classList.add('copy-success', 'bg-green-600');
+            copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> CSS Disalin!';
+            copyOutputBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Disalin!';
+            
+            setTimeout(() => {
+                copyBtn.classList.remove('copy-success', 'bg-green-600');
+                copyOutputBtn.classList.remove('copy-success', 'bg-green-600');
+                copyBtn.innerHTML = '<i class="fas fa-copy mr-2"></i> Salin CSS';
+                copyOutputBtn.innerHTML = '<i class="fas fa-copy mr-2"></i> Salin';
+            }, 2000);
+        }
+        
+        // Event listeners
+        nameTextColor.addEventListener('input', updatePreview);
+        nameTextColorText.addEventListener('input', function() {
+            nameTextColor.value = this.value;
+            updatePreview();
+        });
+        
+        nameBackgroundColor.addEventListener('input', updatePreview);
+        nameBackgroundColorText.addEventListener('input', function() {
+            nameBackgroundColor.value = this.value;
+            updatePreview();
+        });
+        
+        nameFontSize.addEventListener('input', updatePreview);
+        nameBoxPadding.addEventListener('input', updatePreview);
+        
+        chatTextColor.addEventListener('input', updatePreview);
+        chatTextColorText.addEventListener('input', function() {
+            chatTextColor.value = this.value;
+            updatePreview();
+        });
+        
+        chatBackgroundColor.addEventListener('input', updatePreview);
+        chatBackgroundColorText.addEventListener('input', function() {
+            chatBackgroundColor.value = this.value;
+            updatePreview();
+        });
+        
+        chatFontSize.addEventListener('input', updatePreview);
+        chatBoxPadding.addEventListener('input', updatePreview);
+        chatBoxPaddingSide.addEventListener('input', updatePreview);
+        
+        resetBtn.addEventListener('click', resetToDefault);
+        copyBtn.addEventListener('click', copyCSS);
+        copyOutputBtn.addEventListener('click', copyCSS);
+        
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+        });
+    </script>
+</body>
+</html>
