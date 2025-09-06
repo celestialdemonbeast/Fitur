@@ -225,6 +225,83 @@
     .custom-shadow {
       box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
     }
+
+    /*Modal Help*/
+    .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+.obs-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.obs-step {
+  display: flex;
+  gap: 1rem;
+}
+
+.step-number {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.highlight-box {
+  background: #f1f5f9;
+  border-left: 4px solid #3b82f6;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.step-image {
+  margin-top: 0.5rem;
+}
   </style>
 </head>
 <body class="font-sans text-gray-800 min-h-screen">
