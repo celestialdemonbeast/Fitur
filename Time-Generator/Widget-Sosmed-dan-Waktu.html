@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generator Widget Tanggal & Media Sosial</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     tailwind.config = {
       theme: {
@@ -259,15 +260,33 @@
     .toggle-checkbox:checked + .toggle-label {
       background-color: #4f46e5;
     }
+
+    /* Social media icon colors */
+    .twitter-color {
+      color: #1DA1F2;
+    }
+    
+    .instagram-color {
+      color: #E1306C;
+    }
+    
+    .youtube-color {
+      color: #FF0000;
+    }
   </style>
 </head>
 <body class="font-sans text-gray-800 min-h-screen">
-  <!-- Navbar -->
+ 
+
+   <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-container container mx-auto">
-      <a href="#" class="nav-logo">Widget Generator</a>
+      <a href="#" class="nav-logo">Time Widget Generator</a>
       <div class="nav-menu">
+        <a href="Widget-Jam.html" class="nav-item"><i class="fas fa-star mr-2"></i>Jam</a>
+        <a href="#" class="nav-item"><i class="fas fa-times mr-2"></i>Tanggal</a>
         <a href="#" class="nav-item active"><i class="fas fa-star mr-2"></i>Widget Tanggal & Sosial Media</a>
+        <button id="obs-help-btn" class="nav-item" ><i class="fas fa-question-circle mr-2"></i>Bantuan</button>
       </div>
     </div>
   </nav>
@@ -317,16 +336,28 @@
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium">Twitter Handle</label>
             <input type="text" id="twitter-handle" value="@samil_tust" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
+            <div class="mt-2 flex items-center">
+              <input type="checkbox" id="twitter-use-icon" checked class="mr-2 h-4 w-4 text-indigo-600">
+              <label for="twitter-use-icon" class="text-sm text-gray-700">Gunakan ikon Twitter</label>
+            </div>
           </div>
           
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium">Instagram Handle</label>
             <input type="text" id="instagram-handle" value="@samil.tust" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
+            <div class="mt-2 flex items-center">
+              <input type="checkbox" id="instagram-use-icon" checked class="mr-2 h-4 w-4 text-indigo-600">
+              <label for="instagram-use-icon" class="text-sm text-gray-700">Gunakan ikon Instagram</label>
+            </div>
           </div>
           
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium">YouTube Handle</label>
             <input type="text" id="youtube-handle" value="@samil_tust" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
+            <div class="mt-2 flex items-center">
+              <input type="checkbox" id="youtube-use-icon" checked class="mr-2 h-4 w-4 text-indigo-600">
+              <label for="youtube-use-icon" class="text-sm text-gray-700">Gunakan ikon YouTube</label>
+            </div>
           </div>
           
           <div class="mb-4">
@@ -425,7 +456,9 @@
         <div class="preview-container glass-panel p-6 rounded-2xl custom-shadow mb-6 flex items-center justify-center">
           <div id="preview-widget" class="inline-block p-8 rounded-xl w-full max-w-2xl mx-auto shadow-xl text-center" style="background-color: #003152; border-radius: 12px;">
             <div id="time-preview" class="text-7xl md:text-8xl font-bold mb-2" style="color: white; font-family: monospace;">20:56</div>
-            <div id="info-preview" class="text-2xl md:text-3xl mt-4 fade-in" style="color: #fef08a;">Sab, 17/08/2024</div>
+            <div id="info-preview" class="text-2xl md:text-3xl mt-4 fade-in" style="color: #fef08a;">
+              <i class="fab fa-twitter twitter-color mr-2"></i> @samil_tust
+            </div>
           </div>
         </div>
         
@@ -508,9 +541,6 @@
     </div>
   </div>
 
-  <!-- Font Awesome for icons -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  
   <script>
     // Data untuk informasi berganti
     let infoIndex = 0;
@@ -537,14 +567,18 @@
       const showYouTube = document.getElementById('show-youtube').checked;
       const showArt = document.getElementById('show-art').checked;
       
+      const twitterUseIcon = document.getElementById('twitter-use-icon').checked;
+      const instagramUseIcon = document.getElementById('instagram-use-icon').checked;
+      const youtubeUseIcon = document.getElementById('youtube-use-icon').checked;
+      
       const widget = document.getElementById('preview-widget');
       
       // Perbarui infoItems dengan data terbaru
       infoItems = [];
       if (showDate) infoItems.push(getCurrentDate());
-      if (showTwitter) infoItems.push(`Twitter: ${twitterHandle}`);
-      if (showInstagram) infoItems.push(`Instagram: ${instagramHandle}`);
-      if (showYouTube) infoItems.push(`YouTube: ${youtubeHandle}`);
+      if (showTwitter) infoItems.push(twitterUseIcon ? `<i class="fab fa-twitter twitter-color mr-2"></i> ${twitterHandle}` : `Twitter: ${twitterHandle}`);
+      if (showInstagram) infoItems.push(instagramUseIcon ? `<i class="fab fa-instagram instagram-color mr-2"></i> ${instagramHandle}` : `Instagram: ${instagramHandle}`);
+      if (showYouTube) infoItems.push(youtubeUseIcon ? `<i class="fab fa-youtube youtube-color mr-2"></i> ${youtubeHandle}` : `YouTube: ${youtubeHandle}`);
       if (showArt) infoItems.push(artText);
       
       // Jika tidak ada info yang dipilih, tambahkan placeholder
@@ -570,7 +604,7 @@
       const infoElement = document.getElementById('info-preview');
       infoElement.style.color = infoTextColor;
       infoElement.className = `${infoFontFamily} text-2xl md:text-3xl mt-4 fade-in`;
-      infoElement.textContent = infoItems[infoIndex];
+      infoElement.innerHTML = infoItems[infoIndex];
       
       // Perbarui preview warna
       document.getElementById('bg-preview').style.backgroundColor = bgColor;
@@ -620,6 +654,10 @@
       const showYouTube = document.getElementById('show-youtube').checked;
       const showArt = document.getElementById('show-art').checked;
       
+      const twitterUseIcon = document.getElementById('twitter-use-icon').checked;
+      const instagramUseIcon = document.getElementById('instagram-use-icon').checked;
+      const youtubeUseIcon = document.getElementById('youtube-use-icon').checked;
+      
       // Kode HTML yang akan disalin
       return `<!DOCTYPE html>
 <html lang="id">
@@ -628,6 +666,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Widget Tanggal & Media Sosial</title>
   <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -645,6 +684,15 @@
       min-height: 100vh;
       background: transparent;
     }
+    .twitter-color {
+      color: #1DA1F2;
+    }
+    .instagram-color {
+      color: #E1306C;
+    }
+    .youtube-color {
+      color: #FF0000;
+    }
   <\/style>
 </head>
 <body>
@@ -656,9 +704,9 @@
   <script>
     const infoItems = [
       ${showDate ? 'getCurrentDate(),' : ''}
-      ${showTwitter ? `"Twitter: ${twitterHandle}",` : ''}
-      ${showInstagram ? `"Instagram: ${instagramHandle}",` : ''}
-      ${showYouTube ? `"YouTube: ${youtubeHandle}",` : ''}
+      ${showTwitter ? (twitterUseIcon ? `"<i class='fab fa-twitter twitter-color mr-2'></i> ${twitterHandle}",` : `"Twitter: ${twitterHandle}",`) : ''}
+      ${showInstagram ? (instagramUseIcon ? `"<i class='fab fa-instagram instagram-color mr-2'></i> ${instagramHandle}",` : `"Instagram: ${instagramHandle}",`) : ''}
+      ${showYouTube ? (youtubeUseIcon ? `"<i class='fab fa-youtube youtube-color mr-2'></i> ${youtubeHandle}",` : `"YouTube: ${youtubeHandle}",`) : ''}
       ${showArt ? `"${artText}",` : ''}
     ].filter(item => item !== undefined);
     
@@ -688,7 +736,7 @@
       }
       
       const infoElement = document.getElementById('info');
-      infoElement.textContent = infoItems[currentInfoIndex];
+      infoElement.innerHTML = infoItems[currentInfoIndex];
       infoElement.classList.remove('fade-in');
       void infoElement.offsetWidth; // Trigger reflow
       infoElement.classList.add('fade-in');
@@ -758,6 +806,9 @@
     document.getElementById('youtube-handle').addEventListener('input', updatePreview);
     document.getElementById('art-text').addEventListener('input', updatePreview);
     document.getElementById('info-interval').addEventListener('change', updatePreview);
+    document.getElementById('twitter-use-icon').addEventListener('change', updatePreview);
+    document.getElementById('instagram-use-icon').addEventListener('change', updatePreview);
+    document.getElementById('youtube-use-icon').addEventListener('change', updatePreview);
     
     // Event listeners untuk checkbox
     document.getElementById('show-date').addEventListener('change', updatePreview);
@@ -844,7 +895,7 @@
         infoItems[0] = getCurrentDate();
       }
       
-      infoElement.textContent = infoItems[infoIndex];
+      infoElement.innerHTML = infoItems[infoIndex];
       infoElement.classList.remove('fade-in');
       void infoElement.offsetWidth; // Trigger reflow
       infoElement.classList.add('fade-in');
