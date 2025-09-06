@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Kustomisasi Widget Waktu</title>
+  <title>Editor Kustomisasi Widget Tanggal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -112,81 +112,82 @@
       background-color: rgba(255, 255, 255, 0.2);
     }
     
-    /* Custom styles from request */
-    .drop-area {
-      transition: all 0.3s ease;
-    }
-    .drop-area.active {
-      border-color: #3b82f6;
-      background-color: #dbeafe;
-    }
-    .preview-item {
-      transition: transform 0.2s;
-    }
-    .preview-item:hover {
-      transform: translateY(-5px);
-    }
-    .progress-fill {
-      transition: width 0.4s ease;
-    }
-    canvas {
-      display: none;
-    }
-    body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-    }
-    .security-badge {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    .drop-area.error {
-      border-color: #ef4444 !important;
-      background-color: #fee2e2 !important;
-    }
-    .shake {
-      animation: shake 0.5s;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-    
-    /* Clipboard styles */
-    .clipboard-indicator {
-      position: absolute;
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: rgba(16, 185, 129, 0.9);
-      border-radius: 0.5rem;
-      z-index: 10;
-      animation: fadeOut 2s ease-out forwards;
-      opacity: 0;
+      z-index: 1000;
+      padding: 20px;
     }
-    
-    .clipboard-message {
-      color: white;
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
       font-size: 1.5rem;
-      font-weight: bold;
-      text-align: center;
-      padding: 1rem;
+      cursor: pointer;
+      color: #999;
     }
-    
-    @keyframes fadeOut {
-      0% { opacity: 1; }
-      70% { opacity: 1; }
-      100% { opacity: 0; }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    .obs-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .obs-step {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .highlight-box {
+      background: #f1f5f9;
+      border-left: 4px solid #3b82f6;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
+
+    .step-image {
+      margin-top: 0.5rem;
     }
     
     /* Glassmorphism effect */
@@ -226,81 +227,120 @@
       box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
     }
 
-    /*Modal Help*/
-    .modal-overlay {
-  position: fixed;
+    /* Custom font sizes for widget */
+    .widget-font-small {
+      font-size: 1.5rem;
+    }
+    .widget-font-medium {
+      font-size: 2rem;
+    }
+    .widget-font-large {
+      font-size: 2.5rem;
+    }
+    .widget-time-small {
+      font-size: 2.5rem;
+    }
+    .widget-time-medium {
+      font-size: 3rem;
+    }
+    .widget-time-large {
+      font-size: 3.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .widget-font-small {
+        font-size: 1.2rem;
+      }
+      .widget-font-medium {
+        font-size: 1.5rem;
+      }
+      .widget-font-large {
+        font-size: 1.8rem;
+      }
+      .widget-time-small {
+        font-size: 2rem;
+      }
+      .widget-time-medium {
+        font-size: 2.5rem;
+      }
+      .widget-time-large {
+        font-size: 3rem;
+      }
+    }
+
+    /* Clipboard notification styles */
+    .clipboard-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-out;
+    }
+    
+    .clipboard-notification.show {
+      transform: translateX(0);
+    }
+    
+    .clipboard-notification.error {
+      background: #ef4444;
+    }
+    
+    .clipboard-notification i {
+      margin-right: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    /* Clipboard indicator styles */
+.clipboard-indicator {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  background-color: rgba(16, 185, 129, 0.9);
+  border-radius: 0.5rem;
+  z-index: 10;
+  animation: fadeOut 2s ease-out forwards;
+  opacity: 0;
 }
 
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-}
-
-.close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #999;
-}
-
-.close-btn:hover {
-  color: #000;
-}
-
-.obs-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.obs-step {
-  display: flex;
-  gap: 1rem;
-}
-
-.step-number {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.clipboard-message {
   color: white;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1rem;
 }
 
-.step-content {
-  flex: 1;
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-.highlight-box {
-  background: #f1f5f9;
-  border-left: 4px solid #3b82f6;
-  padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
-  border-radius: 0 0.25rem 0.25rem 0;
+.shake {
+  animation: shake 0.5s;
 }
 
-.step-image {
-  margin-top: 0.5rem;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
 }
   </style>
 </head>
@@ -308,7 +348,7 @@
   <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-container container mx-auto">
-      <a href="#" class="nav-logo">Time Widget Generator</a>
+      <a href="#" class="nav-logo">Date Widget Generator</a>
       <div class="nav-menu">
         <a href="Widget-Jam.html" class="nav-item"><i class="fas fa-star mr-2"></i>Jam</a>
         <a href="#" class="nav-item active"><i class="fas fa-times mr-2"></i>Tanggal</a>
@@ -372,9 +412,11 @@
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium">Ukuran Font</label>
             <select id="font-size" class="w-full p-3 border rounded-lg bg-white">
-              <option value="text-base">Normal</option>
+              <option value="text-base">Kecil</option>
               <option value="text-lg">Sedang</option>
               <option value="text-xl">Besar</option>
+              <option value="text-2xl">Sangat Besar</option>
+              <option value="text-3xl" selected>Ekstra Besar</option>
             </select>
           </div>
         </div>
@@ -392,7 +434,7 @@
             <i class="fas fa-code mr-2"></i> Tampilkan Kode HTML
           </button>
           
-          <button id="obs-help-btn" class="gradient-btn py-3 px-6 rounded-xl font-bold text-lg" style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">
+          <button id="obs-help-btn-panel" class="gradient-btn py-3 px-6 rounded-xl font-bold text-lg" style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">
             <i class="fas fa-info-circle mr-2"></i> Petunjuk OBS
           </button>
         </div>
@@ -435,7 +477,9 @@
         <div id="code-output" class="hidden glass-panel rounded-2xl p-6 custom-shadow">
           <h3 class="text-xl font-bold mb-3 text-indigo-700">Kode HTML</h3>
           <p class="text-gray-600 mb-3">Salin kode di bawah dan simpan sebagai file HTML:</p>
-          <div class="code-container relative" id="html-code"></div>
+          <div class="code-container relative">
+            <pre id="html-code"></pre>
+          </div>
           <div class="mt-4 flex gap-3">
             <button id="copy-btn" class="flex-1 gradient-btn py-3 px-4 rounded-xl font-bold">
               <i class="fas fa-copy mr-2"></i> Salin ke Clipboard
@@ -500,7 +544,7 @@
           <div class="step-content">
             <h3 class="font-semibold text-lg text-gray-800">Atur Posisi Widget</h3>
             <p class="text-gray-600 mt-1">Di preview OBS, drag widget ke posisi yang diinginkan.</p>
-            <p class="text-gray-600 mt-2">Anda dapat mengatur ukuran dengan menarik sudut widget.</p>
+            <p class="text-gray-600 mt-2">You can adjust the size by pulling the corners of the widget.</p>
             <div class="step-image flex items-center justify-center bg-gray-100 p-4">
               <div class="bg-indigo-600 rounded-xl w-48 h-24 flex items-center justify-center text-white font-bold">
                 Widget Tanggal
@@ -549,9 +593,9 @@
     </div>
   </div>
 
-  <!-- Font Awesome for icons -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- Notification for clipboard -->
   
+
   <script>
     // Fungsi untuk memperbarui preview
     function updatePreview() {
@@ -588,8 +632,25 @@
       const time = widget.querySelector('#time');
       
       if (datetime && time) {
-        datetime.className = `${fontSize} ${fontFamily} font-bold mb-3 text-center`;
-        time.className = `${fontSize} ${fontFamily}`;
+        // Hapus kelas ukuran font sebelumnya
+        datetime.className = datetime.className.replace(/\btext-(base|lg|xl|2xl|3xl|4xl|5xl)\b/g, '');
+        time.className = time.className.replace(/\btext-(base|lg|xl|2xl|3xl|4xl|5xl)\b/g, '');
+        
+        // Tambahkan kelas font family dan ukuran font yang baru
+        datetime.classList.add(fontSize, fontFamily, 'font-bold', 'mb-3', 'text-center');
+        
+        // Untuk waktu, gunakan ukuran yang lebih besar
+        let timeSize;
+        switch(fontSize) {
+          case 'text-base': timeSize = 'text-2xl'; break;
+          case 'text-lg': timeSize = 'text-3xl'; break;
+          case 'text-xl': timeSize = 'text-4xl'; break;
+          case 'text-2xl': timeSize = 'text-5xl'; break;
+          case 'text-3xl': timeSize = 'text-6xl'; break;
+          default: timeSize = 'text-3xl';
+        }
+        
+        time.classList.add(timeSize, fontFamily);
       }
     }
     
@@ -601,6 +662,17 @@
       const borderRadius = document.getElementById('border-radius').value;
       const fontFamily = document.getElementById('font-family').value;
       const fontSize = document.getElementById('font-size').value;
+      
+      // Tentukan ukuran font untuk waktu
+      let timeSize;
+      switch(fontSize) {
+        case 'text-base': timeSize = 'text-2xl'; break;
+        case 'text-lg': timeSize = 'text-3xl'; break;
+        case 'text-xl': timeSize = 'text-4xl'; break;
+        case 'text-2xl': timeSize = 'text-5xl'; break;
+        case 'text-3xl': timeSize = 'text-6xl'; break;
+        default: timeSize = 'text-3xl';
+      }
       
       // Kode HTML yang akan disalin
       return `<!DOCTYPE html>
@@ -646,7 +718,7 @@
   <div class="inline-block p-10 rounded-xl w-full max-w-2xl mx-auto shadow-xl" style="background-color: ${bgColor}; color: ${textColor}; border-radius: ${borderRadius}px;">
     <div id="datetime" class="${fontSize} font-bold mb-3 text-center">Sab, 17/08/2024</div>
     <div class="w-full h-1.5 my-5 rounded-full" style="background-color: ${lineColor};"></div>
-    <div class="flex items-center justify-center gap-5 ${fontSize === 'text-base' ? 'text-4xl md:text-5xl' : fontSize === 'text-lg' ? 'text-5xl md:text-6xl' : 'text-6xl md:text-7xl'}">
+    <div class="flex items-center justify-center gap-5 ${timeSize}">
       <div id="time" class="font-mono">12:34:56</div>
       <div id="icon" class="w-16 h-16 relative"></div>
     </div>
@@ -751,6 +823,27 @@
         }
       });
     }
+
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('clipboard-notification');
+      notification.querySelector('span').textContent = message;
+      
+      if (isError) {
+        notification.classList.add('error');
+        notification.querySelector('i').className = 'fas fa-exclamation-circle';
+      } else {
+        notification.classList.remove('error');
+        notification.querySelector('i').className = 'fas fa-check-circle';
+      }
+      
+      notification.classList.add('show');
+      
+      // Sembunyikan notifikasi setelah 3 detik
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
     
     // Event listeners untuk kontrol
     document.getElementById('bg-color').addEventListener('input', updatePreview);
@@ -769,7 +862,7 @@
     });
     
     // Event listener untuk tombol Salin
-    document.getElementById('copy-btn').addEventListener('click', function() {
+   document.getElementById('copy-btn').addEventListener('click', function() {
       const code = document.getElementById('html-code').textContent;
       const btn = this;
       
@@ -809,6 +902,11 @@
       document.body.style.overflow = 'hidden';
     });
     
+    document.getElementById('obs-help-btn-panel').addEventListener('click', function() {
+      document.getElementById('obs-help-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    });
+    
     document.getElementById('close-obs-help').addEventListener('click', function() {
       document.getElementById('obs-help-modal').classList.add('hidden');
       document.body.style.overflow = '';
@@ -824,42 +922,6 @@
         this.classList.add('hidden');
         document.body.style.overflow = '';
       }
-    });
-    
-    // Event listeners untuk menu navbar
-    document.getElementById('docs-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('obs-help-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      
-      // Update active menu
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-      });
-      this.classList.add('active');
-    });
-    
-    document.getElementById('about-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('about-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      
-      // Update active menu
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-      });
-      this.classList.add('active');
-    });
-    
-    document.getElementById('home-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Update active menu
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-      });
-      this.classList.add('active');
     });
     
     // Event listeners untuk modal tentang
