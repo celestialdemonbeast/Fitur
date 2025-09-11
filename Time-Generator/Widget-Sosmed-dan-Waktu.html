@@ -6,6 +6,7 @@
   <title>Generator Widget Tanggal & Media Sosial</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
@@ -273,6 +274,23 @@
     .youtube-color {
       color: #FF0000;
     }
+
+    /* Font styles for preview */
+    .font-sans {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+    
+    .font-serif {
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    }
+    
+    .font-mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    
+    .font-slab {
+      font-family: 'Roboto Slab', serif;
+    }
   </style>
 </head>
 <body class="font-sans text-gray-800 min-h-screen">
@@ -335,7 +353,7 @@
           
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium">Twitter Handle</label>
-            <input type="text" id="twitter-handle" value="@samil_tust" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
+            <input type="text" id="twitter-handle" value="@CDB-Official" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
             <div class="mt-2 flex items-center">
               <input type="checkbox" id="twitter-use-icon" checked class="mr-2 h-4 w-4 text-indigo-600">
               <label for="twitter-use-icon" class="text-sm text-gray-700">Gunakan ikon Twitter</label>
@@ -353,7 +371,7 @@
           
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium">YouTube Handle</label>
-            <input type="text" id="youtube-handle" value="@samil_tust" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
+            <input type="text" id="youtube-handle" value="@CDB-Official" class="w-full p-3 border rounded-lg bg-white" placeholder="@username">
             <div class="mt-2 flex items-center">
               <input type="checkbox" id="youtube-use-icon" checked class="mr-2 h-4 w-4 text-indigo-600">
               <label for="youtube-use-icon" class="text-sm text-gray-700">Gunakan ikon YouTube</label>
@@ -388,7 +406,7 @@
             </div>
             <div class="flex items-center">
               <input type="checkbox" id="show-art" checked class="mr-2 h-5 w-5 text-indigo-600">
-              <label for="show-art" class="text-gray-700">Art</label>
+              <label for='show-art' class="text-gray-700">Art</label>
             </div>
           </div>
         </div>
@@ -417,6 +435,7 @@
               <option value="font-sans">Sans-serif</option>
               <option value="font-serif">Serif</option>
               <option value="font-mono" selected>Monospace</option>
+              <option value="font-slab">Slab Serif</option>
             </select>
           </div>
           
@@ -426,6 +445,7 @@
               <option value="font-sans" selected>Sans-serif</option>
               <option value="font-serif">Serif</option>
               <option value="font-mono">Monospace</option>
+              <option value="font-slab">Slab Serif</option>
             </select>
           </div>
         </div>
@@ -442,10 +462,6 @@
           <button id="generate-btn" class="gradient-btn py-3 px-6 rounded-xl font-bold text-lg">
             <i class="fas fa-code mr-2"></i> Tampilkan Kode HTML
           </button>
-          
-          <button id="obs-help-btn" class="gradient-btn py-3 px-6 rounded-xl font-bold text-lg" style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">
-            <i class="fas fa-info-circle mr-2"></i> Petunjuk OBS
-          </button>
         </div>
       </div>
       
@@ -455,9 +471,9 @@
         
         <div class="preview-container glass-panel p-6 rounded-2xl custom-shadow mb-6 flex items-center justify-center">
           <div id="preview-widget" class="inline-block p-8 rounded-xl w-full max-w-2xl mx-auto shadow-xl text-center" style="background-color: #003152; border-radius: 12px;">
-            <div id="time-preview" class="text-7xl md:text-8xl font-bold mb-2" style="color: white; font-family: monospace;">20:56</div>
-            <div id="info-preview" class="text-2xl md:text-3xl mt-4 fade-in" style="color: #fef08a;">
-              <i class="fab fa-twitter twitter-color mr-2"></i> @samil_tust
+            <div id="time-preview" class="text-7xl md:text-8xl font-bold mb-2 font-mono" style="color: white;">20:56</div>
+            <div id="info-preview" class="text-2xl md:text-3xl mt-4 fade-in font-sans" style="color: #fef08a;">
+              <i class="fab fa-twitter twitter-color mr-2"></i> @CDB-Official
             </div>
           </div>
         </div>
@@ -598,12 +614,12 @@
       // Perbarui waktu
       const timeElement = document.getElementById('time-preview');
       timeElement.style.color = timeTextColor;
-      timeElement.className = `${timeFontFamily} text-7xl md:text-8xl font-bold mb-2`;
+      timeElement.className = `text-7xl md:text-8xl font-bold mb-2 ${timeFontFamily}`;
       
       // Perbarui info
       const infoElement = document.getElementById('info-preview');
       infoElement.style.color = infoTextColor;
-      infoElement.className = `${infoFontFamily} text-2xl md:text-3xl mt-4 fade-in`;
+      infoElement.className = `text-2xl md:text-3xl mt-4 fade-in ${infoFontFamily}`;
       infoElement.innerHTML = infoItems[infoIndex];
       
       // Perbarui preview warna
@@ -667,6 +683,7 @@
   <title>Widget Tanggal & Media Sosial</title>
   <script src="https://cdn.tailwindcss.com"><\/script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
   <style>
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -692,6 +709,18 @@
     }
     .youtube-color {
       color: #FF0000;
+    }
+    .font-sans {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+    .font-serif {
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    }
+    .font-mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .font-slab {
+      font-family: 'Roboto Slab', serif;
     }
   <\/style>
 </head>
