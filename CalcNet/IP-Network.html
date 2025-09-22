@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator IP Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Toast notification */
+        .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background-color: #ef4444;
+          color: white;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+          background-color: #10b981;
+        }
+        
+        .toast.warning {
+          background-color: #f59e0b;
+        }
+        
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        .toast-message {
+          margin-left: 0.5rem;
+        }
+        
+        .toast-close {
+          margin-left: 1rem;
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="toast-message" id="toast-message"></span>
+        <span class="toast-close" onclick="hideToast()">&times;</span>
+    </div>
+
+    <!-- Navbar -->
+      <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-primary to-secondary py-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="text-white font-bold text-xl flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                <span>Calc-net</span>
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="IP-Network.html" class="nav-item text-white px-4 py-2 rounded-lg">IP Network</a>
+                <a href="Binary-Code.html" class="nav-item text-white px-4 py-2 rounded-lg">Binary Code</a>
+                <a href="Satuan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Satuan Data</a>
+                <a href="Kecepatan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Kecepatan Data</a>
+                <a href="Listrik.html" class="nav-item text-white px-4 py-2 rounded-lg">Kelistrikan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="main-header text-4xl md:text-5xl font-bold mb-4">Kalkulator IP Network</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Alat untuk menghitung network address, broadcast address, range IP, dan jumlah host dari sebuah subnet</p>
+        </div>
+
+        <!-- Kalkulator Container -->
+        <div class="glass-panel p-6 md:p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <!-- IP Network Calculator -->
+            <div id="ip-network">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Kalkulator IP Network</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Alamat IP</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Contoh: 192.168.1.1" id="ip-address">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Subnet Mask</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Contoh: 255.255.255.0 atau /24" id="subnet-mask">
+                        </div>
+                        <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="calculate-ip">Hitung</button>
+                    </div>
+                    <div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="font-semibold text-gray-800 mb-3">Hasil Perhitungan</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Network Address:</span>
+                                    <span class="font-mono text-primary" id="network-address">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Broadcast Address:</span>
+                                    <span class="font-mono text-primary" id="broadcast-address">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Host Range:</span>
+                                    <span class="font-mono text-primary" id="host-range">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Jumlah Host:</span>
+                                    <span class="font-mono text-primary" id="total-hosts">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Wildcard Mask:</span>
+                                    <span class="font-mono text-primary" id="wildcard-mask">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                <span class="text-gray-600">Kelas IP:</span>
+                                <span class="font-mono text-primary" id="ip-class">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Cara Penggunaan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">📝</div>
+                    <h3 class="font-semibold text-lg mb-2">Input Data</h3>
+                    <p class="text-gray-600">Masukkan alamat IP (contoh: 192.168.1.1) dan subnet mask (contoh: 255.255.255.0 atau /24) pada kolom yang tersedia.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">🔍</div>
+                    <h3 class="font-semibold text-lg mb-2">Hasil Perhitungan</h3>
+                    <p class="text-gray-600">Kalkulator akan menampilkan network address, broadcast address, range host yang dapat digunakan, jumlah host, dan wildcard mask.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 Kalkulator IP Network. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Toast notification functions
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
+
+        // IP Network Calculator
+        document.getElementById('calculate-ip').addEventListener('click', function() {
+            const ipAddress = document.getElementById('ip-address').value;
+            const subnetMask = document.getElementById('subnet-mask').value;
+            
+            if (!ipAddress || !subnetMask) {
+                showToast('Masukkan alamat IP dan subnet mask terlebih dahulu.');
+                return;
+            }
+            
+            // Validasi format IP
+            const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+            if (!ipRegex.test(ipAddress)) {
+                showToast('Format alamat IP tidak valid.');
+                return;
+            }
+            
+            // Validasi IP address
+            const ipParts = ipAddress.split('.');
+            for (let part of ipParts) {
+                const num = parseInt(part);
+                if (num < 0 || num > 255) {
+                    showToast('Alamat IP tidak valid. Setiap oktet harus antara 0-255.');
+                    return;
+                }
+            }
+            
+            // Hitung subnet
+            const networkAddress = calculateNetworkAddress(ipAddress, subnetMask);
+            const broadcastAddress = calculateBroadcastAddress(ipAddress, subnetMask);
+            const hostRange = calculateHostRange(networkAddress, broadcastAddress);
+            const totalHosts = calculateTotalHosts(subnetMask);
+            const wildcardMask = calculateWildcardMask(subnetMask);
+            
+            // Tampilkan hasil
+            document.getElementById('network-address').textContent = networkAddress;
+            document.getElementById('broadcast-address').textContent = broadcastAddress;
+            document.getElementById('host-range').textContent = hostRange;
+            document.getElementById('total-hosts').textContent = totalHosts;
+            document.getElementById('wildcard-mask').textContent = wildcardMask;
+        });
+        
+        // Fungsi bantuan untuk IP Calculator
+        function calculateNetworkAddress(ip, mask) {
+            const ipParts = ip.split('.').map(Number);
+            const maskParts = parseSubnetMask(mask);
+            
+            const networkParts = ipParts.map((part, i) => part & maskParts[i]);
+            return networkParts.join('.');
+        }
+        
+        function calculateBroadcastAddress(ip, mask) {
+            const ipParts = ip.split('.').map(Number);
+            const maskParts = parseSubnetMask(mask);
+            const wildcardParts = maskParts.map(part => 255 - part);
+            
+            const broadcastParts = ipParts.map((part, i) => part | wildcardParts[i]);
+            return broadcastParts.join('.');
+        }
+        
+        function calculateHostRange(network, broadcast) {
+            const networkParts = network.split('.').map(Number);
+            const broadcastParts = broadcast.split('.').map(Number);
+            
+            // Tambah 1 ke alamat network untuk mendapatkan host pertama
+            networkParts[3] += 1;
+            // Kurangi 1 dari alamat broadcast untuk mendapatkan host terakhir
+            broadcastParts[3] -= 1;
+            
+            return `${networkParts.join('.')} - ${broadcastParts.join('.')}`;
+        }
+        
+        function calculateTotalHosts(mask) {
+            const maskParts = parseSubnetMask(mask);
+            const cidr = maskParts.reduce((acc, part) => acc + countBits(part), 0);
+            return Math.pow(2, 32 - cidr) - 2;
+        }
+        
+        function calculateWildcardMask(mask) {
+            const maskParts = parseSubnetMask(mask);
+            return maskParts.map(part => 255 - part).join('.');
+        }
+        
+        function parseSubnetMask(mask) {
+            if (mask.startsWith('/')) {
+                const cidr = parseInt(mask.substring(1));
+                return calculateSubnetFromCidr(cidr);
+            } else {
+                return mask.split('.').map(Number);
+            }
+        }
+        
+        function calculateSubnetFromCidr(cidr) {
+            const mask = [];
+            for (let i = 0; i < 4; i++) {
+                const bits = Math.min(8, Math.max(0, cidr - i * 8));
+                mask.push(bits === 0 ? 0 : 256 - Math.pow(2, 8 - bits));
+            }
+            return mask;
+        }
+        
+        function countBits(n) {
+            let count = 0;
+            while (n) {
+                count += n & 1;
+                n >>= 1;
+            }
+            return count;
+        }
+
+          document.getElementById('calculate-ip').addEventListener('click', function() {
+        const ipAddress = document.getElementById('ip-address').value;
+        const subnetMask = document.getElementById('subnet-mask').value;
+        
+        if (!ipAddress || !subnetMask) {
+            showToast('Masukkan alamat IP dan subnet mask terlebih dahulu.');
+            return;
+        }
+        
+        const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+        if (!ipRegex.test(ipAddress)) {
+            showToast('Format alamat IP tidak valid.');
+            return;
+        }
+        
+        const ipParts = ipAddress.split('.');
+        for (let part of ipParts) {
+            const num = parseInt(part);
+            if (num < 0 || num > 255) {
+                showToast('Alamat IP tidak valid. Setiap oktet harus antara 0-255.');
+                return;
+            }
+        }
+        
+        const networkAddress = calculateNetworkAddress(ipAddress, subnetMask);
+        const broadcastAddress = calculateBroadcastAddress(ipAddress, subnetMask);
+        const hostRange = calculateHostRange(networkAddress, broadcastAddress);
+        const totalHosts = calculateTotalHosts(subnetMask);
+        const wildcardMask = calculateWildcardMask(subnetMask);
+        const ipClass = calculateIPClass(ipAddress);
+        
+        document.getElementById('network-address').textContent = networkAddress;
+        document.getElementById('broadcast-address').textContent = broadcastAddress;
+        document.getElementById('host-range').textContent = hostRange;
+        document.getElementById('total-hosts').textContent = totalHosts;
+        document.getElementById('wildcard-mask').textContent = wildcardMask;
+        document.getElementById('ip-class').textContent = ipClass;
+    });
+
+    // Fungsi tambahan: menentukan kelas IP
+    function calculateIPClass(ip) {
+        const firstOctet = parseInt(ip.split('.')[0]);
+        if (firstOctet >= 1 && firstOctet <= 126) return "Class A";
+        if (firstOctet === 127) return "Loopback (Reserved)";
+        if (firstOctet >= 128 && firstOctet <= 191) return "Class B";
+        if (firstOctet >= 192 && firstOctet <= 223) return "Class C";
+        if (firstOctet >= 224 && firstOctet <= 239) return "Class D (Multicast)";
+        if (firstOctet >= 240 && firstOctet <= 255) return "Class E (Experimental)";
+        return "Tidak diketahui";
+    }
+    </script>
+</body>
+</html>

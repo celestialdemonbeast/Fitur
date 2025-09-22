@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kode Biner & Teks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+        .toast {
+          position: fixed; bottom: 20px; right: 20px;
+          background-color: #ef4444; color: white;
+          padding: 1rem; border-radius: 0.5rem;
+          display: flex; align-items: center;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .toast.success { background-color: #10b981; }
+        .toast.warning { background-color: #f59e0b; }
+        .toast-message { margin-left: 0.5rem; }
+        .toast-close { margin-left: 1rem; cursor: pointer; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Toast -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="toast-message" id="toast-message"></span>
+        <span class="toast-close" onclick="hideToast()">&times;</span>
+    </div>
+
+      <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-primary to-secondary py-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="text-white font-bold text-xl flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                <span>Calc-net</span>
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="IP-Network.html" class="nav-item text-white px-4 py-2 rounded-lg">IP Network</a>
+                <a href="Binary-Code.html" class="nav-item text-white px-4 py-2 rounded-lg">Binary Code</a>
+                <a href="Satuan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Satuan Data</a>
+                <a href="Kecepatan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Kecepatan Data</a>
+                <a href="Listrik.html" class="nav-item text-white px-4 py-2 rounded-lg">Kelistrikan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+            <h1 class="main-header text-4xl md:text-5xl font-bold mb-4">Konversi Kode Biner & Teks</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Alat untuk mengkonversi antara biner, desimal, heksadesimal, dan teks ASCII</p>
+        </div>
+
+        <div class="glass-panel p-6 md:p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <div id="binary-code">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Konverter</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Masukkan Nilai</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Teks, Biner, Desimal, Heksadesimal" id="binary-input">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Dari</label>
+                            <select id="binary-from" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary">
+                                <option value="binary">Biner</option>
+                                <option value="decimal">Desimal</option>
+                                <option value="hexadecimal">Heksadesimal</option>
+                                <option value="text">Teks</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Ke</label>
+                            <select id="binary-to" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary">
+                                <option value="binary">Biner</option>
+                                <option value="decimal">Desimal</option>
+                                <option value="hexadecimal">Heksadesimal</option>
+                                <option value="text">Teks</option>
+                            </select>
+                        </div>
+                        <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="convert-binary">Konversi</button>
+                    </div>
+                    <div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="font-semibold text-gray-800 mb-3">Hasil Konversi</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="text-gray-600 block mb-1">Biner:</span>
+                                    <span class="font-mono text-primary text-lg" id="result-binary">-</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 block mb-1">Desimal:</span>
+                                    <span class="font-mono text-primary text-lg" id="result-decimal">-</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 block mb-1">Heksadesimal:</span>
+                                    <span class="font-mono text-primary text-lg" id="result-hexadecimal">-</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 block mb-1">Teks:</span>
+                                    <span class="font-mono text-primary text-lg" id="result-text">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white text-center">
+        <p>© 2023 Konversi Kode Biner & Teks. All rights reserved.</p>
+    </footer>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function showToast(msg){const t=document.getElementById('toast');document.getElementById('toast-message').textContent=msg;t.classList.remove('hidden');setTimeout(()=>{t.classList.add('hidden');},4000);}
+        function hideToast(){document.getElementById('toast').classList.add('hidden');}
+
+        // helper konversi teks
+        function textToBinary(text){return text.split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');}
+        function textToDecimal(text){return text.split('').map(c=>c.charCodeAt(0)).join(' ');}
+        function textToHex(text){return text.split('').map(c=>c.charCodeAt(0).toString(16).toUpperCase()).join(' ');}
+        function binaryToText(bin){return bin.split(' ').map(b=>String.fromCharCode(parseInt(b,2))).join('');}
+        function decimalToText(dec){return dec.split(' ').map(d=>String.fromCharCode(parseInt(d,10))).join('');}
+        function hexToText(hex){return hex.split(' ').map(h=>String.fromCharCode(parseInt(h,16))).join('');}
+
+        document.getElementById('convert-binary').addEventListener('click',()=>{
+            const input=document.getElementById('binary-input').value.trim();
+            const from=document.getElementById('binary-from').value;
+            if(!input){showToast('Masukkan nilai.');return;}
+            let decimalValue;
+            let textValue="";
+            try{
+                switch(from){
+                    case 'binary': decimalValue=parseInt(input.replace(/\s+/g,''),2); textValue=binaryToText(input); break;
+                    case 'decimal': decimalValue=parseInt(input.split(' ')[0],10); textValue=decimalToText(input); break;
+                    case 'hexadecimal': decimalValue=parseInt(input.split(' ')[0],16); textValue=hexToText(input); break;
+                    case 'text': decimalValue=input.charCodeAt(0); textValue=input; break;
+                }
+            }catch(e){showToast('Input tidak valid.');return;}
+            // hasil
+            document.getElementById('result-binary').textContent= from==='text'? textToBinary(textValue): decimalValue.toString(2);
+            document.getElementById('result-decimal').textContent= from==='text'? textToDecimal(textValue): decimalValue.toString(10);
+            document.getElementById('result-hexadecimal').textContent= from==='text'? textToHex(textValue): decimalValue.toString(16).toUpperCase();
+            document.getElementById('result-text').textContent=textValue;
+        });
+    </script>
+</body>
+</html>

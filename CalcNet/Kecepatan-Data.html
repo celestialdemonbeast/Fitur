@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kecepatan Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Toast notification */
+        .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background-color: #ef4444;
+          color: white;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+          background-color: #10b981;
+        }
+        
+        .toast.warning {
+          background-color: #f59e0b;
+        }
+        
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        .toast-message {
+          margin-left: 0.5rem;
+        }
+        
+        .toast-close {
+          margin-left: 1rem;
+          cursor: pointer;
+        }
+        
+        .info-box {
+          background-color: #e0f2fe;
+          border-left: 4px solid #0ea5e9;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="toast-message" id="toast-message"></span>
+        <span class="toast-close" onclick="hideToast()">&times;</span>
+    </div>
+
+    <!-- Navbar -->
+     <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-primary to-secondary py-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="text-white font-bold text-xl flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                <span>Calc-net</span>
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="IP-Network.html" class="nav-item active text-white px-4 py-2 rounded-lg">IP Network</a>
+                <a href="Binary-Code.html" class="nav-item text-white px-4 py-2 rounded-lg">Binary Code</a>
+                <a href="Satuan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Satuan Data</a>
+                <a href="Kecepatan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Kecepatan Data</a>
+                <a href="Listrik.html" class="nav-item text-white px-4 py-2 rounded-lg">Kelistrikan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="main-header text-4xl md:text-5xl font-bold mb-4">Kalkulator Kecepatan Data</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Alat untuk menghitung waktu transfer data berdasarkan ukuran file dan kecepatan koneksi internet</p>
+        </div>
+
+        <!-- Kalkulator Container -->
+        <div class="glass-panel p-6 md:p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <!-- Data Speed Calculator -->
+            <div id="data-speed">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Kalkulator Kecepatan Data</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Ukuran Data</label>
+                            <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan ukuran data" id="size-value" step="any">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Satuan Ukuran</label>
+                            <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="size-unit">
+                                <option value="MB">Megabyte (MB)</option>
+                                <option value="GB">Gigabyte (GB)</option>
+                                <option value="TB">Terabyte (TB)</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Kecepatan Transfer</label>
+                            <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan kecepatan" id="speed-value" step="any">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Satuan Kecepatan</label>
+                            <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="speed-unit">
+                                <option value="Mbps">Mbps</option>
+                                <option value="MBps">MB/s</option>
+                                <option value="Gbps">Gbps</option>
+                            </select>
+                        </div>
+                        <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="calculate-speed">Hitung</button>
+                    </div>
+                    <div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="font-semibold text-gray-800 mb-3">Hasil Perhitungan</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="text-gray-600 block mb-1">Waktu Transfer:</span>
+                                    <span class="font-mono text-primary text-xl" id="transfer-time">-</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 block mb-1">Kecepatan Sebenarnya:</span>
+                                    <span class="font-mono text-primary" id="actual-speed">-</span>
+                                </div>
+                                <div class="mt-4 p-3 info-box rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Informasi:</h4>
+                                    <p class="text-sm text-blue-600">1 Byte = 8 bit. Kecepatan internet biasanya diukur dalam bit per second (bps), sedangkan ukuran file dalam byte.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Panduan Kecepatan Data</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">📊</div>
+                    <h3 class="font-semibold text-lg mb-2">Satuan Kecepatan</h3>
+                    <p class="text-gray-600">Mbps (Megabit per detik), MB/s (Megabyte per detik), Gbps (Gigabit per detik). Perhatikan perbedaan antara bit (b) dan byte (B).</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">⏱️</div>
+                    <h3 class="font-semibold text-lg mb-2">Waktu Transfer</h3>
+                    <p class="text-gray-600">Waktu yang dibutuhkan untuk mentransfer data dihitung berdasarkan ukuran file dan kecepatan koneksi internet Anda.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">🔍</div>
+                    <h3 class="font-semibold text-lg mb-2">Konversi Satuan</h3>
+                    <p class="text-gray-600">1 MB/s = 8 Mbps. Kecepatan unduh aktual biasanya sekitar 80-90% dari kecepatan yang diiklankan oleh penyedia layanan.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Table -->
+        <div class="mt-12 glass-panel p-6 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Estimasi Waktu Transfer</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-3">Ukuran File</th>
+                            <th class="px-4 py-3">10 Mbps</th>
+                            <th class="px-4 py-3">50 Mbps</th>
+                            <th class="px-4 py-3">100 Mbps</th>
+                            <th class="px-4 py-3">1 Gbps</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">10 MB</td>
+                            <td class="px-4 py-3">8 detik</td>
+                            <td class="px-4 py-3">1.6 detik</td>
+                            <td class="px-4 py-3">0.8 detik</td>
+                            <td class="px-4 py-3">0.08 detik</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <td class="px-4 py-3 font-medium">100 MB</td>
+                            <td class="px-4 py-3">1 menit 20 detik</td>
+                            <td class="px-4 py-3">16 detik</td>
+                            <td class="px-4 py-3">8 detik</td>
+                            <td class="px-4 py-3">0.8 detik</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">1 GB</td>
+                            <td class="px-4 py-3">13 menit 40 detik</td>
+                            <td class="px-4 py-3">2 menit 44 detik</td>
+                            <td class="px-4 py-3">1 menit 22 detik</td>
+                            <td class="px-4 py-3">8.2 detik</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <td class="px-4 py-3 font-medium">5 GB</td>
+                            <td class="px-4 py-3">1 jam 8 menit</td>
+                            <td class="px-4 py-3">13 menit 40 detik</td>
+                            <td class="px-4 py-3">6 menit 50 detik</td>
+                            <td class="px-4 py-3">41 detik</td>
+                        </tr>
+                        <tr class="bg-white">
+                            <td class="px-4 py-3 font-medium">10 GB</td>
+                            <td class="px-4 py-3">2 jam 16 menit</td>
+                            <td class="px-4 py-3">27 menit 20 detik</td>
+                            <td class="px-4 py-3">13 menit 40 detik</td>
+                            <td class="px-4 py-3">1 menit 22 detik</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-sm text-gray-600 mt-4 text-center">* Perhitungan berdasarkan kecepatan maksimum teoritis tanpa memperhitungkan overhead jaringan</p>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 Kalkulator Kecepatan Data. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Toast notification functions
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
+
+        // Data Speed Calculator
+        document.getElementById('calculate-speed').addEventListener('click', function() {
+            const size = parseFloat(document.getElementById('size-value').value);
+            const sizeUnit = document.getElementById('size-unit').value;
+            const speed = parseFloat(document.getElementById('speed-value').value);
+            const speedUnit = document.getElementById('speed-unit').value;
+            
+            if (isNaN(size) || isNaN(speed)) {
+                showToast('Masukkan nilai ukuran dan kecepatan yang valid.');
+                return;
+            }
+            
+            if (size <= 0 || speed <= 0) {
+                showToast('Nilai ukuran dan kecepatan harus lebih besar dari 0.');
+                return;
+            }
+            
+            // Konversi ukuran ke bit
+            let sizeInBits;
+            
+            switch(sizeUnit) {
+                case 'MB':
+                    sizeInBits = size * 8 * 1024 * 1024;
+                    break;
+                case 'GB':
+                    sizeInBits = size * 8 * 1024 * 1024 * 1024;
+                    break;
+                case 'TB':
+                    sizeInBits = size * 8 * 1024 * 1024 * 1024 * 1024;
+                    break;
+            }
+            
+            // Konversi kecepatan ke bit per detik
+            let speedInBps;
+            
+            switch(speedUnit) {
+                case 'Mbps':
+                    speedInBps = speed * 1000000;
+                    break;
+                case 'MBps':
+                    speedInBps = speed * 8 * 1024 * 1024;
+                    break;
+                case 'Gbps':
+                    speedInBps = speed * 1000000000;
+                    break;
+            }
+            
+            // Hitung waktu transfer dalam detik
+            const timeInSeconds = sizeInBits / speedInBps;
+            
+            // Format waktu
+            let timeFormatted;
+            if (timeInSeconds < 60) {
+                timeFormatted = `${timeInSeconds.toFixed(2)} detik`;
+            } else if (timeInSeconds < 3600) {
+                const minutes = Math.floor(timeInSeconds / 60);
+                const seconds = (timeInSeconds % 60).toFixed(0);
+                timeFormatted = `${minutes} menit ${seconds} detik`;
+            } else if (timeInSeconds < 86400) {
+                const hours = Math.floor(timeInSeconds / 3600);
+                const minutes = Math.floor((timeInSeconds % 3600) / 60);
+                timeFormatted = `${hours} jam ${minutes} menit`;
+            } else {
+                const days = Math.floor(timeInSeconds / 86400);
+                const hours = Math.floor((timeInSeconds % 86400) / 3600);
+                timeFormatted = `${days} hari ${hours} jam`;
+            }
+            
+            // Hitung kecepatan sebenarnya dalam MB/s
+            const actualSpeed = (speedInBps / 8) / (1024 * 1024);
+            
+            // Tampilkan hasil
+            document.getElementById('transfer-time').textContent = timeFormatted;
+            document.getElementById('actual-speed').textContent = `${actualSpeed.toFixed(2)} MB/s`;
+        });
+    </script>
+</body>
+</html>

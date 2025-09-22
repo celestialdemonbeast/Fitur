@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konversi Satuan Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Toast notification */
+        .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background-color: #ef4444;
+          color: white;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+          background-color: #10b981;
+        }
+        
+        .toast.warning {
+          background-color: #f59e0b;
+        }
+        
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        .toast-message {
+          margin-left: 0.5rem;
+        }
+        
+        .toast-close {
+          margin-left: 1rem;
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="toast-message" id="toast-message"></span>
+        <span class="toast-close" onclick="hideToast()">&times;</span>
+    </div>
+
+     <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-primary to-secondary py-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="text-white font-bold text-xl flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                <span>Calc-net</span>
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="IP-Network.html" class="nav-item text-white px-4 py-2 rounded-lg">IP Network</a>
+                <a href="Binary-Code.html" class="nav-item text-white px-4 py-2 rounded-lg">Binary Code</a>
+                <a href="Satuan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Satuan Data</a>
+                <a href="Kecepatan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Kecepatan Data</a>
+                <a href="Listrik.html" class="nav-item text-white px-4 py-2 rounded-lg">Kelistrikan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="main-header text-4xl md:text-5xl font-bold mb-4">Konversi Satuan Data</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Alat untuk mengkonversi antara berbagai satuan data digital seperti bit, byte, kilobyte, megabyte, gigabyte, dan terabyte</p>
+        </div>
+
+        <!-- Kalkulator Container -->
+        <div class="glass-panel p-6 md:p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <!-- Data Units Calculator -->
+            <div id="data-units">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Konversi Satuan Data</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Nilai</label>
+                            <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="data-value" step="any">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Dari Satuan</label>
+                            <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="data-from">
+                                <option value="bit">Bit</option>
+                                <option value="byte">Byte</option>
+                                <option value="kilobit">Kilobit (Kb)</option>
+                                <option value="kilobyte">Kilobyte (KB)</option>
+                                <option value="megabit">Megabit (Mb)</option>
+                                <option value="megabyte">Megabyte (MB)</option>
+                                <option value="gigabit">Gigabit (Gb)</option>
+                                <option value="gigabyte">Gigabyte (GB)</option>
+                                <option value="terabit">Terabit (Tb)</option>
+                                <option value="terabyte">Terabyte (TB)</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Ke Satuan</label>
+                            <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="data-to">
+                                <option value="bit">Bit</option>
+                                <option value="byte">Byte</option>
+                                <option value="kilobit">Kilobit (Kb)</option>
+                                <option value="kilobyte">Kilobyte (KB)</option>
+                                <option value="megabit">Megabit (Mb)</option>
+                                <option value="megabyte">Megabyte (MB)</option>
+                                <option value="gigabit">Gigabit (Gb)</option>
+                                <option value="gigabyte">Gigabyte (GB)</option>
+                                <option value="terabit">Terabit (Tb)</option>
+                                <option value="terabyte">Terabyte (TB)</option>
+                            </select>
+                        </div>
+                        <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="convert-data">Konversi</button>
+                    </div>
+                    <div>
+                        <div class="bg-gray-50 p-4 rounded-lg h-full flex items-center justify-center">
+                            <div class="text-center">
+                                <h3 class="font-semibold text-gray-800 mb-3">Hasil Konversi</h3>
+                                <div class="text-3xl font-bold text-primary" id="data-result">-</div>
+                                <p class="text-gray-600 mt-2" id="data-formula"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Satuan Data Digital</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">🔢</div>
+                    <h3 class="font-semibold text-lg mb-2">Bit dan Byte</h3>
+                    <p class="text-gray-600">Bit (b) adalah unit data terkecil, sedangkan Byte (B) terdiri dari 8 bit. Byte adalah unit dasar untuk penyimpanan data.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">📊</div>
+                    <h3 class="font-semibold text-lg mb-2">Satuan Besar</h3>
+                    <p class="text-gray-600">1 KB = 1024 B, 1 MB = 1024 KB, 1 GB = 1024 MB, 1 TB = 1024 GB. Perhatikan perbedaan antara bit (b) dan byte (B).</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">⚡</div>
+                    <h3 class="font-semibold text-lg mb-2">Konversi</h3>
+                    <p class="text-gray-600">Untuk mengkonversi antara bit dan byte, kalikan atau bagi dengan 8. Untuk satuan yang lebih besar, gunakan faktor 1024 (basis biner).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Table -->
+        <div class="mt-12 glass-panel p-6 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tabel Konversi Satuan Data</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-3">Satuan</th>
+                            <th class="px-4 py-3">Singkatan</th>
+                            <th class="px-4 py-3">Setara dengan</th>
+                            <th class="px-4 py-3">Dalam Byte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">Bit</td>
+                            <td class="px-4 py-3">b</td>
+                            <td class="px-4 py-3">1/8 Byte</td>
+                            <td class="px-4 py-3">0.125 B</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <td class="px-4 py-3 font-medium">Byte</td>
+                            <td class="px-4 py-3">B</td>
+                            <td class="px-4 py-3">8 bit</td>
+                            <td class="px-4 py-3">1 B</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">Kilobyte</td>
+                            <td class="px-4 py-3">KB</td>
+                            <td class="px-4 py-3">1,024 Byte</td>
+                            <td class="px-4 py-3">1,024 B</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <td class="px-4 py-3 font-medium">Megabyte</td>
+                            <td class="px-4 py-3">MB</td>
+                            <td class="px-4 py-3">1,024 KB</td>
+                            <td class="px-4 py-3">1,048,576 B</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">Gigabyte</td>
+                            <td class="px-4 py-3">GB</td>
+                            <td class="px-4 py-3">1,024 MB</td>
+                            <td class="px-4 py-3">1,073,741,824 B</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-4 py-3 font-medium">Terabyte</td>
+                            <td class="px-4 py-3">TB</td>
+                            <td class="px-4 py-3">1,024 GB</td>
+                            <td class="px-4 py-3">1,099,511,627,776 B</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 Konversi Satuan Data. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Toast notification functions
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
+
+        // Data Units Converter
+        document.getElementById('convert-data').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('data-value').value);
+            const from = document.getElementById('data-from').value;
+            const to = document.getElementById('data-to').value;
+            
+            if (isNaN(value)) {
+                showToast('Masukkan nilai yang valid.');
+                return;
+            }
+            
+            // Konversi ke bit sebagai satuan dasar
+            let valueInBits;
+            
+            switch(from) {
+                case 'bit':
+                    valueInBits = value;
+                    break;
+                case 'byte':
+                    valueInBits = value * 8;
+                    break;
+                case 'kilobit':
+                    valueInBits = value * 1000;
+                    break;
+                case 'kilobyte':
+                    valueInBits = value * 8000;
+                    break;
+                case 'megabit':
+                    valueInBits = value * 1000000;
+                    break;
+                case 'megabyte':
+                    valueInBits = value * 8000000;
+                    break;
+                case 'gigabit':
+                    valueInBits = value * 1000000000;
+                    break;
+                case 'gigabyte':
+                    valueInBits = value * 8000000000;
+                    break;
+                case 'terabit':
+                    valueInBits = value * 1000000000000;
+                    break;
+                case 'terabyte':
+                    valueInBits = value * 8000000000000;
+                    break;
+            }
+            
+            // Konversi dari bit ke satuan target
+            let result;
+            
+            switch(to) {
+                case 'bit':
+                    result = valueInBits;
+                    break;
+                case 'byte':
+                    result = valueInBits / 8;
+                    break;
+                case 'kilobit':
+                    result = valueInBits / 1000;
+                    break;
+                case 'kilobyte':
+                    result = valueInBits / 8000;
+                    break;
+                case 'megabit':
+                    result = valueInBits / 1000000;
+                    break;
+                case 'megabyte':
+                    result = valueInBits / 8000000;
+                    break;
+                case 'gigabit':
+                    result = valueInBits / 1000000000;
+                    break;
+                case 'gigabyte':
+                    result = valueInBits / 8000000000;
+                    break;
+                case 'terabit':
+                    result = valueInBits / 1000000000000;
+                    break;
+                case 'terabyte':
+                    result = valueInBits / 8000000000000;
+                    break;
+            }
+            
+            // Tampilkan hasil
+            document.getElementById('data-result').textContent = result.toFixed(6);
+            document.getElementById('data-formula').textContent = `${value} ${from} = ${result.toFixed(6)} ${to}`;
+        });
+    </script>
+</body>
+</html>

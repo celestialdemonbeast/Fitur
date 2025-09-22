@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kelistrikan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Toast notification */
+        .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background-color: #ef4444;
+          color: white;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+          background-color: #10b981;
+        }
+        
+        .toast.warning {
+          background-color: #f59e0b;
+        }
+        
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        .toast-message {
+          margin-left: 0.5rem;
+        }
+        
+        .toast-close {
+          margin-left: 1rem;
+          cursor: pointer;
+        }
+        
+        .info-box {
+          background-color: #e0f2fe;
+          border-left: 4px solid #0ea5e9;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="toast-message" id="toast-message"></span>
+        <span class="toast-close" onclick="hideToast()">&times;</span>
+    </div>
+
+    <!-- Navbar -->
+      <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-primary to-secondary py-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="text-white font-bold text-xl flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                <span>Calc-net</span>
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="IP-Network.html" class="nav-item text-white px-4 py-2 rounded-lg">IP Network</a>
+                <a href="Binary-Code.html" class="nav-item text-white px-4 py-2 rounded-lg">Binary Code</a>
+                <a href="Satuan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Satuan Data</a>
+                <a href="Kecepatan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Kecepatan Data</a>
+                <a href="Listrik.html" class="nav-item text-white px-4 py-2 rounded-lg">Kelistrikan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="main-header text-4xl md:text-5xl font-bold mb-4">Kalkulator Kelistrikan</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Alat untuk menghitung daya, arus, tegangan, hambatan, dan konsumsi energi listrik</p>
+        </div>
+
+        <!-- Kalkulator Container -->
+        <div class="glass-panel p-6 md:p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <!-- Electrical Units Calculator -->
+            <div id="electrical">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Kalkulator Satuan Kelistrikan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Jenis Perhitungan</label>
+                            <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="electrical-type">
+                                <option value="power">Daya (Watt)</option>
+                                <option value="current">Arus (Ampere)</option>
+                                <option value="voltage">Tegangan (Volt)</option>
+                                <option value="resistance">Hambatan (Ohm)</option>
+                                <option value="energy">Energi (kWh)</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" id="input1-label">Tegangan (Volt)</label>
+                            <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="input1-value" step="any">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" id="input2-label">Arus (Ampere)</label>
+                            <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="input2-value" step="any">
+                        </div>
+                        <div class="mb-4 hidden" id="input3-container">
+                            <label class="block text-gray-700 mb-2" id="input3-label">Waktu (Jam)</label>
+                            <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="input3-value" step="any">
+                        </div>
+                        <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="calculate-electrical">Hitung</button>
+                    </div>
+                    <div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="font-semibold text-gray-800 mb-3">Hasil Perhitungan</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600" id="result1-label">Daya:</span>
+                                    <span class="font-mono text-primary" id="result1-value">-</span>
+                                </div>
+                                <div class="flex justify-between hidden" id="result2-container">
+                                    <span class="text-gray-600" id="result2-label">Energi:</span>
+                                    <span class="font-mono text-primary" id="result2-value">-</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 info-box rounded-lg">
+                                <h4 class="font-medium text-blue-800 mb-2">Rumus:</h4>
+                                <p class="text-sm text-blue-600 font-mono" id="formula-display">Daya (W) = Tegangan (V) × Arus (A)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Rumus Kelistrikan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">⚡</div>
+                    <h3 class="font-semibold text-lg mb-2">Hukum Ohm</h3>
+                    <p class="text-gray-600">V = I × R<br>Tegangan = Arus × Hambatan</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">💡</div>
+                    <h3 class="font-semibold text-lg mb-2">Daya Listrik</h3>
+                    <p class="text-gray-600">P = V × I<br>Daya = Tegangan × Arus</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">🔋</div>
+                    <h3 class="font-semibold text-lg mb-2">Energi Listrik</h3>
+                    <p class="text-gray-600">E = P × t<br>Energi = Daya × Waktu</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Table -->
+        <div class="mt-12 glass-panel p-6 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Satuan Kelistrikan</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-3">Besaran</th>
+                            <th class="px-4 py-3">Satuan</th>
+                            <th class="px-4 py-3">Simbol</th>
+                            <th class="px-4 py-3">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">Tegangan</td>
+                            <td class="px-4 py-3">Volt</td>
+                            <td class="px-4 py-3">V</td>
+                            <td class="px-4 py-3">Beda potensial listrik</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <td class="px-4 py-3 font-medium">Arus</td>
+                            <td class="px-4 py-3">Ampere</td>
+                            <td class="px-4 py-3">A</td>
+                            <td class="px-4 py-3">Aliran muatan listrik</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-medium">Hambatan</td>
+                            <td class="px-4 py-3">Ohm</td>
+                            <td class="px-4 py-3">Ω</td>
+                            <td class="px-4 py-3">Penghambat aliran arus</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <td class="px-4 py-3 font-medium">Daya</td>
+                            <td class="px-4 py-3">Watt</td>
+                            <td class="px-4 py-3">W</td>
+                            <td class="px-4 py-3">Laju penggunaan energi</td>
+                        </tr>
+                        <tr class="bg-white">
+                            <td class="px-4 py-3 font-medium">Energi</td>
+                            <td class="px-4 py-3">Kilowatt-hour</td>
+                            <td class="px-4 py-3">kWh</td>
+                            <td class="px-4 py-3">Daya dikalikan waktu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Examples Section -->
+        <div class="mt-12 glass-panel p-6 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Contoh Perhitungan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-3">Contoh 1: Menghitung Daya</h3>
+                    <p class="text-sm text-blue-600">Sebuah lampu memiliki tegangan 220V dan arus 0.5A. Berapa daya lampu tersebut?</p>
+                    <p class="text-sm text-blue-600 mt-2 font-mono">P = V × I = 220 × 0.5 = 110 Watt</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-green-800 mb-3">Contoh 2: Menghitung Energi</h3>
+                    <p class="text-sm text-green-600">Lampu 100 Watt dinyalakan selama 5 jam. Berapa energi yang digunakan?</p>
+                    <p class="text-sm text-green-600 mt-2 font-mono">E = P × t = 0.1 kW × 5 jam = 0.5 kWh</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 Kalkulator Kelistrikan. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Toast notification functions
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
+
+        // Electrical calculator input labels update
+        const electricalType = document.getElementById('electrical-type');
+        const input1Label = document.getElementById('input1-label');
+        const input2Label = document.getElementById('input2-label');
+        const input3Container = document.getElementById('input3-container');
+        const input3Label = document.getElementById('input3-label');
+        const result1Label = document.getElementById('result1-label');
+        const result2Container = document.getElementById('result2-container');
+        const result2Label = document.getElementById('result2-label');
+        const formulaDisplay = document.getElementById('formula-display');
+
+        electricalType.addEventListener('change', updateElectricalLabels);
+        
+        function updateElectricalLabels() {
+            const type = electricalType.value;
+            
+            switch(type) {
+                case 'power':
+                    input1Label.textContent = 'Tegangan (Volt)';
+                    input2Label.textContent = 'Arus (Ampere)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Daya:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Daya (W) = Tegangan (V) × Arus (A)';
+                    break;
+                case 'current':
+                    input1Label.textContent = 'Daya (Watt)';
+                    input2Label.textContent = 'Tegangan (Volt)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Arus:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Arus (A) = Daya (W) / Tegangan (V)';
+                    break;
+                case 'voltage':
+                    input1Label.textContent = 'Daya (Watt)';
+                    input2Label.textContent = 'Arus (Ampere)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Tegangan:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Tegangan (V) = Daya (W) / Arus (A)';
+                    break;
+                case 'resistance':
+                    input1Label.textContent = 'Tegangan (Volt)';
+                    input2Label.textContent = 'Arus (Ampere)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Hambatan:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Hambatan (Ω) = Tegangan (V) / Arus (A)';
+                    break;
+                case 'energy':
+                    input1Label.textContent = 'Daya (Watt)';
+                    input2Label.textContent = 'Tegangan (Volt)';
+                    input3Label.textContent = 'Waktu (Jam)';
+                    input3Container.classList.remove('hidden');
+                    result1Label.textContent = 'Daya:';
+                    result2Container.classList.remove('hidden');
+                    result2Label.textContent = 'Energi:';
+                    formulaDisplay.textContent = 'Energi (kWh) = Daya (kW) × Waktu (Jam)';
+                    break;
+            }
+        }
+
+        // Initialize electrical labels
+        updateElectricalLabels();
+
+        // Electrical Calculator
+        document.getElementById('calculate-electrical').addEventListener('click', function() {
+            const type = document.getElementById('electrical-type').value;
+            const input1 = parseFloat(document.getElementById('input1-value').value);
+            const input2 = parseFloat(document.getElementById('input2-value').value);
+            const input3 = parseFloat(document.getElementById('input3-value').value) || 0;
+            
+            if (isNaN(input1) || isNaN(input2) || (type === 'energy' && isNaN(input3))) {
+                showToast('Masukkan nilai yang valid untuk semua field.');
+                return;
+            }
+            
+            if (input1 <= 0 || input2 <= 0 || (type === 'energy' && input3 <= 0)) {
+                showToast('Nilai harus lebih besar dari 0.');
+                return;
+            }
+            
+            let result1, result2;
+            
+            switch(type) {
+                case 'power': // Daya = Tegangan * Arus
+                    result1 = input1 * input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Watt`;
+                    break;
+                case 'current': // Arus = Daya / Tegangan
+                    result1 = input1 / input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Ampere`;
+                    break;
+                case 'voltage': // Tegangan = Daya / Arus
+                    result1 = input1 / input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Volt`;
+                    break;
+                case 'resistance': // Hambatan = Tegangan / Arus
+                    result1 = input1 / input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Ohm`;
+                    break;
+                case 'energy': // Energi = Daya * Waktu
+                    result1 = input1; // Daya dalam Watt
+                    result2 = (input1 / 1000) * input3; // Energi dalam kWh
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Watt`;
+                    document.getElementById('result2-value').textContent = `${result2.toFixed(2)} kWh`;
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

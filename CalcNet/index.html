@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calc-net - Halaman Utama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+        
+        .feature-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+        
+        .nav-item {
+          transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+          background-color: rgba(79, 70, 229, 0.1);
+          transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-primary to-secondary py-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            
+            
+            <a href="index.html" class="text-white font-bold text-xl flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                <span>Calc-net</span>
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="IP-Network.html" class="nav-item text-white px-4 py-2 rounded-lg">IP Network</a>
+                <a href="Binary-Code.html" class="nav-item text-white px-4 py-2 rounded-lg">Binary Code</a>
+                <a href="Satuan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Satuan Data</a>
+                <a href="Kecepatan-Data.html" class="nav-item text-white px-4 py-2 rounded-lg">Kecepatan Data</a>
+                <a href="Listrik.html" class="nav-item text-white px-4 py-2 rounded-lg">Kelistrikan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="main-header text-4xl md:text-6xl font-bold mb-6">Calc-net</h1>
+            <p class="text-gray-600 text-xl max-w-3xl mx-auto">Kumpulan alat kalkulator serbaguna untuk berbagai kebutuhan perhitungan teknis dan konversi satuan</p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- IP Network Card -->
+            <div id="ip-network" class="feature-card glass-panel p-6 rounded-xl custom-shadow">
+                <div class="text-primary text-5xl mb-4 text-center">📡</div>
+                <h3 class="font-bold text-xl text-gray-800 mb-3 text-center">Kalkulator IP Network</h3>
+                <p class="text-gray-600 mb-4">Alat untuk menghitung parameter jaringan IP seperti network address, broadcast address, range host, dan jumlah host yang tersedia dalam sebuah subnet.</p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Fitur Utama:</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Menghitung network address dan broadcast address</li>
+                        <li>• Menentukan range IP host yang dapat digunakan</li>
+                        <li>• Menghitung jumlah host yang tersedia</li>
+                        <li>• Menghasilkan wildcard mask</li>
+                        <li>• Mendukung format subnet mask CIDR (contoh: /24)</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <a href="ip-network.html" class="gradient-btn inline-block px-6 py-2 rounded-lg font-medium text-white">Buka Kalkulator</a>
+                </div>
+            </div>
+
+            <!-- Binary Code Card -->
+            <div id="binary-code" class="feature-card glass-panel p-6 rounded-xl custom-shadow">
+                <div class="text-primary text-5xl mb-4 text-center">🔢</div>
+                <h3 class="font-bold text-xl text-gray-800 mb-3 text-center">Konversi Kode Biner</h3>
+                <p class="text-gray-600 mb-4">Alat untuk mengkonversi antara sistem bilangan biner, desimal, dan heksadesimal dengan cepat dan akurat.</p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Fitur Utama:</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Konversi dari biner ke desimal dan heksadesimal</li>
+                        <li>• Konversi dari desimal ke biner dan heksadesimal</li>
+                        <li>• Konversi dari heksadesimal ke biner dan desimal</li>
+                        <li>• Tampilan hasil dalam ketiga format sekaligus</li>
+                        <li>• Validasi input untuk memastikan data valid</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <a href="binary-code.html" class="gradient-btn inline-block px-6 py-2 rounded-lg font-medium text-white">Buka Kalkulator</a>
+                </div>
+            </div>
+
+            <!-- Data Units Card -->
+            <div id="data-units" class="feature-card glass-panel p-6 rounded-xl custom-shadow">
+                <div class="text-primary text-5xl mb-4 text-center">💾</div>
+                <h3 class="font-bold text-xl text-gray-800 mb-3 text-center">Konversi Satuan Data</h3>
+                <p class="text-gray-600 mb-4">Alat untuk mengkonversi antara berbagai satuan penyimpanan data digital seperti bit, byte, kilobyte, megabyte, gigabyte, dan terabyte.</p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Fitur Utama:</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Konversi antara bit, byte, dan satuan turunannya</li>
+                        <li>• Dukungan untuk kilobit, megabit, gigabit, terabit</li>
+                        <li>• Dukungan untuk kilobyte, megabyte, gigabyte, terabyte</li>
+                        <li>• Tampilan rumus konversi yang digunakan</li>
+                        <li>• Presisi hasil hingga 6 angka desimal</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <a href="Satuan-Data.html" class="gradient-btn inline-block px-6 py-2 rounded-lg font-medium text-white">Buka Kalkulator</a>
+                </div>
+            </div>
+
+            <!-- Data Speed Card -->
+            <div id="data-speed" class="feature-card glass-panel p-6 rounded-xl custom-shadow">
+                <div class="text-primary text-5xl mb-4 text-center">⚡</div>
+                <h3 class="font-bold text-xl text-gray-800 mb-3 text-center">Kalkulator Kecepatan Data</h3>
+                <p class="text-gray-600 mb-4">Alat untuk menghitung waktu transfer data berdasarkan ukuran file dan kecepatan koneksi internet.</p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Fitur Utama:</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Menghitung waktu transfer data</li>
+                        <li>• Konversi antara Mbps, MB/s, dan Gbps</li>
+                        <li>• Dukungan untuk berbagai ukuran file (MB, GB, TB)</li>
+                        <li>• Tampilan kecepatan sebenarnya dalam MB/s</li>
+                        <li>• Format waktu yang mudah dibaca (detik, menit, jam, hari)</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <a href="Kecepatan-Data.html" class="gradient-btn inline-block px-6 py-2 rounded-lg font-medium text-white">Buka Kalkulator</a>
+                </div>
+            </div>
+
+            <!-- Electrical Card -->
+            <div id="electrical" class="feature-card glass-panel p-6 rounded-xl custom-shadow">
+                <div class="text-primary text-5xl mb-4 text-center">🔌</div>
+                <h3 class="font-bold text-xl text-gray-800 mb-3 text-center">Kalkulator Kelistrikan</h3>
+                <p class="text-gray-600 mb-4">Alat untuk menghitung berbagai parameter kelistrikan berdasarkan Hukum Ohm dan rumus daya listrik.</p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Fitur Utama:</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Menghitung daya (Watt), arus (Ampere), tegangan (Volt)</li>
+                        <li>• Menghitung hambatan (Ohm) berdasarkan Hukum Ohm</li>
+                        <li>• Menghitung konsumsi energi (kWh)</li>
+                        <li>• Tampilan rumus yang digunakan untuk setiap perhitungan</li>
+                        <li>• Antarmuka yang dinamis berdasarkan jenis perhitungan</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <a href="Listrik.html" class="gradient-btn inline-block px-6 py-2 rounded-lg font-medium text-white">Buka Kalkulator</a>
+                </div>
+            </div>
+
+          
+
+        <!-- How to Use Section -->
+        <div class="mt-16 glass-panel p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Cara Menggunakan Kalkulator</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-3">Untuk Kalkulator Individu</h3>
+                    <ol class="text-sm text-blue-600 space-y-2">
+                        <li>1. Klik tombol "Buka Kalkulator" pada fitur yang diinginkan</li>
+                        <li>2. Masukkan nilai yang diketahui ke dalam field input</li>
+                        <li>3. Pilih satuan atau format yang sesuai</li>
+                        <li>4. Klik tombol "Hitung" atau "Konversi"</li>
+                        <li>5. Lihat hasil perhitungan di bagian hasil</li>
+                    </ol>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-green-800 mb-3">Untuk Kalkulator Lengkap</h3>
+                    <ol class="text-sm text-green-600 space-y-2">
+                        <li>1. Buka halaman "Semua Kalkulator"</li>
+                        <li>2. Pilih tab kalkulator yang ingin digunakan</li>
+                        <li>3. Masukkan data yang diperlukan</li>
+                        <li>4. Klik tombol hitung untuk melihat hasil</li>
+                        <li>5. Beralih ke tab lain untuk menggunakan kalkulator berbeda</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-lg font-semibold">Calc-net</p>
+            <p class="mt-2">Kumpulan alat kalkulator untuk berbagai kebutuhan teknis</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="ip-network.html" class="hover:text-primary transition-colors">IP Network</a>
+                <a href="binary-code.html" class="hover:text-primary transition-colors">Binary Code</a>
+                <a href="data-units.html" class="hover:text-primary transition-colors">Satuan Data</a>
+                <a href="data-speed.html" class="hover:text-primary transition-colors">Kecepatan Data</a>
+                <a href="electrical.html" class="hover:text-primary transition-colors">Kelistrikan</a>
+                <!-- <a href="full-calculator.html" class="hover:text-primary transition-colors">Semua Kalkulator</a> -->
+            </div>
+            <p class="mt-6">© 2023 Calc-net. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
