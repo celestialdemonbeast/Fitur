@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#7c3aed',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        .preview-container {
+          background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                           linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                           linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                           linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+          background-size: 20px 20px;
+          background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        
+        .color-preview {
+          width: 30px;
+          height: 30px;
+          border-radius: 4px;
+          display: inline-block;
+          margin-right: 10px;
+          border: 1px solid #ccc;
+        }
+        
+        .code-container {
+          max-height: 300px;
+          overflow: auto;
+          font-family: monospace;
+          white-space: pre;
+          padding: 1rem;
+          background: #1e293b;
+          color: #e2e8f0;
+          border-radius: 0.5rem;
+          margin-top: 1rem;
+          position: relative;
+        }
+        
+        /* Navbar styles - IMPROVED */
+        .navbar {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+        }
+        
+        .nav-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem 2rem;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        
+        .nav-logo {
+          color: white;
+          font-weight: bold;
+          font-size: 1.5rem;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+        }
+        
+        .nav-logo i {
+          margin-right: 0.5rem;
+          font-size: 1.8rem;
+        }
+        
+        .nav-menu {
+          display: flex;
+          gap: 0.5rem;
+        }
+        
+        .nav-item {
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+          padding: 0.6rem 1.2rem;
+          border-radius: 0.5rem;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .nav-item i {
+          margin-right: 0.5rem;
+          font-size: 1.1rem;
+        }
+        
+        .nav-item:before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: all 0.5s ease;
+        }
+        
+        .nav-item:hover:before {
+          left: 100%;
+        }
+        
+        .nav-item:hover {
+          background-color: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-item.active {
+          background-color: rgba(255, 255, 255, 0.2);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item.active:after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 70%;
+          height: 3px;
+          background: white;
+          border-radius: 2px;
+        }
+        
+        /* Mobile menu button */
+        .mobile-menu-button {
+          display: none;
+          color: white;
+          font-size: 1.5rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+        }
+        
+        /* Custom styles */
+        .drop-area {
+          transition: all 0.3s ease;
+        }
+        .drop-area.active {
+          border-color: #3b82f6;
+          background-color: #dbeafe;
+        }
+        .preview-item {
+          transition: transform 0.2s;
+        }
+        .preview-item:hover {
+          transform: translateY(-5px);
+        }
+        canvas {
+          display: none;
+        }
+        body {
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          min-height: 100vh;
+        }
+        
+        .drop-area.error {
+          border-color: #ef4444 !important;
+          background-color: #fee2e2 !important;
+        }
+        .shake {
+          animation: shake 0.5s;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Clipboard styles */
+        .clipboard-indicator {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(16, 185, 129, 0.9);
+          border-radius: 0.5rem;
+          z-index: 10;
+          animation: fadeOut 2s ease-out forwards;
+          opacity: 0;
+        }
+        
+        .clipboard-message {
+          color: white;
+          font-size: 1.5rem;
+          font-weight: bold;
+          text-align: center;
+          padding: 1rem;
+        }
+        
+        @keyframes fadeOut {
+          0% { opacity: 1; }
+          70% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        
+        /* Glassmorphism effect */
+        .glass-panel {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          border-radius: 15px;
+        }
+        
+        /* Gradient buttons */
+        .gradient-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom header */
+        .main-header {
+          background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom shadow */
+        .custom-shadow {
+          box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Fade animation for rotating text */
+        .fade-in {
+          animation: fadeIn 1s;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        
+        .modal-content {
+          background: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          max-width: 600px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          position: relative;
+        }
+        
+        .close-btn {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: #6b7280;
+        }
+        
+        .close-btn:hover {
+          color: #374151;
+        }
+        
+        /* Toggle switch */
+        .toggle-checkbox:checked {
+          right: 0;
+          border-color: #4f46e5;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+          background-color: #4f46e5;
+        }
+
+        /* Social media icon colors */
+        .twitter-color {
+          color: #1DA1F2;
+        }
+        
+        .instagram-color {
+          color: #E1306C;
+        }
+        
+        .youtube-color {
+          color: #FF0000;
+        }
+
+        /* Font styles for preview */
+        .font-sans {
+          font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+        
+        .font-serif {
+          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        }
+        
+        .font-mono {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        
+        .font-slab {
+          font-family: 'Roboto Slab', serif;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 968px) {
+          .nav-menu {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            flex-direction: column;
+            padding: 1rem;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-100%);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 40;
+          }
+          
+          .nav-menu.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+          }
+          
+          .mobile-menu-button {
+            display: block;
+          }
+          
+          .nav-item {
+            justify-content: center;
+            border-radius: 0.25rem;
+          }
+        }
+        
+        @media (max-width: 640px) {
+          .nav-container {
+            padding: 0.75rem 1rem;
+          }
+          
+          .nav-logo {
+            font-size: 1.2rem;
+          }
+          
+          .nav-logo i {
+            font-size: 1.5rem;
+          }
+        }
+        
+        /* Toast notification */
+        .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background-color: #ef4444;
+          color: white;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+          background-color: #10b981;
+        }
+        
+        .toast.warning {
+          background-color: #f59e0b;
+        }
+        
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        .toast-message {
+          margin-left: 0.5rem;
+        }
+        
+        .toast-close {
+          margin-left: 1rem;
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 font-sans">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="toast-message" id="toast-message"></span>
+        <span class="toast-close" onclick="hideToast()">&times;</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class="fas fa-calculator"></i>
+                <span>Kalkulator Interaktif</span>
+            </a>
+            
+            <button class="mobile-menu-button" id="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="nav-menu" id="nav-menu">
+                <a href="#" class="nav-item active" data-tab="ip-network">
+                    <i class="fas fa-network-wired"></i>
+                    <span>IP Network</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="binary-code">
+                    <i class="fas fa-digital-tachograph"></i>
+                    <span>Binary Code</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="data-units">
+                    <i class="fas fa-database"></i>
+                    <span>Satuan Data</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="data-speed">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Kecepatan Data</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="electrical">
+                    <i class="fas fa-bolt"></i>
+                    <span>Kelistrikan</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="main-header text-4xl md:text-5xl font-bold mb-4">Kalkulator Interaktif</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Alat serbaguna untuk menghitung IP Network, Binary Code, Satuan Data, Kecepatan Data, dan Satuan Kelistrikan</p>
+        </div>
+
+        <!-- Kalkulator Container -->
+        <div class="glass-panel p-6 md:p-8 custom-shadow rounded-xl max-w-4xl mx-auto">
+            <!-- Tab Content -->
+            <div id="tab-content">
+                <!-- IP Network Calculator -->
+                <div id="ip-network" class="tab-pane active">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Kalkulator IP Network</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Alamat IP</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Contoh: 192.168.1.1" id="ip-address">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Subnet Mask</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Contoh: 255.255.255.0 atau /24" id="subnet-mask">
+                            </div>
+                            <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="calculate-ip">Hitung</button>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="font-semibold text-gray-800 mb-3">Hasil Perhitungan</h3>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Network Address:</span>
+                                        <span class="font-mono text-primary" id="network-address">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Broadcast Address:</span>
+                                        <span class="font-mono text-primary" id="broadcast-address">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Host Range:</span>
+                                        <span class="font-mono text-primary" id="host-range">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Jumlah Host:</span>
+                                        <span class="font-mono text-primary" id="total-hosts">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Wildcard Mask:</span>
+                                        <span class="font-mono text-primary" id="wildcard-mask">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Binary Code Calculator -->
+                <div id="binary-code" class="tab-pane hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Konversi Kode Biner</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Masukkan Nilai</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Biner, Desimal, Heksadesimal" id="binary-input">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Dari</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="binary-from">
+                                    <option value="binary">Biner</option>
+                                    <option value="decimal">Desimal</option>
+                                    <option value="hexadecimal">Heksadesimal</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Ke</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="binary-to">
+                                    <option value="binary">Biner</option>
+                                    <option value="decimal">Desimal</option>
+                                    <option value="hexadecimal">Heksadesimal</option>
+                                </select>
+                            </div>
+                            <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="convert-binary">Konversi</button>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="font-semibold text-gray-800 mb-3">Hasil Konversi</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <span class="text-gray-600 block mb-1">Biner:</span>
+                                        <span class="font-mono text-primary text-lg" id="result-binary">-</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600 block mb-1">Desimal:</span>
+                                        <span class="font-mono text-primary text-lg" id="result-decimal">-</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600 block mb-1">Heksadesimal:</span>
+                                        <span class="font-mono text-primary text-lg" id="result-hexadecimal">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Units Calculator -->
+                <div id="data-units" class="tab-pane hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Konversi Satuan Data</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Nilai</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="data-value" step="any">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Dari Satuan</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="data-from">
+                                    <option value="bit">Bit</option>
+                                    <option value="byte">Byte</option>
+                                    <option value="kilobit">Kilobit (Kb)</option>
+                                    <option value="kilobyte">Kilobyte (KB)</option>
+                                    <option value="megabit">Megabit (Mb)</option>
+                                    <option value="megabyte">Megabyte (MB)</option>
+                                    <option value="gigabit">Gigabit (Gb)</option>
+                                    <option value="gigabyte">Gigabyte (GB)</option>
+                                    <option value="terabit">Terabit (Tb)</option>
+                                    <option value="terabyte">Terabyte (TB)</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Ke Satuan</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="data-to">
+                                    <option value="bit">Bit</option>
+                                    <option value="byte">Byte</option>
+                                    <option value="kilobit">Kilobit (Kb)</option>
+                                    <option value="kilobyte">Kilobyte (KB)</option>
+                                    <option value="megabit">Megabit (Mb)</option>
+                                    <option value="megabyte">Megabyte (MB)</option>
+                                    <option value="gigabit">Gigabit (Gb)</option>
+                                    <option value="gigabyte">Gigabyte (GB)</option>
+                                    <option value="terabit">Terabit (Tb)</option>
+                                    <option value="terabyte">Terabyte (TB)</option>
+                                </select>
+                            </div>
+                            <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="convert-data">Konversi</button>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg h-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <h3 class="font-semibold text-gray-800 mb-3">Hasil Konversi</h3>
+                                    <div class="text-3xl font-bold text-primary" id="data-result">-</div>
+                                    <p class="text-gray-600 mt-2" id="data-formula"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Speed Calculator -->
+                <div id="data-speed" class="tab-pane hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Kalkulator Kecepatan Data</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Ukuran Data</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan ukuran data" id="size-value" step="any">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Satuan Ukuran</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="size-unit">
+                                    <option value="MB">Megabyte (MB)</option>
+                                    <option value="GB">Gigabyte (GB)</option>
+                                    <option value="TB">Terabyte (TB)</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Kecepatan Transfer</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan kecepatan" id="speed-value" step="any">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Satuan Kecepatan</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="speed-unit">
+                                    <option value="Mbps">Mbps</option>
+                                    <option value="MBps">MB/s</option>
+                                    <option value="Gbps">Gbps</option>
+                                </select>
+                            </div>
+                            <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="calculate-speed">Hitung</button>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="font-semibold text-gray-800 mb-3">Hasil Perhitungan</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <span class="text-gray-600 block mb-1">Waktu Transfer:</span>
+                                        <span class="font-mono text-primary text-xl" id="transfer-time">-</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600 block mb-1">Kecepatan Sebenarnya:</span>
+                                        <span class="font-mono text-primary" id="actual-speed">-</span>
+                                    </div>
+                                    <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                        <h4 class="font-medium text-blue-800 mb-2">Informasi:</h4>
+                                        <p class="text-sm text-blue-600">1 Byte = 8 bit. Kecepatan internet biasanya diukur dalam bit per second (bps), sedangkan ukuran file dalam byte.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electrical Units Calculator -->
+                <div id="electrical" class="tab-pane hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Kalkulator Satuan Kelistrikan</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Jenis Perhitungan</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" id="electrical-type">
+                                    <option value="power">Daya (Watt)</option>
+                                    <option value="current">Arus (Ampere)</option>
+                                    <option value="voltage">Tegangan (Volt)</option>
+                                    <option value="resistance">Hambatan (Ohm)</option>
+                                    <option value="energy">Energi (kWh)</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" id="input1-label">Tegangan (Volt)</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="input1-value" step="any">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" id="input2-label">Arus (Ampere)</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="input2-value" step="any">
+                            </div>
+                            <div class="mb-4 hidden" id="input3-container">
+                                <label class="block text-gray-700 mb-2" id="input3-label">Waktu (Jam)</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Masukkan nilai" id="input3-value" step="any">
+                            </div>
+                            <button class="gradient-btn px-6 py-2 rounded-lg font-medium text-white w-full" id="calculate-electrical">Hitung</button>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="font-semibold text-gray-800 mb-3">Hasil Perhitungan</h3>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600" id="result1-label">Daya:</span>
+                                        <span class="font-mono text-primary" id="result1-value">-</span>
+                                    </div>
+                                    <div class="flex justify-between hidden" id="result2-container">
+                                        <span class="text-gray-600" id="result2-label">Energi:</span>
+                                        <span class="font-mono text-primary" id="result2-value">-</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Rumus:</h4>
+                                    <p class="text-sm text-blue-600 font-mono" id="formula-display">Daya (W) = Tegangan (V) × Arus (A)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Fitur Kalkulator</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">📡</div>
+                    <h3 class="font-semibold text-lg mb-2">IP Network</h3>
+                    <p class="text-gray-600">Hitung network address, broadcast address, range IP, dan jumlah host dari sebuah subnet.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">🔢</div>
+                    <h3 class="font-semibold text-lg mb-2">Binary Code</h3>
+                    <p class="text-gray-600">Konversi antara biner, desimal, dan heksadesimal dengan mudah dan cepat.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-lg custom-shadow">
+                    <div class="text-primary text-4xl mb-4">⚡</div>
+                    <h3 class="font-semibold text-lg mb-2">Kelistrikan</h3>
+                    <p class="text-gray-600">Hitung daya, arus, tegangan, hambatan, dan konsumsi energi listrik.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 Kalkulator Interaktif. All rights reserved.</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="twitter-color hover:opacity-80 text-xl"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="instagram-color hover:opacity-80 text-xl"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="youtube-color hover:opacity-80 text-xl"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const navMenu = document.getElementById('nav-menu');
+        
+        mobileMenuButton.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            const icon = mobileMenuButton.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // Close mobile menu when clicking on a nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 968) {
+                    navMenu.classList.remove('active');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+
+        // Tab switching functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items
+                document.querySelectorAll('.nav-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.add('hidden');
+                    pane.classList.remove('active');
+                });
+                
+                // Show the selected tab pane
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Electrical calculator input labels update
+        const electricalType = document.getElementById('electrical-type');
+        const input1Label = document.getElementById('input1-label');
+        const input2Label = document.getElementById('input2-label');
+        const input3Container = document.getElementById('input3-container');
+        const input3Label = document.getElementById('input3-label');
+        const result1Label = document.getElementById('result1-label');
+        const result2Container = document.getElementById('result2-container');
+        const formulaDisplay = document.getElementById('formula-display');
+
+        electricalType.addEventListener('change', updateElectricalLabels);
+        
+        function updateElectricalLabels() {
+            const type = electricalType.value;
+            
+            switch(type) {
+                case 'power':
+                    input1Label.textContent = 'Tegangan (Volt)';
+                    input2Label.textContent = 'Arus (Ampere)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Daya:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Daya (W) = Tegangan (V) × Arus (A)';
+                    break;
+                case 'current':
+                    input1Label.textContent = 'Daya (Watt)';
+                    input2Label.textContent = 'Tegangan (Volt)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Arus:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Arus (A) = Daya (W) / Tegangan (V)';
+                    break;
+                case 'voltage':
+                    input1Label.textContent = 'Daya (Watt)';
+                    input2Label.textContent = 'Arus (Ampere)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Tegangan:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Tegangan (V) = Daya (W) / Arus (A)';
+                    break;
+                case 'resistance':
+                    input1Label.textContent = 'Tegangan (Volt)';
+                    input2Label.textContent = 'Arus (Ampere)';
+                    input3Container.classList.add('hidden');
+                    result1Label.textContent = 'Hambatan:';
+                    result2Container.classList.add('hidden');
+                    formulaDisplay.textContent = 'Hambatan (Ω) = Tegangan (V) / Arus (A)';
+                    break;
+                case 'energy':
+                    input1Label.textContent = 'Daya (Watt)';
+                    input2Label.textContent = 'Tegangan (Volt)';
+                    input3Label.textContent = 'Waktu (Jam)';
+                    input3Container.classList.remove('hidden');
+                    result1Label.textContent = 'Daya:';
+                    result2Container.classList.remove('hidden');
+                    result2Label.textContent = 'Energi:';
+                    formulaDisplay.textContent = 'Energi (kWh) = Daya (kW) × Waktu (Jam)';
+                    break;
+            }
+        }
+
+        // Initialize electrical labels
+        updateElectricalLabels();
+
+        // Toast notification functions
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
+
+        // IP Network Calculator
+        document.getElementById('calculate-ip').addEventListener('click', function() {
+            const ipAddress = document.getElementById('ip-address').value;
+            const subnetMask = document.getElementById('subnet-mask').value;
+            
+            if (!ipAddress || !subnetMask) {
+                showToast('Masukkan alamat IP dan subnet mask terlebih dahulu.');
+                return;
+            }
+            
+            // Validasi format IP
+            const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+            if (!ipRegex.test(ipAddress)) {
+                showToast('Format alamat IP tidak valid.');
+                return;
+            }
+            
+            // Validasi IP address
+            const ipParts = ipAddress.split('.');
+            for (let part of ipParts) {
+                const num = parseInt(part);
+                if (num < 0 || num > 255) {
+                    showToast('Alamat IP tidak valid. Setiap oktet harus antara 0-255.');
+                    return;
+                }
+            }
+            
+            // Hitung subnet (contoh sederhana)
+            const networkAddress = calculateNetworkAddress(ipAddress, subnetMask);
+            const broadcastAddress = calculateBroadcastAddress(ipAddress, subnetMask);
+            const hostRange = calculateHostRange(networkAddress, broadcastAddress);
+            const totalHosts = calculateTotalHosts(subnetMask);
+            const wildcardMask = calculateWildcardMask(subnetMask);
+            
+            // Tampilkan hasil
+            document.getElementById('network-address').textContent = networkAddress;
+            document.getElementById('broadcast-address').textContent = broadcastAddress;
+            document.getElementById('host-range').textContent = hostRange;
+            document.getElementById('total-hosts').textContent = totalHosts;
+            document.getElementById('wildcard-mask').textContent = wildcardMask;
+        });
+        
+        // Fungsi bantuan untuk IP Calculator
+        function calculateNetworkAddress(ip, mask) {
+            const ipParts = ip.split('.').map(Number);
+            const maskParts = parseSubnetMask(mask);
+            
+            const networkParts = ipParts.map((part, i) => part & maskParts[i]);
+            return networkParts.join('.');
+        }
+        
+        function calculateBroadcastAddress(ip, mask) {
+            const ipParts = ip.split('.').map(Number);
+            const maskParts = parseSubnetMask(mask);
+            const wildcardParts = maskParts.map(part => 255 - part);
+            
+            const broadcastParts = ipParts.map((part, i) => part | wildcardParts[i]);
+            return broadcastParts.join('.');
+        }
+        
+        function calculateHostRange(network, broadcast) {
+            const networkParts = network.split('.').map(Number);
+            const broadcastParts = broadcast.split('.').map(Number);
+            
+            // Tambah 1 ke alamat network untuk mendapatkan host pertama
+            networkParts[3] += 1;
+            // Kurangi 1 dari alamat broadcast untuk mendapatkan host terakhir
+            broadcastParts[3] -= 1;
+            
+            return `${networkParts.join('.')} - ${broadcastParts.join('.')}`;
+        }
+        
+        function calculateTotalHosts(mask) {
+            const maskParts = parseSubnetMask(mask);
+            const cidr = maskParts.reduce((acc, part) => acc + countBits(part), 0);
+            return Math.pow(2, 32 - cidr) - 2;
+        }
+        
+        function calculateWildcardMask(mask) {
+            const maskParts = parseSubnetMask(mask);
+            return maskParts.map(part => 255 - part).join('.');
+        }
+        
+        function parseSubnetMask(mask) {
+            if (mask.startsWith('/')) {
+                const cidr = parseInt(mask.substring(1));
+                return calculateSubnetFromCidr(cidr);
+            } else {
+                return mask.split('.').map(Number);
+            }
+        }
+        
+        function calculateSubnetFromCidr(cidr) {
+            const mask = [];
+            for (let i = 0; i < 4; i++) {
+                const bits = Math.min(8, Math.max(0, cidr - i * 8));
+                mask.push(bits === 0 ? 0 : 256 - Math.pow(2, 8 - bits));
+            }
+            return mask;
+        }
+        
+        function countBits(n) {
+            let count = 0;
+            while (n) {
+                count += n & 1;
+                n >>= 1;
+            }
+            return count;
+        }
+
+        // Binary Code Converter
+        document.getElementById('convert-binary').addEventListener('click', function() {
+            const input = document.getElementById('binary-input').value;
+            const from = document.getElementById('binary-from').value;
+            const to = document.getElementById('binary-to').value;
+            
+            if (!input) {
+                showToast('Masukkan nilai yang akan dikonversi.');
+                return;
+            }
+            
+            let decimalValue;
+            
+            // Konversi dari format input ke desimal
+            try {
+                switch(from) {
+                    case 'binary':
+                        if (!/^[01]+$/.test(input)) {
+                            showToast('Input biner hanya boleh berisi 0 dan 1.');
+                            return;
+                        }
+                        decimalValue = parseInt(input, 2);
+                        break;
+                    case 'decimal':
+                        if (!/^\d+$/.test(input)) {
+                            showToast('Input desimal hanya boleh berisi angka.');
+                            return;
+                        }
+                        decimalValue = parseInt(input, 10);
+                        break;
+                    case 'hexadecimal':
+                        if (!/^[0-9A-Fa-f]+$/.test(input)) {
+                            showToast('Input heksadesimal hanya boleh berisi angka 0-9 dan huruf A-F.');
+                            return;
+                        }
+                        decimalValue = parseInt(input, 16);
+                        break;
+                }
+            } catch (e) {
+                showToast('Terjadi kesalahan dalam konversi. Pastikan input valid.');
+                return;
+            }
+            
+            // Konversi dari desimal ke format output
+            let binaryResult, decimalResult, hexResult;
+            
+            switch(to) {
+                case 'binary':
+                    binaryResult = decimalValue.toString(2);
+                    decimalResult = decimalValue.toString(10);
+                    hexResult = decimalValue.toString(16).toUpperCase();
+                    break;
+                case 'decimal':
+                    binaryResult = decimalValue.toString(2);
+                    decimalResult = decimalValue.toString(10);
+                    hexResult = decimalValue.toString(16).toUpperCase();
+                    break;
+                case 'hexadecimal':
+                    binaryResult = decimalValue.toString(2);
+                    decimalResult = decimalValue.toString(10);
+                    hexResult = decimalValue.toString(16).toUpperCase();
+                    break;
+            }
+            
+            // Tampilkan hasil
+            document.getElementById('result-binary').textContent = binaryResult;
+            document.getElementById('result-decimal').textContent = decimalResult;
+            document.getElementById('result-hexadecimal').textContent = hexResult;
+        });
+
+        // Data Units Converter
+        document.getElementById('convert-data').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('data-value').value);
+            const from = document.getElementById('data-from').value;
+            const to = document.getElementById('data-to').value;
+            
+            if (isNaN(value)) {
+                showToast('Masukkan nilai yang valid.');
+                return;
+            }
+            
+            // Konversi ke bit sebagai satuan dasar
+            let valueInBits;
+            
+            switch(from) {
+                case 'bit':
+                    valueInBits = value;
+                    break;
+                case 'byte':
+                    valueInBits = value * 8;
+                    break;
+                case 'kilobit':
+                    valueInBits = value * 1000;
+                    break;
+                case 'kilobyte':
+                    valueInBits = value * 8000;
+                    break;
+                case 'megabit':
+                    valueInBits = value * 1000000;
+                    break;
+                case 'megabyte':
+                    valueInBits = value * 8000000;
+                    break;
+                case 'gigabit':
+                    valueInBits = value * 1000000000;
+                    break;
+                case 'gigabyte':
+                    valueInBits = value * 8000000000;
+                    break;
+                case 'terabit':
+                    valueInBits = value * 1000000000000;
+                    break;
+                case 'terabyte':
+                    valueInBits = value * 8000000000000;
+                    break;
+            }
+            
+            // Konversi dari bit ke satuan target
+            let result;
+            
+            switch(to) {
+                case 'bit':
+                    result = valueInBits;
+                    break;
+                case 'byte':
+                    result = valueInBits / 8;
+                    break;
+                case 'kilobit':
+                    result = valueInBits / 1000;
+                    break;
+                case 'kilobyte':
+                    result = valueInBits / 8000;
+                    break;
+                case 'megabit':
+                    result = valueInBits / 1000000;
+                    break;
+                case 'megabyte':
+                    result = valueInBits / 8000000;
+                    break;
+                case 'gigabit':
+                    result = valueInBits / 1000000000;
+                    break;
+                case 'gigabyte':
+                    result = valueInBits / 8000000000;
+                    break;
+                case 'terabit':
+                    result = valueInBits / 1000000000000;
+                    break;
+                case 'terabyte':
+                    result = valueInBits / 8000000000000;
+                    break;
+            }
+            
+            // Tampilkan hasil
+            document.getElementById('data-result').textContent = result.toFixed(6);
+            document.getElementById('data-formula').textContent = `${value} ${from} = ${result.toFixed(6)} ${to}`;
+        });
+
+        // Data Speed Calculator
+        document.getElementById('calculate-speed').addEventListener('click', function() {
+            const size = parseFloat(document.getElementById('size-value').value);
+            const sizeUnit = document.getElementById('size-unit').value;
+            const speed = parseFloat(document.getElementById('speed-value').value);
+            const speedUnit = document.getElementById('speed-unit').value;
+            
+            if (isNaN(size) || isNaN(speed)) {
+                showToast('Masukkan nilai ukuran dan kecepatan yang valid.');
+                return;
+            }
+            
+            // Konversi ukuran ke bit
+            let sizeInBits;
+            
+            switch(sizeUnit) {
+                case 'MB':
+                    sizeInBits = size * 8 * 1024 * 1024;
+                    break;
+                case 'GB':
+                    sizeInBits = size * 8 * 1024 * 1024 * 1024;
+                    break;
+                case 'TB':
+                    sizeInBits = size * 8 * 1024 * 1024 * 1024 * 1024;
+                    break;
+            }
+            
+            // Konversi kecepatan ke bit per detik
+            let speedInBps;
+            
+            switch(speedUnit) {
+                case 'Mbps':
+                    speedInBps = speed * 1000000;
+                    break;
+                case 'MBps':
+                    speedInBps = speed * 8 * 1024 * 1024;
+                    break;
+                case 'Gbps':
+                    speedInBps = speed * 1000000000;
+                    break;
+            }
+            
+            // Hitung waktu transfer dalam detik
+            const timeInSeconds = sizeInBits / speedInBps;
+            
+            // Format waktu
+            let timeFormatted;
+            if (timeInSeconds < 60) {
+                timeFormatted = `${timeInSeconds.toFixed(2)} detik`;
+            } else if (timeInSeconds < 3600) {
+                timeFormatted = `${(timeInSeconds / 60).toFixed(2)} menit`;
+            } else if (timeInSeconds < 86400) {
+                timeFormatted = `${(timeInSeconds / 3600).toFixed(2)} jam`;
+            } else {
+                timeFormatted = `${(timeInSeconds / 86400).toFixed(2)} hari`;
+            }
+            
+            // Hitung kecepatan sebenarnya dalam MB/s
+            const actualSpeed = (speedInBps / 8) / (1024 * 1024);
+            
+            // Tampilkan hasil
+            document.getElementById('transfer-time').textContent = timeFormatted;
+            document.getElementById('actual-speed').textContent = `${actualSpeed.toFixed(2)} MB/s`;
+        });
+
+        // Electrical Calculator
+        document.getElementById('calculate-electrical').addEventListener('click', function() {
+            const type = document.getElementById('electrical-type').value;
+            const input1 = parseFloat(document.getElementById('input1-value').value);
+            const input2 = parseFloat(document.getElementById('input2-value').value);
+            const input3 = parseFloat(document.getElementById('input3-value').value) || 0;
+            
+            if (isNaN(input1) || isNaN(input2) || (type === 'energy' && isNaN(input3))) {
+                showToast('Masukkan nilai yang valid untuk semua field.');
+                return;
+            }
+            
+            let result1, result2;
+            
+            switch(type) {
+                case 'power': // Daya = Tegangan * Arus
+                    result1 = input1 * input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Watt`;
+                    break;
+                case 'current': // Arus = Daya / Tegangan
+                    result1 = input1 / input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Ampere`;
+                    break;
+                case 'voltage': // Tegangan = Daya / Arus
+                    result1 = input1 / input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Volt`;
+                    break;
+                case 'resistance': // Hambatan = Tegangan / Arus
+                    result1 = input1 / input2;
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Ohm`;
+                    break;
+                case 'energy': // Energi = Daya * Waktu
+                    result1 = input1; // Daya dalam Watt
+                    result2 = (input1 / 1000) * input3; // Energi dalam kWh
+                    document.getElementById('result1-value').textContent = `${result1.toFixed(2)} Watt`;
+                    document.getElementById('result2-value').textContent = `${result2.toFixed(2)} kWh`;
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
