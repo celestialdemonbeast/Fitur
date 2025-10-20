@@ -1,0 +1,46 @@
+body {
+  background: #0a0a2a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: sans-serif;
+}
+
+.music-widget {
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  width: 280px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  color: #fff;
+}
+
+.music-widget img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.controls {
+  margin-top: 10px;
+}
+
+.controls button {
+  background: #ff6b6b;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.controls button:hover {
+  background: #ff4c4c;
+}
+

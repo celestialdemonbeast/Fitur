@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Playlist JSON + localStorage</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 10px 0; }
+    img { width: 50px; vertical-align: middle; margin-right: 10px; }
+
+
+    .playlist-editor {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.playlist-editor input {
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
+.playlist-editor button {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #4caf50;
+  color: white;
+}
+
+.playlist-editor button:hover {
+  background: #43a047;
+}
+
+  </style>
+</head>
+<body>
+  <h2>🎶 Playlist Musik</h2>
+
+  <input type="text" id="titleInput" placeholder="Judul Lagu">
+  <input type="text" id="artistInput" placeholder="Artis">
+  <input type="text" id="coverInput" placeholder="Cover (URL)">
+  <input type="text" id="srcInput" placeholder="File Musik (src)">
+  <button onclick="addSong()">Tambah Lagu</button>
+
+  <ul id="playlist"></ul>
+
+  <script>
+    const STORAGE_KEY = 'playlistData';
+
+    // Load dari localStorage atau fallback ke default
+    let playlist = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+      {
+        title: "Glimpse of Us",
+        artist: "Joji",
+        cover: "cover1.jpg",
+        src: "glimpse.mp3"
+      },
+      {
+        title: "Another Song",
+        artist: "Artist Name",
+        cover: "cover2.jpg",
+        src: "song2.mp3"
+      }
+    ];
+
+    function saveToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist));
+    }
+
+    function renderPlaylist() {
+      const list = document.getElementById('playlist');
+      list.innerHTML = '';
+      playlist.forEach((song, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <img src="${song.cover}" alt="cover">
+          <strong>${song.title}</strong> - ${song.artist}
+          <audio controls src="${song.src}"></audio><br>
+          <button onclick="editSong(${index})">Edit</button>
+          <button onclick="deleteSong(${index})">Hapus</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function addSong() {
+      const title = document.getElementById('titleInput').value.trim();
+      const artist = document.getElementById('artistInput').value.trim();
+      const cover = document.getElementById('coverInput').value.trim();
+      const src = document.getElementById('srcInput').value.trim();
+      if (title && artist && cover && src) {
+        playlist.push({ title, artist, cover, src });
+        saveToStorage();
+        renderPlaylist();
+        document.getElementById('titleInput').value = '';
+        document.getElementById('artistInput').value = '';
+        document.getElementById('coverInput').value = '';
+        document.getElementById('srcInput').value = '';
+      }
+    }
+
+    function editSong(index) {
+      const song = playlist[index];
+      const newTitle = prompt("Judul baru:", song.title);
+      const newArtist = prompt("Artis baru:", song.artist);
+      const newCover = prompt("Cover baru:", song.cover);
+      const newSrc = prompt("File musik baru:", song.src);
+      if (newTitle && newArtist && newCover && newSrc) {
+        playlist[index] = { title: newTitle, artist: newArtist, cover: newCover, src: newSrc };
+        saveToStorage();
+        renderPlaylist();
+      }
+    }
+
+    function deleteSong(index) {
+      if (confirm("Yakin ingin menghapus lagu ini?")) {
+        playlist.splice(index, 1);
+        saveToStorage();
+        renderPlaylist();
+      }
+    }
+
+    renderPlaylist();
+  </script>
+
+
+
+<div class="playlist-editor">
+  <h3>Buat Playlist Baru</h3>
+  <input type="text" id="newTitle" placeholder="Judul Lagu"><br>
+  <input type="text" id="newArtist" placeholder="Artis"><br>
+  <input type="text" id="newCover" placeholder="URL Cover"><br>
+  <input type="text" id="newSrc" placeholder="File MP3 / URL"><br>
+  <button id="addSong">+ Tambah Lagu</button>
+  <button id="savePlaylist">💾 Save Playlist</button>
+</div>
+<script>let newPlaylist = [];
+
+document.getElementById("addSong").addEventListener("click", () => {
+  const title = document.getElementById("newTitle").value;
+  const artist = document.getElementById("newArtist").value;
+  const cover = document.getElementById("newCover").value;
+  const src = document.getElementById("newSrc").value;
+
+  if (title && artist && cover && src) {
+    newPlaylist.push({ title, artist, cover, src });
+    alert("Lagu ditambahkan ke playlist sementara!");
+  } else {
+    alert("Harap isi semua field!");
+  }
+});
+
+document.getElementById("savePlaylist").addEventListener("click", () => {
+  if (newPlaylist.length === 0) {
+    alert("Playlist kosong!");
+    return;
+  }
+  const blob = new Blob([JSON.stringify(newPlaylist, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "playlist.json";
+  link.click();
+  alert("Playlist.json baru berhasil dibuat! Silakan replace file lama.");
+});
+</script>
+</body>
+</html>
