@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator</title>
+    <title>QR Code Generator with Logo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -20,12 +20,45 @@
         }
         #qrCodeContainer {
             transition: all 0.3s ease;
+            min-height: 200px;
         }
         .download-btn {
             transition: transform 0.2s ease;
         }
         .download-btn:hover {
             transform: translateY(-2px);
+        }
+        .logo-preview {
+            max-width: 80px;
+            max-height: 80px;
+            object-fit: contain;
+            margin-top: 10px;
+            border: 2px dashed #6b7280;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        .scannable-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .scannable-yes {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+        .scannable-warning {
+            background-color: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+            border: 1px solid #eab308;
+        }
+        .scannable-no {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
         }
         @media (max-width: 640px) {
             .flex-col-mobile {
@@ -41,7 +74,7 @@
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <header class="text-center mb-10">
             <h1 class="text-3xl md:text-4xl font-bold text-indigo-400 mb-2">QR Code Generator</h1>
-            <p class="text-gray-400"> Created by : <a href="https://cdb-official.netlify.app/fitur">Celestial Demon Beast</a></p>
+            <p class="text-gray-400">Create scannable QR codes with logos</p>
         </header>
 
         <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
@@ -53,7 +86,7 @@
                             <i class="fas fa-link mr-2 text-indigo-500"></i> Enter URL or Text
                         </label>
                         <input type="text" id="urlInput" placeholder="https://example.com" 
-                            class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-black text-gray-100">
+                            class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-900 text-gray-100">
                     </div>
 
                     <div class="mb-6">
@@ -63,12 +96,12 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="fgColor" class="block text-xs text-gray-500 mb-1">Foreground Color</label>
+                                <label for="fgColor" class="block text-xs text-gray-500 mb-1">QR Color</label>
                                 <div class="flex items-center">
                                     <input type="color" id="fgColor" value="#000000" 
                                         class="w-10 h-10 border border-gray-600 rounded cursor-pointer bg-black">
                                     <input type="text" id="fgColorText" value="#000000" 
-                                        class="ml-2 px-2 py-1 border border-gray-600 rounded text-sm w-24 bg-black text-gray-100">
+                                        class="ml-2 px-2 py-1 border border-gray-600 rounded text-sm w-24 bg-gray-900 text-gray-100">
                                     <span class="color-preview" id="fgPreview" style="background-color: #000000;"></span>
                                 </div>
                             </div>
@@ -79,7 +112,7 @@
                                     <input type="color" id="bgColor" value="#ffffff" 
                                         class="w-10 h-10 border border-gray-300 rounded cursor-pointer">
                                     <input type="text" id="bgColorText" value="#ffffff" 
-                                        class="ml-2 px-2 py-1 border border-gray-600 rounded text-sm w-24 bg-black text-gray-100">
+                                        class="ml-2 px-2 py-1 border border-gray-600 rounded text-sm w-24 bg-gray-900 text-gray-100">
                                     <span class="color-preview" id="bgPreview" style="background-color: #ffffff;"></span>
                                 </div>
                             </div>
@@ -87,35 +120,97 @@
                     </div>
 
                     <div class="mb-6">
-                        <label for="qrSize" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-expand mr-2 text-indigo-500"></i> QR Code Size
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <i class="fas fa-image mr-2 text-indigo-500"></i> Logo/Image in Center (Optional)
                         </label>
-                        <select id="qrSize" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-black text-gray-100">
-                            <option value="200">Small (200x200)</option>
-                            <option value="300" selected>Medium (300x300)</option>
-                            <option value="400">Large (400x400)</option>
-                            <option value="500">Extra Large (500x500)</option>
-                        </select>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <input type="file" id="logoInput" accept="image/*" 
+                                    class="flex-1 px-3 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100 text-sm">
+                                <button id="removeLogoBtn" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm hidden">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div id="logoPreviewContainer" class="hidden">
+                                <label class="block text-xs text-gray-500 mb-1">Logo Preview</label>
+                                <img id="logoPreview" class="logo-preview" src="" alt="Logo Preview">
+                                <div class="mt-3">
+                                    <label for="logoSize" class="block text-xs text-gray-500 mb-1">
+                                        Logo Size: <span id="logoSizeValue" class="font-medium">20%</span>
+                                    </label>
+                                    <input type="range" id="logoSize" min="10" max="30" value="20" 
+                                        class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                        <span>Small (Safe)</span>
+                                        <span>Medium</span>
+                                        <span>Large (Risky)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <label for="logoBorder" class="block text-xs text-gray-500 mb-1">
+                                        White Border: <span id="logoBorderValue" class="font-medium">Yes</span>
+                                    </label>
+                                    <input type="checkbox" id="logoBorder" checked 
+                                        class="w-4 h-4 text-indigo-600 bg-gray-900 border-gray-600 rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="qrSize" class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-expand mr-2 text-indigo-500"></i> QR Code Size
+                            </label>
+                            <select id="qrSize" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100">
+                                <option value="256">Small (256x256)</option>
+                                <option value="384" selected>Medium (384x384)</option>
+                                <option value="512">Large (512x512)</option>
+                                <option value="640">Extra Large (640x640)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="qrErrorCorrection" class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-shield-alt mr-2 text-indigo-500"></i> Error Correction
+                            </label>
+                            <select id="qrErrorCorrection" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100">
+                                <option value="L">Low (7%)</option>
+                                <option value="M" selected>Medium (15%)</option>
+                                <option value="Q">Quartile (25%)</option>
+                                <option value="H">High (30%)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="qrMargin" class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-border-all mr-2 text-indigo-500"></i> Margin
+                            </label>
+                            <select id="qrMargin" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100">
+                                <option value="0">No margin</option>
+                                <option value="1" selected>Small (1 module)</option>
+                                <option value="2">Medium (2 modules)</option>
+                                <option value="4">Large (4 modules)</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="mb-6">
-                        <label for="qrMargin" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-border-all mr-2 text-indigo-500"></i> Margin Size
-                        </label>
-                        <select id="qrMargin" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-black text-gray-100">
-                            <option value="0">No margin</option>
-                            <option value="1" selected>Small margin</option>
-                            <option value="2">Medium margin</option>
-                            <option value="4">Large margin</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-6">
-                        <label for="nameTag" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="nameTag" class="block text-sm font-medium text-gray-300 mb-2">
                             <i class="fas fa-tag mr-2 text-indigo-500"></i> Name Tag (Optional)
                         </label>
                         <input type="text" id="nameTag" placeholder="e.g. My QR Code" 
-                            class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-black text-gray-100">
+                            class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-900 text-gray-100">
+                    </div>
+
+                    <div class="flex items-center justify-between mb-6">
+                        <div id="scannabilityIndicator" class="hidden">
+                            <span class="text-sm font-medium">Scannability:</span>
+                            <span id="scannabilityText" class="scannable-indicator">Checking...</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm text-gray-400" id="logoCoverage">Logo covers: 0%</span>
+                        </div>
                     </div>
 
                     <button id="generateBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-300">
@@ -125,8 +220,10 @@
 
                 <!-- Output Section -->
                 <div class="w-full md:w-1/2 flex flex-col items-center justify-center">
-                    <div id="qrCodeContainer" class="mb-3 p-4 bg-gray-700 border border-gray-600 rounded-lg shadow-sm flex items-center justify-center">
-                        <p class="text-gray-400">Your QR code will appear here</p>
+                    <div id="qrCodeContainer" class="mb-3 p-4 bg-gray-700 border border-gray-600 rounded-lg shadow-sm flex items-center justify-center min-h-[400px]">
+                        <p class="text-gray-400 text-center">Your QR code will appear here<br>
+                            <span class="text-sm text-gray-500">Test with your phone camera</span>
+                        </p>
                     </div>
                     <div id="nameTagContainer" class="text-center mb-6 hidden">
                         <p id="nameTagText" class="text-lg font-medium text-gray-100"></p>
@@ -149,15 +246,30 @@
 
         <div class="bg-gray-800 rounded-xl shadow-lg p-6">
             <h2 class="text-xl font-semibold text-gray-100 mb-4">
-                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i> How to use
+                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i> Tips for Scannable QR Codes with Logos
             </h2>
-            <ol class="list-decimal pl-5 space-y-2 text-gray-300">
-                <li>Enter the URL or text you want to encode in the QR code</li>
-                <li>Customize the colors using the color pickers or by entering hex codes</li>
-                <li>Adjust the size and margin as needed</li>
-                <li>Click "Generate QR Code" to create your customized QR code</li>
-                <li>Download in your preferred format (PNG, SVG, or JPG)</li>
-            </ol>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-medium text-green-400 mb-2">✓ DO:</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-300">
+                        <li>Keep logo size below 25% of QR code area</li>
+                        <li>Use high contrast between logo and QR color</li>
+                        <li>Enable white border around logo</li>
+                        <li>Use High error correction (H or Q) when adding logo</li>
+                        <li>Test with multiple QR scanner apps</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-red-400 mb-2">✗ DON'T:</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-300">
+                        <li>Cover the positioning markers (three corners)</li>
+                        <li>Use logo with same color as QR code</li>
+                        <li>Make logo too detailed or complex</li>
+                        <li>Use logo with transparency over QR modules</li>
+                        <li>Place logo off-center</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -173,6 +285,7 @@
             const bgPreview = document.getElementById('bgPreview');
             const qrSize = document.getElementById('qrSize');
             const qrMargin = document.getElementById('qrMargin');
+            const qrErrorCorrection = document.getElementById('qrErrorCorrection');
             const generateBtn = document.getElementById('generateBtn');
             const qrCodeContainer = document.getElementById('qrCodeContainer');
             const downloadPNG = document.getElementById('downloadPNG');
@@ -181,6 +294,22 @@
             const nameTag = document.getElementById('nameTag');
             const nameTagContainer = document.getElementById('nameTagContainer');
             const nameTagText = document.getElementById('nameTagText');
+            const logoInput = document.getElementById('logoInput');
+            const logoPreview = document.getElementById('logoPreview');
+            const logoPreviewContainer = document.getElementById('logoPreviewContainer');
+            const removeLogoBtn = document.getElementById('removeLogoBtn');
+            const logoSize = document.getElementById('logoSize');
+            const logoSizeValue = document.getElementById('logoSizeValue');
+            const logoBorder = document.getElementById('logoBorder');
+            const logoBorderValue = document.getElementById('logoBorderValue');
+            const scannabilityIndicator = document.getElementById('scannabilityIndicator');
+            const scannabilityText = document.getElementById('scannabilityText');
+            const logoCoverage = document.getElementById('logoCoverage');
+
+            // Variables
+            let logoImage = null;
+            let generatedQRCanvas = null;
+            let logoDataURL = null;
 
             // Color picker synchronization
             fgColor.addEventListener('input', function() {
@@ -207,6 +336,153 @@
                 }
             });
 
+            // Logo upload handling
+            logoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file');
+                    return;
+                }
+
+                // Check file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size should be less than 2MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    logoImage = new Image();
+                    logoImage.onload = function() {
+                        logoPreview.src = event.target.result;
+                        logoDataURL = event.target.result; // Store for SVG
+                        logoPreviewContainer.classList.remove('hidden');
+                        removeLogoBtn.classList.remove('hidden');
+                        updateLogoCoverage();
+                    };
+                    logoImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Logo size slider
+            logoSize.addEventListener('input', function() {
+                const size = parseInt(logoSize.value);
+                logoSizeValue.textContent = `${size}%`;
+                updateLogoCoverage();
+                if (generatedQRCanvas) {
+                    generateBtn.click();
+                }
+            });
+
+            // Logo border toggle
+            logoBorder.addEventListener('change', function() {
+                logoBorderValue.textContent = logoBorder.checked ? 'Yes' : 'No';
+                if (generatedQRCanvas) {
+                    generateBtn.click();
+                }
+            });
+
+            // Update logo coverage percentage
+            function updateLogoCoverage() {
+                if (!logoImage) {
+                    logoCoverage.textContent = 'Logo covers: 0%';
+                    return;
+                }
+                const sizePercent = parseInt(logoSize.value) / 100;
+                const coverage = Math.round((sizePercent * sizePercent) * 100);
+                logoCoverage.textContent = `Logo covers: ${coverage}%`;
+                
+                // Update scannability indicator
+                if (coverage < 15) {
+                    scannabilityText.textContent = 'Good';
+                    scannabilityText.className = 'scannable-indicator scannable-yes';
+                } else if (coverage < 25) {
+                    scannabilityText.textContent = 'Fair';
+                    scannabilityText.className = 'scannable-indicator scannable-warning';
+                } else {
+                    scannabilityText.textContent = 'Poor';
+                    scannabilityText.className = 'scannable-indicator scannable-no';
+                }
+                scannabilityIndicator.classList.remove('hidden');
+            }
+
+            // Remove logo
+            removeLogoBtn.addEventListener('click', function() {
+                logoImage = null;
+                logoDataURL = null;
+                logoPreview.src = '';
+                logoPreviewContainer.classList.add('hidden');
+                removeLogoBtn.classList.add('hidden');
+                logoInput.value = '';
+                logoCoverage.textContent = 'Logo covers: 0%';
+                scannabilityIndicator.classList.add('hidden');
+                if (generatedQRCanvas) {
+                    generateBtn.click();
+                }
+            });
+
+            // Function to add logo to QR code
+            function addLogoToQR(canvas) {
+                if (!logoImage) return canvas;
+
+                const logoSizePercent = parseInt(logoSize.value) / 100;
+                const qrSize = canvas.width;
+                const logoWidth = qrSize * logoSizePercent;
+                const logoHeight = logoWidth * (logoImage.height / logoImage.width);
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Save current state
+                ctx.save();
+                
+                const centerX = qrSize / 2;
+                const centerY = qrSize / 2;
+                
+                // Draw white border if enabled
+                if (logoBorder.checked) {
+                    const borderSize = logoWidth * 1.4;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, borderSize / 2, 0, Math.PI * 2);
+                    ctx.fillStyle = bgColor.value;
+                    ctx.fill();
+                    
+                    // Draw white square/rectangle background
+                    const bgWidth = logoWidth * 1.2;
+                    const bgHeight = logoHeight * 1.2;
+                    const bgX = centerX - bgWidth / 2;
+                    const bgY = centerY - bgHeight / 2;
+                    
+                    // Rounded rectangle
+                    const radius = 8;
+                    ctx.beginPath();
+                    ctx.moveTo(bgX + radius, bgY);
+                    ctx.lineTo(bgX + bgWidth - radius, bgY);
+                    ctx.quadraticCurveTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + radius);
+                    ctx.lineTo(bgX + bgWidth, bgY + bgHeight - radius);
+                    ctx.quadraticCurveTo(bgX + bgWidth, bgY + bgHeight, bgX + bgWidth - radius, bgY + bgHeight);
+                    ctx.lineTo(bgX + radius, bgY + bgHeight);
+                    ctx.quadraticCurveTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - radius);
+                    ctx.lineTo(bgX, bgY + radius);
+                    ctx.quadraticCurveTo(bgX, bgY, bgX + radius, bgY);
+                    ctx.closePath();
+                    ctx.fillStyle = bgColor.value;
+                    ctx.fill();
+                }
+                
+                // Draw logo
+                const logoX = centerX - logoWidth / 2;
+                const logoY = centerY - logoHeight / 2;
+                ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight);
+                
+                // Restore state
+                ctx.restore();
+                
+                return canvas;
+            }
+
             // Generate QR Code
             generateBtn.addEventListener('click', function() {
                 const url = urlInput.value.trim();
@@ -222,10 +498,11 @@
                     },
                     width: parseInt(qrSize.value),
                     margin: parseInt(qrMargin.value),
+                    errorCorrectionLevel: qrErrorCorrection.value,
                     quality: 1
                 };
 
-                qrCodeContainer.innerHTML = '';
+                qrCodeContainer.innerHTML = '<div class="text-center"><div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-2"></div><p class="text-gray-400">Generating QR code...</p></div>';
                 
                 // Handle name tag
                 if (nameTag.value.trim()) {
@@ -235,107 +512,176 @@
                     nameTagContainer.classList.add('hidden');
                 }
                 
-                QRCode.toCanvas(url, options, function(err, canvas) {
-                    if (err) {
-                        console.error(err);
-                        qrCodeContainer.innerHTML = '<p class="text-red-500">Error generating QR code</p>';
-                        return;
-                    }
-                    
-                    canvas.id = 'qrCanvas';
-                    canvas.style.maxWidth = '100%';
-                    canvas.style.height = 'auto';
-                    qrCodeContainer.innerHTML = '';
-                    qrCodeContainer.appendChild(canvas);
-                });
+                // Generate QR code with higher timeout for better rendering
+                setTimeout(() => {
+                    QRCode.toCanvas(url, options, function(err, canvas) {
+                        if (err) {
+                            console.error(err);
+                            qrCodeContainer.innerHTML = '<p class="text-red-500">Error generating QR code</p>';
+                            return;
+                        }
+                        
+                        canvas.id = 'qrCanvas';
+                        canvas.style.maxWidth = '100%';
+                        canvas.style.height = 'auto';
+                        
+                        // Add logo if exists
+                        if (logoImage) {
+                            canvas = addLogoToQR(canvas);
+                        }
+                        
+                        generatedQRCanvas = canvas;
+                        qrCodeContainer.innerHTML = '';
+                        qrCodeContainer.appendChild(canvas);
+                        
+                        // Add test instructions
+                        // const testNote = document.createElement('p');
+                        // testNote.className = 'text-sm text-gray-400 mt-3 text-center';
+                        // testNote.innerHTML = '<i class="fas fa-camera mr-1"></i> Point your phone camera at this QR code to test';
+                        // qrCodeContainer.appendChild(testNote);
+                    });
+                }, 100);
             });
+
+            // Function to create downloadable canvas with name tag and logo
+            function createDownloadCanvas() {
+                if (!generatedQRCanvas) return null;
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const qrCanvas = generatedQRCanvas;
+                const padding = 20;
+                const textHeight = nameTag.value.trim() ? 30 : 0;
+                
+                canvas.width = qrCanvas.width;
+                canvas.height = qrCanvas.height + (nameTag.value.trim() ? padding + textHeight : 0);
+                
+                // Background
+                ctx.fillStyle = bgColor.value;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw QR code with logo
+                ctx.drawImage(qrCanvas, 0, 0);
+                
+                // Draw name tag if exists
+                if (nameTag.value.trim()) {
+                    ctx.font = `bold ${textHeight - 10}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = fgColor.value;
+                    ctx.fillText(nameTag.value.trim(), canvas.width / 2, qrCanvas.height + padding + textHeight - 10);
+                }
+                
+                return canvas;
+            }
+
+            // Function to create SVG with logo
+            async function createSVGWithLogo(url, options) {
+                return new Promise((resolve, reject) => {
+                    QRCode.toString(url, options, function(err, svg) {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
+                        
+                        // If no logo, return plain SVG
+                        if (!logoImage || !logoDataURL) {
+                            resolve(svg);
+                            return;
+                        }
+                        
+                        // Parse SVG string
+                        const parser = new DOMParser();
+                        const svgDoc = parser.parseFromString(svg, 'image/svg+xml');
+                        const svgElement = svgDoc.documentElement;
+                        
+                        // Get SVG dimensions
+                        const viewBox = svgElement.getAttribute('viewBox');
+                        const viewBoxValues = viewBox ? viewBox.split(' ') : ['0', '0', '300', '300'];
+                        const svgWidth = parseInt(viewBoxValues[2]);
+                        const svgHeight = parseInt(viewBoxValues[3]);
+                        
+                        // Calculate logo size and position
+                        const logoSizePercent = parseInt(logoSize.value) / 100;
+                        const logoWidth = svgWidth * logoSizePercent;
+                        const logoHeight = logoWidth * (logoImage.height / logoImage.width);
+                        const logoX = (svgWidth - logoWidth) / 2;
+                        const logoY = (svgHeight - logoHeight) / 2;
+                        
+                        // Create background rectangle if border is enabled
+                        if (logoBorder.checked) {
+                            const borderSize = logoWidth * 1.4;
+                            const borderX = (svgWidth - borderSize) / 2;
+                            const borderY = (svgHeight - borderSize) / 2;
+                            
+                            const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                            bgRect.setAttribute('cx', svgWidth / 2);
+                            bgRect.setAttribute('cy', svgHeight / 2);
+                            bgRect.setAttribute('r', borderSize / 2);
+                            bgRect.setAttribute('fill', bgColor.value);
+                            svgElement.appendChild(bgRect);
+                            
+                            // Add white square background
+                            const bgSquare = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                            bgSquare.setAttribute('x', (svgWidth - logoWidth * 1.2) / 2);
+                            bgSquare.setAttribute('y', (svgHeight - logoHeight * 1.2) / 2);
+                            bgSquare.setAttribute('width', logoWidth * 1.2);
+                            bgSquare.setAttribute('height', logoHeight * 1.2);
+                            bgSquare.setAttribute('rx', '8');
+                            bgSquare.setAttribute('fill', bgColor.value);
+                            svgElement.appendChild(bgSquare);
+                        }
+                        
+                        // Add logo as image element
+                        const logoElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                        logoElement.setAttribute('x', logoX);
+                        logoElement.setAttribute('y', logoY);
+                        logoElement.setAttribute('width', logoWidth);
+                        logoElement.setAttribute('height', logoHeight);
+                        logoElement.setAttribute('href', logoDataURL);
+                        logoElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                        
+                        svgElement.appendChild(logoElement);
+                        
+                        // Convert back to string
+                        const serializer = new XMLSerializer();
+                        const newSVG = serializer.serializeToString(svgElement);
+                        resolve(newSVG);
+                    });
+                });
+            }
 
             // Download functions
             downloadPNG.addEventListener('click', function() {
-                const canvas = document.querySelector('#qrCanvas');
-                if (!canvas) {
+                if (!generatedQRCanvas) {
                     alert('Please generate a QR code first');
                     return;
                 }
                 
-                // Create a new canvas with name tag if exists
-                if (nameTag.value.trim()) {
-                    const combinedCanvas = document.createElement('canvas');
-                    const ctx = combinedCanvas.getContext('2d');
-                    const padding = 20;
-                    const textHeight = 30;
-                    
-                    combinedCanvas.width = canvas.width;
-                    combinedCanvas.height = canvas.height + (nameTag.value.trim() ? padding + textHeight : 0);
-                    
-                    // White background
-                    ctx.fillStyle = bgColor.value;
-                    ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
-                    
-                    // Draw QR code
-                    ctx.drawImage(canvas, 0, 0);
-                    
-                    // Draw name tag if exists
-                    if (nameTag.value.trim()) {
-                        ctx.font = `bold ${textHeight - 10}px Arial`;
-                        ctx.textAlign = 'center';
-                        ctx.fillStyle = fgColor.value;
-                        ctx.fillText(nameTag.value.trim(), combinedCanvas.width / 2, canvas.height + padding + textHeight - 10);
-                    }
-                    
-                    combinedCanvas.toBlob(function(blob) {
-                        saveAs(blob, `${nameTag.value.trim() || 'qr-code'}.png`);
-                    }, 'image/png', 1);
-                } else {
-                    canvas.toBlob(function(blob) {
-                        saveAs(blob, 'qr-code.png');
-                    }, 'image/png', 1);
-                }
-                });
+                const downloadCanvas = createDownloadCanvas();
+                if (!downloadCanvas) return;
+                
+                downloadCanvas.toBlob(function(blob) {
+                    const fileName = `${nameTag.value.trim() || 'qr-code'}.png`;
+                    saveAs(blob, fileName);
+                }, 'image/png', 1);
+            });
 
             downloadJPG.addEventListener('click', function() {
-                const canvas = document.querySelector('#qrCanvas');
-                if (!canvas) {
+                if (!generatedQRCanvas) {
                     alert('Please generate a QR code first');
                     return;
                 }
                 
-                // Create a new canvas with name tag if exists
-                if (nameTag.value.trim()) {
-                    const combinedCanvas = document.createElement('canvas');
-                    const ctx = combinedCanvas.getContext('2d');
-                    const padding = 20;
-                    const textHeight = 30;
-                    
-                    combinedCanvas.width = canvas.width;
-                    combinedCanvas.height = canvas.height + (nameTag.value.trim() ? padding + textHeight : 0);
-                    
-                    // White background
-                    ctx.fillStyle = bgColor.value;
-                    ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
-                    
-                    // Draw QR code
-                    ctx.drawImage(canvas, 0, 0);
-                    
-                    // Draw name tag if exists
-                    if (nameTag.value.trim()) {
-                        ctx.font = `bold ${textHeight - 10}px Arial`;
-                        ctx.textAlign = 'center';
-                        ctx.fillStyle = fgColor.value;
-                        ctx.fillText(nameTag.value.trim(), combinedCanvas.width / 2, canvas.height + padding + textHeight - 10);
-                    }
-                    
-                    combinedCanvas.toBlob(function(blob) {
-                        saveAs(blob, `${nameTag.value.trim() || 'qr-code'}.jpg`);
-                    }, 'image/jpeg', 1);
-                } else {
-                    canvas.toBlob(function(blob) {
-                        saveAs(blob, 'qr-code.jpg');
-                    }, 'image/jpeg', 1);
-                }
-                });
+                const downloadCanvas = createDownloadCanvas();
+                if (!downloadCanvas) return;
+                
+                downloadCanvas.toBlob(function(blob) {
+                    const fileName = `${nameTag.value.trim() || 'qr-code'}.jpg`;
+                    saveAs(blob, fileName);
+                }, 'image/jpeg', 0.9);
+            });
 
-            downloadSVG.addEventListener('click', function() {
+            downloadSVG.addEventListener('click', async function() {
                 const url = urlInput.value.trim();
                 if (!url) {
                     alert('Please generate a QR code first');
@@ -349,18 +695,21 @@
                     },
                     width: parseInt(qrSize.value),
                     margin: parseInt(qrMargin.value),
+                    errorCorrectionLevel: qrErrorCorrection.value,
                     type: 'svg'
                 };
 
-                QRCode.toString(url, options, function(err, svg) {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
+                try {
+                    // Generate SVG with logo if available
+                    const svg = await createSVGWithLogo(url, options);
                     
                     const blob = new Blob([svg], {type: 'image/svg+xml'});
-                    saveAs(blob, 'qr-code.svg');
-                });
+                    const fileName = `${nameTag.value.trim() || 'qr-code'}.svg`;
+                    saveAs(blob, fileName);
+                } catch (err) {
+                    console.error(err);
+                    alert('Error generating SVG with logo. Please try again.');
+                }
             });
 
             // Generate QR code on Enter key press
@@ -369,6 +718,9 @@
                     generateBtn.click();
                 }
             });
+
+            // Initialize
+            updateLogoCoverage();
         });
     </script>
 </body>
