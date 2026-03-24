@@ -13,121 +13,164 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3b82f6',
-                        dark: '#1e293b',
+                        primary: '#6366F1',
+                        accent: '#A855F7',
+                        dark: '#0A0A0A',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #6366F1;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
         .password-container {
             position: relative;
         }
         .toggle-password {
             position: absolute;
-            right: 10px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #64748b;
+            color: #94A3B8;
         }
         #qrcode canvas {
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col">
-    <header class="bg-primary text-white py-6 shadow-md">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold text-center"><i class="fas fa-wifi mr-2"></i>Generator QR Code WiFi</h1>
-            <p class="text-center mt-2 opacity-90">Created by : <a href="https://cdb-official.netlify.app/fitur">Celestial Demon Beast</a></p>
-             
+    <header class="py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-5xl font-extrabold tracking-tight mb-4">
+                <span class="gradient-text">WiFi QR Generator</span>
+            </h1>
+            <p class="text-gray-400 font-medium">DESIGNED BY <span class="text-indigo-400">CELESTIAL DEMON BEAST</span></p>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8 flex-grow">
-        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="max-w-4xl mx-auto glass-panel overflow-hidden">
             <div class="md:flex">
                 <!-- Form Input -->
-                <div class="md:w-1/2 p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Konfigurasi WiFi</h2>
+                <div class="md:w-1/2 p-8 md:p-10">
+                    <h2 class="text-2xl font-bold text-white mb-8">WiFi Configuration</h2>
                     
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2 font-medium">SSID (Nama WiFi)</label>
-                        <input type="text" id="ssid" placeholder="Nama jaringan WiFi" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    <div class="mb-6">
+                        <label class="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-3">SSID (Nama WiFi)</label>
+                        <input type="text" id="ssid" placeholder="Network name" 
+                               class="input-field w-full px-5 py-3 rounded-xl focus:outline-none">
                     </div>
                     
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2 font-medium">Jenis Keamanan</label>
-                        <div class="space-y-2">
-                            <div class="flex items-center">
-                                <input type="radio" name="security" id="wpa" value="WPA" class="mr-2" checked>
-                                <label for="wpa" class="cursor-pointer">WPA/WPA2</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input type="radio" name="security" id="wep" value="WEP" class="mr-2">
-                                <label for="wep" class="cursor-pointer">WEP</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input type="radio" name="security" id="none" value="nopass" class="mr-2">
-                                <label for="none" class="cursor-pointer">Tidak Ada Keamanan</label>
-                            </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-3">Security Level</label>
+                        <div class="grid grid-cols-1 gap-3">
+                            <label class="flex items-center p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                                <input type="radio" name="security" id="wpa" value="WPA" class="accent-indigo-500 w-4 h-4 mr-3" checked>
+                                <span class="text-sm font-medium">WPA/WPA2 (Standard)</span>
+                            </label>
+                            <label class="flex items-center p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                                <input type="radio" name="security" id="wep" value="WEP" class="accent-indigo-500 w-4 h-4 mr-3">
+                                <span class="text-sm font-medium">WEP (Legacy)</span>
+                            </label>
+                            <label class="flex items-center p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                                <input type="radio" name="security" id="none" value="nopass" class="accent-indigo-500 w-4 h-4 mr-3">
+                                <span class="text-sm font-medium">No Security (Public)</span>
+                            </label>
                         </div>
                     </div>
                     
-                    <div class="mb-4" id="passwordField">
-                        <label class="block text-gray-700 mb-2 font-medium">Password</label>
+                    <div class="mb-6" id="passwordField">
+                        <label class="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-3">Network Password</label>
                         <div class="password-container">
-                            <input type="password" id="password" placeholder="Password WiFi" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10">
+                            <input type="password" id="password" placeholder="••••••••" 
+                                   class="input-field w-full px-5 py-3 rounded-xl focus:outline-none pr-12">
                             <span class="toggle-password" id="togglePassword">
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye text-sm"></i>
                             </span>
                         </div>
                     </div>
                     
-                    <div class="mb-6">
-                        <label class="block text-gray-700 mb-2 font-medium">Nama QR Code (Opsional)</label>
-                        <input type="text" id="qrName" placeholder="Nama untuk file QR" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    
-                    <button id="generateBtn" class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
-                        <i class="fas fa-qrcode mr-2"></i> Generate QR Code
+                    <button id="generateBtn" class="gradient-btn w-full py-4 text-white font-bold rounded-xl uppercase tracking-[0.2em] text-xs mt-4">
+                        Generate Signal
                     </button>
                 </div>
                 
                 <!-- Hasil QR Code -->
-                <div class="md:w-1/2 bg-slate-50 p-6 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Hasil QR Code</h2>
-                    <div class="text-center mb-4">
-                        <div id="qrcode" class="flex justify-center mb-4"></div>
-                        <p class="text-gray-600 text-sm mt-2" id="wifiDetails">Masukkan detail WiFi untuk membuat QR Code</p>
+                <div class="md:w-1/2 bg-white/[0.02] p-8 md:p-10 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-white/5">
+                    <h2 class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-8">Access Point QR</h2>
+                    <div class="text-center mb-8">
+                        <div id="qrcode" class="flex justify-center bg-white p-4 rounded-2xl shadow-2xl shadow-indigo-500/10">
+                            <!-- Placeholder -->
+                            <div class="w-[200px] h-[200px] flex items-center justify-center border-2 border-dashed border-indigo-500/20 rounded-xl">
+                                <i class="fas fa-wifi text-indigo-500/20 text-4xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mt-6" id="wifiDetails">Ready to generate</p>
                     </div>
                     
-                    <div class="mt-4 w-full max-w-xs hidden" id="downloadSection">
-                        <button id="downloadBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
-                            <i class="fas fa-download mr-2"></i> Download QR Code
+                    <div class="w-full hidden" id="downloadSection">
+                        <button id="downloadBtn" class="w-full bg-white/5 hover:bg-white/10 text-white font-black py-4 px-4 rounded-xl transition duration-300 uppercase tracking-widest text-[10px] border border-white/10">
+                            Download Asset
                         </button>
                     </div>
                     
-                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 w-full">
-                        <h3 class="font-bold mb-2"><i class="fas fa-info-circle mr-1"></i> Cara Penggunaan</h3>
-                        <ul class="list-disc pl-5 space-y-1">
-                            <li>Isi detail jaringan WiFi Anda</li>
-                            <li>Klik tombol "Generate QR Code"</li>
-                            <li>Scan QR Code dengan perangkat lain</li>
-                            <li>Download untuk menyimpan QR Code</li>
+                    <div class="mt-10 p-6 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 w-full">
+                        <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Quick Guide</h3>
+                        <ul class="space-y-3 text-gray-400 text-xs">
+                            <li class="flex items-center"><i class="fas fa-circle text-[4px] text-indigo-500 mr-3"></i>Enter network parameters</li>
+                            <li class="flex items-center"><i class="fas fa-circle text-[4px] text-indigo-500 mr-3"></i>Generate the encrypted QR</li>
+                            <li class="flex items-center"><i class="fas fa-circle text-[4px] text-indigo-500 mr-3"></i>Share or print for instant access</li>
                         </ul>
                     </div>
                 </div>
@@ -135,10 +178,9 @@
         </div>
     </main>
 
-    <footer class="bg-dark text-white py-6 mt-8">
+    <footer class="py-12 mt-12 border-t border-white/5">
         <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2023 Generator QR Code WiFi. Semua hak dilindungi.</p>
-            <p class="mt-2 text-slate-300 text-sm">Buat QR Code untuk berbagi akses WiFi dengan mudah dan aman</p>
+            <p class="text-gray-500 text-xs font-medium tracking-widest">&copy; 2024 <span class="text-indigo-400 font-bold">CDB Official</span> &bull; WiFi Engine Specialist</p>
         </div>
     </footer>
 

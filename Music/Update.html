@@ -1,178 +1,250 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Playlist JSON + localStorage</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, button { margin: 5px; }
-    ul { list-style-type: none; padding: 0; }
-    li { margin: 10px 0; }
-    img { width: 50px; vertical-align: middle; margin-right: 10px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Engine | Playlist Editor</title>
+    <link rel="icon" type="image/png" href="https://cdb-official.netlify.app/Asset/Logo%20[Dasar].png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+        }
 
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
 
-    .playlist-editor {
-  margin-top: 15px;
-  padding: 10px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-  text-align: left;
-  font-size: 14px;
-}
+        .gradient-text {
+            background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.playlist-editor input {
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-}
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.playlist-editor button {
-  margin-top: 8px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #4caf50;
-  color: white;
-}
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.1);
+        }
 
-.playlist-editor button:hover {
-  background: #43a047;
-}
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
 
-  </style>
+        .input-field:focus {
+            border-color: #6366F1;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .song-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .song-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: scale(1.02);
+        }
+
+        audio::-webkit-media-controls-panel {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display,
+        audio::-webkit-media-controls-timeline,
+        audio::-webkit-media-controls-volume-slider {
+            filter: invert(1);
+        }
+    </style>
 </head>
-<body>
-  <h2>🎶 Playlist Musik</h2>
+<body class="min-h-screen">
+    <div class="container mx-auto px-6 py-12 max-w-6xl">
+        <header class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold tracking-tight mb-4">
+                <span class="gradient-text">Music Engine</span>
+            </h1>
+            <p class="text-gray-400 font-medium tracking-widest uppercase text-sm">Playlist Configuration Console</p>
+        </header>
 
-  <input type="text" id="titleInput" placeholder="Judul Lagu">
-  <input type="text" id="artistInput" placeholder="Artis">
-  <input type="text" id="coverInput" placeholder="Cover (URL)">
-  <input type="text" id="srcInput" placeholder="File Musik (src)">
-  <button onclick="addSong()">Tambah Lagu</button>
+        <div class="grid lg:grid-cols-2 gap-10">
+            <!-- Left: Add New Song -->
+            <div class="space-y-8">
+                <div class="glass-panel p-8">
+                    <h2 class="text-2xl font-bold mb-8 flex items-center">
+                        <i class="fas fa-plus-circle text-indigo-500 mr-3"></i>
+                        Register New Track
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Track Title</label>
+                            <input type="text" id="titleInput" placeholder="Enchanted Melodies" class="input-field w-full p-4 rounded-xl text-sm outline-none">
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Artist Name</label>
+                            <input type="text" id="artistInput" placeholder="Celestial Demon" class="input-field w-full p-4 rounded-xl text-sm outline-none">
+                        </div>
 
-  <ul id="playlist"></ul>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cover URL</label>
+                            <input type="text" id="coverInput" placeholder="https://example.com/cover.jpg" class="input-field w-full p-4 rounded-xl text-sm outline-none">
+                        </div>
 
-  <script>
-    const STORAGE_KEY = 'playlistData';
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Audio Source (MP3/URL)</label>
+                            <input type="text" id="srcInput" placeholder="https://example.com/audio.mp3" class="input-field w-full p-4 rounded-xl text-sm outline-none">
+                        </div>
 
-    // Load dari localStorage atau fallback ke default
-    let playlist = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-      {
-        title: "Glimpse of Us",
-        artist: "Joji",
-        cover: "cover1.jpg",
-        src: "glimpse.mp3"
-      },
-      {
-        title: "Another Song",
-        artist: "Artist Name",
-        cover: "cover2.jpg",
-        src: "song2.mp3"
-      }
-    ];
+                        <button onclick="addSong()" class="gradient-btn w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest mt-4">
+                            Add to Archive
+                        </button>
+                    </div>
+                </div>
 
-    function saveToStorage() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist));
-    }
+                <div class="glass-panel p-8 border-indigo-500/20">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-file-export text-purple-500 mr-3"></i>
+                        Deploy Engine
+                    </h2>
+                    <p class="text-sm text-gray-400 mb-6 font-medium leading-relaxed">Execute synchronization to generate the master <code class="text-indigo-400 px-1">playlist.json</code> file for the widget.</p>
+                    <button id="savePlaylist" class="w-full py-4 rounded-xl border border-white/10 font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all">
+                        Sync & Download JSON
+                    </button>
+                </div>
+            </div>
 
-    function renderPlaylist() {
-      const list = document.getElementById('playlist');
-      list.innerHTML = '';
-      playlist.forEach((song, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <img src="${song.cover}" alt="cover">
-          <strong>${song.title}</strong> - ${song.artist}
-          <audio controls src="${song.src}"></audio><br>
-          <button onclick="editSong(${index})">Edit</button>
-          <button onclick="deleteSong(${index})">Hapus</button>
-        `;
-        list.appendChild(li);
-      });
-    }
+            <!-- Right: Current Playlist -->
+            <div class="glass-panel p-8 min-h-[600px]">
+                <h2 class="text-2xl font-bold mb-8 flex items-center">
+                    <i class="fas fa-compact-disc text-indigo-500 mr-3 animate-spin-slow"></i>
+                    Master Playlist
+                </h2>
+                
+                <div id="playlist" class="space-y-4">
+                    <!-- Tracks will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function addSong() {
-      const title = document.getElementById('titleInput').value.trim();
-      const artist = document.getElementById('artistInput').value.trim();
-      const cover = document.getElementById('coverInput').value.trim();
-      const src = document.getElementById('srcInput').value.trim();
-      if (title && artist && cover && src) {
-        playlist.push({ title, artist, cover, src });
-        saveToStorage();
+    <script>
+        const STORAGE_KEY = 'playlistData';
+        let playlist = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+            {
+                title: "Glimpse of Us",
+                artist: "Joji",
+                cover: "https://cdb-official.netlify.app/Asset/Logo%20[Dasar].png",
+                src: "glimpse.mp3"
+            }
+        ];
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist));
+        }
+
+        function renderPlaylist() {
+            const list = document.getElementById('playlist');
+            list.innerHTML = '';
+            playlist.forEach((song, index) => {
+                const card = document.createElement('div');
+                card.className = 'song-card p-5 rounded-2xl flex items-center gap-5';
+                card.innerHTML = `
+                    <img src="${song.cover}" class="w-20 h-20 rounded-xl object-cover shadow-lg border border-white/10 mr-2">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-lg truncate mb-1">${song.title}</h4>
+                        <p class="text-indigo-400 text-sm font-semibold truncate mb-3 italic">${song.artist}</p>
+                        <audio controls src="${song.src}" class="w-full h-8 opacity-60 hover:opacity-100 transition-opacity"></audio>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="editSong(${index})" class="p-2 text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteSong(${index})" class="p-2 text-red-400 hover:text-red-500 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function addSong() {
+            const title = document.getElementById('titleInput').value.trim();
+            const artist = document.getElementById('artistInput').value.trim();
+            const cover = document.getElementById('coverInput').value.trim();
+            const src = document.getElementById('srcInput').value.trim();
+            if (title && artist && cover && src) {
+                playlist.push({ title, artist, cover, src });
+                saveToStorage();
+                renderPlaylist();
+                ['titleInput', 'artistInput', 'coverInput', 'srcInput'].forEach(id => document.getElementById(id).value = '');
+            } else {
+                alert("Synchronization failed: All fields mandatory.");
+            }
+        }
+
+        function editSong(index) {
+            const song = playlist[index];
+            const newTitle = prompt("Update Title:", song.title);
+            if (newTitle === null) return;
+            const newArtist = prompt("Update Artist:", song.artist);
+            const newCover = prompt("Update Cover URL:", song.cover);
+            const newSrc = prompt("Update Audio Src:", song.src);
+            
+            if (newTitle && newArtist && newCover && newSrc) {
+                playlist[index] = { title: newTitle, artist: newArtist, cover: newCover, src: newSrc };
+                saveToStorage();
+                renderPlaylist();
+            }
+        }
+
+        function deleteSong(index) {
+            if (confirm("Execute deletion of this track from memory?")) {
+                playlist.splice(index, 1);
+                saveToStorage();
+                renderPlaylist();
+            }
+        }
+
+        document.getElementById("savePlaylist").addEventListener("click", () => {
+            if (playlist.length === 0) {
+                alert("Operation aborted: Playlist empty.");
+                return;
+            }
+            const blob = new Blob([JSON.stringify(playlist, null, 2)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "playlist.json";
+            link.click();
+            alert("Master File Synchronized: playlist.json generated.");
+        });
+
         renderPlaylist();
-        document.getElementById('titleInput').value = '';
-        document.getElementById('artistInput').value = '';
-        document.getElementById('coverInput').value = '';
-        document.getElementById('srcInput').value = '';
-      }
-    }
-
-    function editSong(index) {
-      const song = playlist[index];
-      const newTitle = prompt("Judul baru:", song.title);
-      const newArtist = prompt("Artis baru:", song.artist);
-      const newCover = prompt("Cover baru:", song.cover);
-      const newSrc = prompt("File musik baru:", song.src);
-      if (newTitle && newArtist && newCover && newSrc) {
-        playlist[index] = { title: newTitle, artist: newArtist, cover: newCover, src: newSrc };
-        saveToStorage();
-        renderPlaylist();
-      }
-    }
-
-    function deleteSong(index) {
-      if (confirm("Yakin ingin menghapus lagu ini?")) {
-        playlist.splice(index, 1);
-        saveToStorage();
-        renderPlaylist();
-      }
-    }
-
-    renderPlaylist();
-  </script>
-
-
-
-<div class="playlist-editor">
-  <h3>Buat Playlist Baru</h3>
-  <input type="text" id="newTitle" placeholder="Judul Lagu"><br>
-  <input type="text" id="newArtist" placeholder="Artis"><br>
-  <input type="text" id="newCover" placeholder="URL Cover"><br>
-  <input type="text" id="newSrc" placeholder="File MP3 / URL"><br>
-  <button id="addSong">+ Tambah Lagu</button>
-  <button id="savePlaylist">💾 Save Playlist</button>
-</div>
-<script>let newPlaylist = [];
-
-document.getElementById("addSong").addEventListener("click", () => {
-  const title = document.getElementById("newTitle").value;
-  const artist = document.getElementById("newArtist").value;
-  const cover = document.getElementById("newCover").value;
-  const src = document.getElementById("newSrc").value;
-
-  if (title && artist && cover && src) {
-    newPlaylist.push({ title, artist, cover, src });
-    alert("Lagu ditambahkan ke playlist sementara!");
-  } else {
-    alert("Harap isi semua field!");
-  }
-});
-
-document.getElementById("savePlaylist").addEventListener("click", () => {
-  if (newPlaylist.length === 0) {
-    alert("Playlist kosong!");
-    return;
-  }
-  const blob = new Blob([JSON.stringify(newPlaylist, null, 2)], { type: "application/json" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "playlist.json";
-  link.click();
-  alert("Playlist.json baru berhasil dibuat! Silakan replace file lama.");
-});
-</script>
+    </script>
 </body>
 </html>
+/html>

@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Widget</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Engine | Widget</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="music-widget">
-    <img id="cover" src="" alt="Cover">
-    <div class="info">
-      <h3 id="title">Judul Lagu</h3>
-      <p id="artist">Artis</p>
+    <div class="music-widget">
+        <img id="cover" src="https://cdb-official.netlify.app/Asset/Logo%20[Dasar].png" alt="Cover">
+        <div class="info">
+            <h3 id="title">Initializing...</h3>
+            <p id="artist">CDB ENGINE</p>
+        </div>
+        <div class="controls">
+            <button id="prev"><i class="fas fa-backward"></i></button>
+            <button id="play" class="main-btn"><i class="fas fa-play"></i></button>
+            <button id="pause" class="main-btn"><i class="fas fa-pause"></i></button>
+            <button id="stop"><i class="fas fa-stop"></i></button>
+            <button id="next"><i class="fas fa-forward"></i></button>
+        </div>
     </div>
-    <div class="controls">
-      <button id="prev">⏮</button>
-      <button id="play">▶</button>
-      <button id="pause">⏸</button>
-      <button id="stop">⏹</button>
-      <button id="next">⏭</button>
-    </div>
-  </div>
 
-  <audio id="audio"></audio>
-  <script src="script.js"></script>
+    <audio id="audio"></audio>
+    <script src="script.js"></script>
 </body>
 </html>

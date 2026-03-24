@@ -25,418 +25,205 @@
       }
     }
   </script>
-  <style>
-    /* Custom Styles */
-    .sun-ray {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 2px;
-      height: 24px;
-      background: linear-gradient(to bottom, #fef08a, #f59e0b);
-      transform-origin: top center;
-      border-radius: 1px;
-    }
-    
-    .preview-container {
-      background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
-                         linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-                         linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-                         linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
-      background-size: 20px 20px;
-      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    }
-    
-    .color-preview {
-      width: 30px;
-      height: 30px;
-      border-radius: 4px;
-      display: inline-block;
-      margin-right: 10px;
-      border: 1px solid #ccc;
-    }
-    
-    .code-container {
-      max-height: 300px;
-      overflow: auto;
-      font-family: monospace;
-      white-space: pre;
-      padding: 1rem;
-      background: #1e293b;
-      color: #e2e8f0;
-      border-radius: 0.5rem;
-      margin-top: 1rem;
-      position: relative;
-    }
-    
-    /* Navbar styles */
-    .navbar {
-      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    
-    .nav-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-    }
-    
-    .nav-logo {
-      color: white;
-      font-weight: bold;
-      font-size: 1.5rem;
-      text-decoration: none;
-    }
-    
-    .nav-menu {
-      display: flex;
-      gap: 2rem;
-    }
-    
-    .nav-item {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-    }
-    
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-    
-    .nav-item.active {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Modal styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      max-width: 600px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-    }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
 
-    .close-btn {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #999;
-    }
+        .gradient-text {
+            background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    .close-btn:hover {
-      color: #000;
-    }
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    .obs-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.1);
+        }
 
-    .obs-step {
-      display: flex;
-      gap: 1rem;
-    }
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
 
-    .step-number {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+        .input-field:focus {
+            border-color: #6366F1;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
 
-    .step-content {
-      flex: 1;
-    }
+        .preview-container {
+            background: #0A0A0A;
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.5rem;
+        }
 
-    .highlight-box {
-      background: #f1f5f9;
-      border-left: 4px solid #3b82f6;
-      padding: 0.5rem 1rem;
-      margin-top: 0.5rem;
-      border-radius: 0 0.25rem 0.25rem 0;
-    }
+        .code-container {
+            background: #050505;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            color: #94A3B8;
+        }
 
-    .step-image {
-      margin-top: 0.5rem;
-    }
-    
-    /* Glassmorphism effect */
-    .glass-panel {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-      border-radius: 15px;
-    }
-    
-    /* Gradient buttons */
-    .gradient-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      transition: all 0.3s ease;
-    }
-    
-    .gradient-btn:hover {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Custom header */
-    .main-header {
-      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Custom shadow */
-    .custom-shadow {
-      box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.3);
-    }
+        /* Navbar styles */
+        .navbar {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
 
-    /* Custom font sizes for widget */
-    .widget-font-small {
-      font-size: 1.5rem;
-    }
-    .widget-font-medium {
-      font-size: 2rem;
-    }
-    .widget-font-large {
-      font-size: 2.5rem;
-    }
-    .widget-time-small {
-      font-size: 2.5rem;
-    }
-    .widget-time-medium {
-      font-size: 3rem;
-    }
-    .widget-time-large {
-      font-size: 3.5rem;
-    }
-    
-    @media (max-width: 768px) {
-      .widget-font-small {
-        font-size: 1.2rem;
-      }
-      .widget-font-medium {
-        font-size: 1.5rem;
-      }
-      .widget-font-large {
-        font-size: 1.8rem;
-      }
-      .widget-time-small {
-        font-size: 2rem;
-      }
-      .widget-time-medium {
-        font-size: 2.5rem;
-      }
-      .widget-time-large {
-        font-size: 3rem;
-      }
-    }
+        .nav-item {
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-    /* Clipboard notification styles */
-    .clipboard-notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #10b981;
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      display: flex;
-      align-items: center;
-      z-index: 1000;
-      transform: translateX(100%);
-      transition: transform 0.3s ease-out;
-    }
-    
-    .clipboard-notification.show {
-      transform: translateX(0);
-    }
-    
-    .clipboard-notification.error {
-      background: #ef4444;
-    }
-    
-    .clipboard-notification i {
-      margin-right: 0.5rem;
-      font-size: 1.2rem;
-    }
+        .nav-item:hover, .nav-item.active {
+            color: #ffffff;
+        }
 
-    /* Clipboard indicator styles */
-.clipboard-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(16, 185, 129, 0.9);
-  border-radius: 0.5rem;
-  z-index: 10;
-  animation: fadeOut 2s ease-out forwards;
-  opacity: 0;
-}
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #6366F1, #A855F7);
+        }
 
-.clipboard-message {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  padding: 1rem;
-}
-
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.shake {
-  animation: shake 0.5s;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-.error {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-}
+        .sun-ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 24px;
+            background: linear-gradient(to bottom, #fef08a, #f59e0b);
+            transform-origin: top center;
+            border-radius: 1px;
+        }
+    </style>
   </style>
 </head>
 <body class="font-sans text-gray-800 min-h-screen">
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container container mx-auto">
-      <a href="#" class="nav-logo">Date Widget Generator</a>
-      <div class="nav-menu">
-        <a href="Widget-Jam.html" class="nav-item"><i class="fas fa-star mr-2"></i>Jam</a>
-        <a href="#" class="nav-item active"><i class="fas fa-times mr-2"></i>Tanggal</a>
-        <a href="Widget-Sosmed-dan-Waktu.html" class="nav-item"><i class="fas fa-star mr-2"></i>Widget Tanggal & Sosial Media</a>
-        <button id="obs-help-btn" class="nav-item" ><i class="fas fa-question-circle mr-2"></i>Bantuan</button>
+  <nav class="navbar py-4">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <a href="#" class="flex items-center space-x-3 text-white font-bold text-2xl tracking-tight">
+        <i class="fas fa-calendar-alt text-indigo-500"></i>
+        <span class="gradient-text">Date Engine</span>
+      </a>
+      <div class="hidden lg:flex items-center space-x-8">
+        <a href="Widget-Jam.html" class="nav-item font-semibold">Clock</a>
+        <a href="#" class="nav-item active font-semibold">Date</a>
+        <a href="Widget-Sosmed-dan-Waktu.html" class="nav-item font-semibold">Socials</a>
+        <button id="obs-help-btn-nav" class="nav-item font-semibold">Help</button>
       </div>
     </div>
   </nav>
 
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <div class="text-center mb-10">
-      <h1 class="text-4xl font-bold main-header mb-3">Editor Kustomisasi Widget Tanggal</h1>
-      <p class="text-gray-600 max-w-2xl mx-auto text-lg">Ubah warna, font, dan ketajaman sudut sesuai keinginan Anda. Tanggal dan waktu sekarang berada di tengah untuk tampilan yang lebih seimbang.</p>
+  <div class="container mx-auto px-6 py-16 max-w-6xl">
+    <div class="text-center mb-20">
+      <h1 class="text-5xl md:text-6xl font-extrabold mb-4 main-header tracking-tight">Date Widget Pro</h1>
+      <p class="text-gray-400 max-w-2xl mx-auto font-medium">Next-generation customization engine for date and solar widgets. Balanced perfectly for modern streaming setups.</p>
     </div>
     
     <div class="flex flex-col lg:flex-row gap-8">
       <!-- Panel Kontrol -->
-      <div class="w-full lg:w-1/3 glass-panel p-6 rounded-2xl custom-shadow">
-        <h2 class="text-xl font-bold mb-6 text-indigo-700">Pengaturan Kustomisasi</h2>
+      <div class="w-full lg:w-1/3 glass-panel p-8 rounded-2xl shadow-xl">
+        <h2 class="text-2xl font-bold mb-10 text-white">Engine Configuration</h2>
         
-        <div class="mb-6">
-          <h3 class="font-semibold mb-3 text-gray-700">Warna Widget</h3>
+        <div class="mb-10">
+          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Aesthetics</h3>
           
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium">Warna Latar Belakang</label>
-            <div class="flex items-center">
-              <div class="color-preview" id="bg-preview" style="background-color: #003152;"></div>
-              <input type="color" id="bg-color" value="#003152" class="w-full h-10 rounded-lg border-0">
+          <div class="mb-6">
+            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Widget Background</label>
+            <div class="flex items-center space-x-4">
+              <input type="color" id="bg-color" value="#003152" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
+              <input type="text" value="#003152" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
             </div>
           </div>
           
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium">Warna Teks</label>
-            <div class="flex items-center">
-              <div class="color-preview" id="text-preview" style="background-color: #ffffff;"></div>
-              <input type="color" id="text-color" value="#ffffff" class="w-full h-10 rounded-lg border-0">
+          <div class="mb-6">
+            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Text Color</label>
+            <div class="flex items-center space-x-4">
+              <input type="color" id="text-color" value="#ffffff" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
+              <input type="text" value="#ffffff" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
             </div>
           </div>
           
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium">Warna Garis Pembatas</label>
-            <div class="flex items-center">
-              <div class="color-preview" id="line-preview" style="background-color: #009ddb;"></div>
-              <input type="color" id="line-color" value="#009ddb" class="w-full h-10 rounded-lg border-0">
+          <div class="mb-6">
+            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Accent Line</label>
+            <div class="flex items-center space-x-4">
+              <input type="color" id="line-color" value="#009ddb" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
+              <input type="text" value="#009ddb" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
             </div>
           </div>
         </div>
         
-        <div class="mb-6">
-          <h3 class="font-semibold mb-3 text-gray-700">Gaya Font</h3>
+        <div class="mb-10">
+          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Typography</h3>
           
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium">Jenis Font</label>
-            <select id="font-family" class="w-full p-3 border rounded-lg bg-white">
-              <option value="font-sans">Sans-serif (Default)</option>
-              <option value="font-serif">Serif</option>
-              <option value="font-monospace">Monospace</option>
-              <option value="font-roboto">roboto</option>
+          <div class="mb-6">
+            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Font Family</label>
+            <select id="font-family" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
+              <option value="font-sans">Plus Jakarta Sans</option>
+              <option value="font-serif">Elegant Serif</option>
+              <option value="font-monospace">Modern Monospace</option>
             </select>
           </div>
           
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium">Ukuran Font</label>
-            <select id="font-size" class="w-full p-3 border rounded-lg bg-white">
-              <option value="text-base">Kecil</option>
-              <option value="text-lg">Sedang</option>
-              <option value="text-xl">Besar</option>
-              <option value="text-2xl">Sangat Besar</option>
-              <option value="text-3xl" selected>Ekstra Besar</option>
+          <div class="mb-6">
+            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Scale</label>
+            <select id="font-size" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
+              <option value="text-base">Compact</option>
+              <option value="text-lg">Small</option>
+              <option value="text-xl">Normal</option>
+              <option value="text-2xl">Large</option>
+              <option value="text-3xl" selected>Ultra-large</option>
             </select>
           </div>
         </div>
         
-        <div class="mb-6">
-          <h3 class="font-semibold mb-3 text-gray-700">Ketajaman Sudut</h3>
+        <div class="mb-10">
+          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Structure</h3>
           <div>
-            <label class="block mb-2 text-sm font-medium">Border Radius: <span id="radius-value">12px</span></label>
-            <input type="range" id="border-radius" min="0" max="30" value="12" class="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer">
+            <label class="block mb-3 text-xs font-bold text-gray-600 uppercase tracking-wider">Corner Radius</label>
+            <input type="range" id="border-radius" min="0" max="60" value="24" class="w-full h-2 accent-indigo-500 bg-white/5 rounded-lg appearance-none cursor-pointer">
+            <div class="mt-2 text-[10px] font-bold text-indigo-400 text-center uppercase tracking-widest" id="radius-value">24px</div>
           </div>
         </div>
         
-        <div class="mt-6 flex flex-col gap-4">
-          <button id="generate-btn" class="gradient-btn py-3 px-6 rounded-xl font-bold text-lg">
-            <i class="fas fa-code mr-2"></i> Tampilkan Kode HTML
-          </button>
-          
-          <button id="obs-help-btn-panel" class="gradient-btn py-3 px-6 rounded-xl font-bold text-lg" style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">
-            <i class="fas fa-info-circle mr-2"></i> Petunjuk OBS
+        <div class="mt-12 space-y-4">
+          <button id="generate-btn" class="gradient-btn w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest">
+            Generate Code
           </button>
         </div>
       </div>

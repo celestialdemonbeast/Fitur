@@ -10,269 +10,240 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #6366F1;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
         .color-preview {
             width: 30px;
             height: 30px;
-            border-radius: 4px;
+            border-radius: 8px;
             display: inline-block;
             vertical-align: middle;
             margin-left: 8px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         #qrCodeContainer {
             transition: all 0.3s ease;
             min-height: 200px;
-        }
-        .download-btn {
-            transition: transform 0.2s ease;
-        }
-        .download-btn:hover {
-            transform: translateY(-2px);
         }
         .logo-preview {
             max-width: 80px;
             max-height: 80px;
             object-fit: contain;
             margin-top: 10px;
-            border: 2px dashed #6b7280;
-            border-radius: 8px;
-            padding: 5px;
-        }
-        .scannable-indicator {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 8px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 12px;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-        .scannable-yes {
-            background-color: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            border: 1px solid #22c55e;
-        }
-        .scannable-warning {
-            background-color: rgba(234, 179, 8, 0.2);
-            color: #eab308;
-            border: 1px solid #eab308;
-        }
-        .scannable-no {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-        @media (max-width: 640px) {
-            .flex-col-mobile {
-                flex-direction: column;
-            }
-            .w-full-mobile {
-                width: 100% !important;
-            }
+            padding: 8px;
         }
     </style>
 </head>
-<body class="bg-gray-900 min-h-screen text-gray-100">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <header class="text-center mb-10">
-             <h1 class="text-3xl font-bold text-center"><i class="fas fa-wifi mr-2"></i>QR Code Generator</h1>
-            <p class="text-center mt-2 opacity-90">Created by : <a href="https://cdb-official.netlify.app/fitur">Celestial Demon Beast</a></p>
-
+<body class="bg-black text-white min-h-screen">
+    <div class="container mx-auto px-6 py-12 max-w-5xl">
+        <header class="text-center mb-16">
+             <h1 class="text-5xl font-extrabold tracking-tight mb-4">
+                <span class="gradient-text">QR Code Generator</span>
+             </h1>
+            <p class="text-gray-400 font-medium">DESIGNED BY <span class="text-indigo-400">CELESTIAL DEMON BEAST</span></p>
         </header>
 
-        <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+        <div class="glass-panel p-8 md:p-10 mb-10">
             <div class="flex flex-col md:flex-row gap-8">
                 <!-- Input Section -->
                 <div class="w-full md:w-1/2">
-                    <div class="mb-6">
-                        <label for="urlInput" class="block text-sm font-medium text-gray-300 mb-2">
-                            <i class="fas fa-link mr-2 text-indigo-500"></i> Enter URL or Text
+                    <div class="mb-8">
+                        <label for="urlInput" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                            Enter URL or Text
                         </label>
-                        <input type="text" id="urlInput" placeholder="https://example.com" 
-                            class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-900 text-gray-100">
+                        <input type="text" id="urlInput" placeholder="https://cdb-official.netlify.app" 
+                            class="input-field w-full px-5 py-3 rounded-xl focus:outline-none">
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            <i class="fas fa-palette mr-2 text-indigo-500"></i> Customize Colors
+                    <div class="mb-8">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                            Customize Design
                         </label>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
                             <div>
-                                <label for="fgColor" class="block text-xs text-gray-500 mb-1">QR Color</label>
+                                <label for="fgColor" class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">QR Color</label>
                                 <div class="flex items-center">
-                                    <input type="color" id="fgColor" value="#000000" 
-                                        class="w-10 h-10 border border-gray-600 rounded cursor-pointer bg-black">
-                                    <input type="text" id="fgColorText" value="#000000" 
-                                        class="ml-2 px-2 py-1 border border-gray-600 rounded text-sm w-24 bg-gray-900 text-gray-100">
-                                    <span class="color-preview" id="fgPreview" style="background-color: #000000;"></span>
+                                    <input type="color" id="fgColor" value="#ffffff" 
+                                        class="w-10 h-10 border-0 rounded-lg cursor-pointer bg-transparent">
+                                    <input type="text" id="fgColorText" value="#ffffff" 
+                                        class="ml-3 input-field px-3 py-2 rounded-lg text-xs w-full font-mono">
                                 </div>
                             </div>
                             
                             <div>
-                                <label for="bgColor" class="block text-xs text-gray-500 mb-1">Background Color</label>
+                                <label for="bgColor" class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Background</label>
                                 <div class="flex items-center">
-                                    <input type="color" id="bgColor" value="#ffffff" 
-                                        class="w-10 h-10 border border-gray-300 rounded cursor-pointer">
-                                    <input type="text" id="bgColorText" value="#ffffff" 
-                                        class="ml-2 px-2 py-1 border border-gray-600 rounded text-sm w-24 bg-gray-900 text-gray-100">
-                                    <span class="color-preview" id="bgPreview" style="background-color: #ffffff;"></span>
+                                    <input type="color" id="bgColor" value="#000000" 
+                                        class="w-10 h-10 border-0 rounded-lg cursor-pointer bg-transparent">
+                                    <input type="text" id="bgColorText" value="#000000" 
+                                        class="ml-3 input-field px-3 py-2 rounded-lg text-xs w-full font-mono">
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            <i class="fas fa-image mr-2 text-indigo-500"></i> Logo/Image in Center (Optional)
-                        </label>
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2">
-                                <input type="file" id="logoInput" accept="image/*" 
-                                    class="flex-1 px-3 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100 text-sm">
-                                <button id="removeLogoBtn" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm hidden">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div id="logoPreviewContainer" class="hidden">
-                                <label class="block text-xs text-gray-500 mb-1">Logo Preview</label>
-                                <img id="logoPreview" class="logo-preview" src="" alt="Logo Preview">
-                                <div class="mt-3">
-                                    <label for="logoSize" class="block text-xs text-gray-500 mb-1">
-                                        Logo Size: <span id="logoSizeValue" class="font-medium">20%</span>
-                                    </label>
-                                    <input type="range" id="logoSize" min="10" max="30" value="20" 
-                                        class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>Small (Safe)</span>
-                                        <span>Medium</span>
-                                        <span>Large (Risky)</span>
+                        <div class="space-y-4">
+                            <label class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Logo in Center (Optional)</label>
+                            <input type="file" id="logoInput" accept="image/*" 
+                                class="w-full input-field px-4 py-3 rounded-xl text-xs">
+                            
+                            <div id="logoPreviewContainer" class="hidden glass-panel p-5 mt-4">
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Logo Preview</span>
+                                    <button id="removeLogoBtn" class="text-red-400 hover:text-red-300 transition-colors text-xs font-bold uppercase tracking-wider">Remove</button>
+                                </div>
+                                <div class="flex items-center space-x-6">
+                                    <img id="logoPreview" class="logo-preview" src="" alt="Logo Preview">
+                                    <div class="flex-1 space-y-4">
+                                        <div>
+                                            <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                                <span>Size</span>
+                                                <span id="logoSizeValue" class="text-white">20%</span>
+                                            </div>
+                                            <input type="range" id="logoSize" min="10" max="30" value="20" 
+                                                class="w-full accent-indigo-500">
+                                        </div>
+                                        <label class="flex items-center space-x-3 cursor-pointer group">
+                                            <input type="checkbox" id="logoBorder" checked 
+                                                class="w-4 h-4 rounded accent-indigo-500 bg-white/10 border-0">
+                                            <span class="text-[10px] font-bold text-gray-500 group-hover:text-white uppercase tracking-wider transition-colors">White Border</span>
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="mt-3">
-                                    <label for="logoBorder" class="block text-xs text-gray-500 mb-1">
-                                        White Border: <span id="logoBorderValue" class="font-medium">Yes</span>
-                                    </label>
-                                    <input type="checkbox" id="logoBorder" checked 
-                                        class="w-4 h-4 text-indigo-600 bg-gray-900 border-gray-600 rounded">
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-2 gap-6 mb-8">
                         <div>
-                            <label for="qrSize" class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-expand mr-2 text-indigo-500"></i> QR Code Size
+                            <label for="qrSize" class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                                Resolution
                             </label>
-                            <select id="qrSize" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100">
-                                <option value="256">Small (256x256)</option>
-                                <option value="384" selected>Medium (384x384)</option>
-                                <option value="512">Large (512x512)</option>
-                                <option value="640">Extra Large (640x640)</option>
+                            <select id="qrSize" class="input-field w-full px-4 py-3 rounded-xl text-xs bg-[#111] font-mono outline-none">
+                                <option value="256">256 x 256</option>
+                                <option value="384" selected>384 x 384</option>
+                                <option value="512">512 x 512</option>
+                                <option value="640">640 x 640</option>
                             </select>
                         </div>
 
                         <div>
-                            <label for="qrErrorCorrection" class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-shield-alt mr-2 text-indigo-500"></i> Error Correction
+                            <label for="qrErrorCorrection" class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                                Correction
                             </label>
-                            <select id="qrErrorCorrection" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100">
+                            <select id="qrErrorCorrection" class="input-field w-full px-4 py-3 rounded-xl text-xs bg-[#111] font-mono outline-none">
                                 <option value="L">Low (7%)</option>
                                 <option value="M" selected>Medium (15%)</option>
                                 <option value="Q">Quartile (25%)</option>
                                 <option value="H">High (30%)</option>
                             </select>
                         </div>
-
-                        <div>
-                            <label for="qrMargin" class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-border-all mr-2 text-indigo-500"></i> Margin
-                            </label>
-                            <select id="qrMargin" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-gray-100">
-                                <option value="0">No margin</option>
-                                <option value="1" selected>Small (1 module)</option>
-                                <option value="2">Medium (2 modules)</option>
-                                <option value="4">Large (4 modules)</option>
-                            </select>
-                        </div>
                     </div>
 
-                    <div class="mb-6">
-                        <label for="nameTag" class="block text-sm font-medium text-gray-300 mb-2">
-                            <i class="fas fa-tag mr-2 text-indigo-500"></i> Name Tag (Optional)
-                        </label>
-                        <input type="text" id="nameTag" placeholder="e.g. My QR Code" 
-                            class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-900 text-gray-100">
-                    </div>
-
-                    <div class="flex items-center justify-between mb-6">
-                        <div id="scannabilityIndicator" class="hidden">
-                            <span class="text-sm font-medium">Scannability:</span>
-                            <span id="scannabilityText" class="scannable-indicator">Checking...</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm text-gray-400" id="logoCoverage">Logo covers: 0%</span>
-                        </div>
-                    </div>
-
-                    <button id="generateBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-300">
-                        <i class="fas fa-qrcode mr-2"></i> Generate QR Code
+                    <button id="generateBtn" class="gradient-btn w-full py-4 text-white font-bold rounded-xl uppercase tracking-[0.2em] text-xs">
+                        Generate QR Code
                     </button>
                 </div>
 
                 <!-- Output Section -->
-                <div class="w-full md:w-1/2 flex flex-col items-center justify-center">
-                    <div id="qrCodeContainer" class="mb-3 p-4 bg-gray-700 border border-gray-600 rounded-lg shadow-sm flex items-center justify-center min-h-[400px]">
-                        <p class="text-gray-400 text-center">Your QR code will appear here<br>
-                            <span class="text-sm text-gray-500">Test with your phone camera</span>
-                        </p>
-                    </div>
-                    <div id="nameTagContainer" class="text-center mb-6 hidden">
-                        <p id="nameTagText" class="text-lg font-medium text-gray-100"></p>
+                <div class="w-full md:w-1/2 flex flex-col items-center">
+                    <div id="qrCodeContainer" class="mb-8 p-6 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center w-full max-w-[400px] aspect-square">
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm font-medium">Your QR code will appear here</p>
+                            <p class="text-gray-600 text-[10px] uppercase font-bold tracking-widest mt-2">Ready to Scan</p>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 w-full justify-center">
-                        <button id="downloadPNG" class="download-btn flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium">
-                            <i class="fas fa-download mr-2"></i> PNG
+                    <div class="grid grid-cols-3 gap-3 w-full">
+                        <button id="downloadPNG" class="px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-black tracking-widest uppercase border border-white/10 transition-all">
+                            PNG
                         </button>
-                        <button id="downloadSVG" class="download-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium">
-                            <i class="fas fa-download mr-2"></i> SVG
+                        <button id="downloadSVG" class="px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-black tracking-widest uppercase border border-white/10 transition-all">
+                            SVG
                         </button>
-                        <button id="downloadJPG" class="download-btn flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium">
-                            <i class="fas fa-download mr-2"></i> JPG
+                        <button id="downloadJPG" class="px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-black tracking-widest uppercase border border-white/10 transition-all">
+                            JPG
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-gray-800 rounded-xl shadow-lg p-6">
-            <h2 class="text-xl font-semibold text-gray-100 mb-4">
-                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i> Tips for Scannable QR Codes with Logos
+        <div class="glass-panel p-10">
+            <h2 class="text-2xl font-bold text-white mb-8 tracking-tight">
+                Design Guidelines
             </h2>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="text-lg font-medium text-green-400 mb-2">✓ DO:</h3>
-                    <ul class="list-disc pl-5 space-y-2 text-gray-300">
-                        <li>Keep logo size below 25% of QR code area</li>
-                        <li>Use high contrast between logo and QR color</li>
-                        <li>Enable white border around logo</li>
-                        <li>Use High error correction (H or Q) when adding logo</li>
-                        <li>Test with multiple QR scanner apps</li>
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">The Dos</h3>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-indigo-500 mr-3 text-xs"></i>Keep logo size below 25%</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-indigo-500 mr-3 text-xs"></i>Maintain high contrast</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-indigo-500 mr-3 text-xs"></i>Use High error correction</li>
                     </ul>
                 </div>
-                <div>
-                    <h3 class="text-lg font-medium text-red-400 mb-2">✗ DON'T:</h3>
-                    <ul class="list-disc pl-5 space-y-2 text-gray-300">
-                        <li>Cover the positioning markers (three corners)</li>
-                        <li>Use logo with same color as QR code</li>
-                        <li>Make logo too detailed or complex</li>
-                        <li>Use logo with transparency over QR modules</li>
-                        <li>Place logo off-center</li>
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-black text-red-400 uppercase tracking-widest">The Don'ts</h3>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li class="flex items-center"><i class="fas fa-times-circle text-red-500 mr-3 text-xs"></i>Cover positioning markers</li>
+                        <li class="flex items-center"><i class="fas fa-times-circle text-red-500 mr-3 text-xs"></i>Use complex logos</li>
+                        <li class="flex items-center"><i class="fas fa-times-circle text-red-500 mr-3 text-xs"></i>Place logo off-center</li>
                     </ul>
                 </div>
             </div>
         </div>
+
+        <footer class="mt-20 text-center py-10 border-t border-white/5">
+            <p class="text-gray-500 text-sm font-medium tracking-wide">&copy; 2024 <span class="text-indigo-400 font-bold">CDB Official</span> &bull; QR Engine Specialist</p>
+        </footer>
+    </div>
     </div>
 
     <script>
