@@ -12,72 +12,130 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg-dark: #000000;
+        }
+
         body {
-            background-color: #000000;
+            background-color: var(--bg-dark);
             color: #ffffff;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
         .gradient-text {
             background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
             -webkit-background-clip: text;
             background-clip: text;
-            -webkit-text-fill-color: transparent;
+            /* -webkit-text-fill-color: transparent; */
+            color: transparent;
         }
 
         .gradient-btn {
             background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .gradient-btn:hover::after {
+            left: 100%;
         }
 
         .gradient-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
             filter: brightness(1.1);
         }
 
         .input-field {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: white;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .input-field:focus {
             border-color: #6366F1;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
         }
 
         .color-preview {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: inline-block;
             vertical-align: middle;
-            margin-left: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-left: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
+
         #qrCodeContainer {
-            transition: all 0.3s ease;
-            min-height: 200px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%);
         }
+
         .logo-preview {
-            max-width: 80px;
-            max-height: 80px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
-            margin-top: 10px;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 12px;
-            padding: 8px;
+            padding: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #6366f1;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(99,102,241,0.5);
         }
     </style>
 </head>
@@ -113,8 +171,9 @@
                                 <div class="flex items-center">
                                     <input type="color" id="fgColor" value="#ffffff" 
                                         class="w-10 h-10 border-0 rounded-lg cursor-pointer bg-transparent">
+                                    <div id="fgPreview" class="color-preview" style="background-color: #ffffff"></div>
                                     <input type="text" id="fgColorText" value="#ffffff" 
-                                        class="ml-3 input-field px-3 py-2 rounded-lg text-xs w-full font-mono">
+                                        class="ml-3 input-field px-3 py-2 rounded-lg text-xs w-full font-mono uppercase">
                                 </div>
                             </div>
                             
@@ -123,8 +182,9 @@
                                 <div class="flex items-center">
                                     <input type="color" id="bgColor" value="#000000" 
                                         class="w-10 h-10 border-0 rounded-lg cursor-pointer bg-transparent">
+                                    <div id="bgPreview" class="color-preview" style="background-color: #000000"></div>
                                     <input type="text" id="bgColorText" value="#000000" 
-                                        class="ml-3 input-field px-3 py-2 rounded-lg text-xs w-full font-mono">
+                                        class="ml-3 input-field px-3 py-2 rounded-lg text-xs w-full font-mono uppercase">
                                 </div>
                             </div>
                         </div>
@@ -140,7 +200,9 @@
                                     <button id="removeLogoBtn" class="text-red-400 hover:text-red-300 transition-colors text-xs font-bold uppercase tracking-wider">Remove</button>
                                 </div>
                                 <div class="flex items-center space-x-6">
-                                    <img id="logoPreview" class="logo-preview" src="" alt="Logo Preview">
+                                    <div class="relative">
+                                        <img id="logoPreview" class="logo-preview" src="" alt="Logo Preview">
+                                    </div>
                                     <div class="flex-1 space-y-4">
                                         <div>
                                             <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
@@ -150,18 +212,26 @@
                                             <input type="range" id="logoSize" min="10" max="30" value="20" 
                                                 class="w-full accent-indigo-500">
                                         </div>
-                                        <label class="flex items-center space-x-3 cursor-pointer group">
-                                            <input type="checkbox" id="logoBorder" checked 
-                                                class="w-4 h-4 rounded accent-indigo-500 bg-white/10 border-0">
-                                            <span class="text-[10px] font-bold text-gray-500 group-hover:text-white uppercase tracking-wider transition-colors">White Border</span>
-                                        </label>
+                                        <div class="flex items-center justify-between">
+                                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                                <input type="checkbox" id="logoBorder" checked 
+                                                    class="w-4 h-4 rounded accent-indigo-500 bg-white/10 border-0">
+                                                <span class="text-[10px] font-bold text-gray-500 group-hover:text-white uppercase tracking-wider transition-colors">Safe Mode</span>
+                                            </label>
+                                            <span id="logoBorderValue" class="hidden">Yes</span>
+                                            <div id="logoCoverage" class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">Logo covers: 0%</div>
+                                        </div>
                                     </div>
+                                </div>
+                                <div id="scannabilityIndicator" class="mt-4 pt-4 border-t border-white/5 flex items-center justify-between hidden">
+                                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Scannability</span>
+                                    <span id="scannabilityText" class="px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500">Good</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-3 gap-6 mb-8">
                         <div>
                             <label for="qrSize" class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
                                 Resolution
@@ -185,6 +255,26 @@
                                 <option value="H">High (30%)</option>
                             </select>
                         </div>
+
+                        <div>
+                            <label for="qrMargin" class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                                Margin
+                            </label>
+                            <select id="qrMargin" class="input-field w-full px-4 py-3 rounded-xl text-xs bg-[#111] font-mono outline-none">
+                                <option value="1">Small</option>
+                                <option value="2" selected>Medium</option>
+                                <option value="4">Large</option>
+                                <option value="8">Extra</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <label for="nameTag" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                            Label / Name Tag (Optional)
+                        </label>
+                        <input type="text" id="nameTag" placeholder="e.g. My Website" 
+                            class="input-field w-full px-5 py-3 rounded-xl focus:outline-none">
                     </div>
 
                     <button id="generateBtn" class="gradient-btn w-full py-4 text-white font-bold rounded-xl uppercase tracking-[0.2em] text-xs">
@@ -194,11 +284,15 @@
 
                 <!-- Output Section -->
                 <div class="w-full md:w-1/2 flex flex-col items-center">
-                    <div id="qrCodeContainer" class="mb-8 p-6 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center w-full max-w-[400px] aspect-square">
+                    <div id="qrCodeContainer" class="mb-8 p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center justify-center w-full max-w-[400px] aspect-square relative overflow-hidden">
                         <div class="text-center">
                             <p class="text-gray-500 text-sm font-medium">Your QR code will appear here</p>
                             <p class="text-gray-600 text-[10px] uppercase font-bold tracking-widest mt-2">Ready to Scan</p>
                         </div>
+                    </div>
+                    
+                    <div id="nameTagContainer" class="hidden mb-6 text-center">
+                        <span id="nameTagText" class="text-xs font-bold text-indigo-400 uppercase tracking-widest border-b border-indigo-500/30 pb-1"></span>
                     </div>
 
                     <div class="grid grid-cols-3 gap-3 w-full">
@@ -286,26 +380,30 @@
 
             // Color picker synchronization
             fgColor.addEventListener('input', function() {
-                fgColorText.value = fgColor.value;
+                fgColorText.value = fgColor.value.toUpperCase();
                 fgPreview.style.backgroundColor = fgColor.value;
             });
 
             bgColor.addEventListener('input', function() {
-                bgColorText.value = bgColor.value;
+                bgColorText.value = bgColor.value.toUpperCase();
                 bgPreview.style.backgroundColor = bgColor.value;
             });
 
             fgColorText.addEventListener('input', function() {
-                if (/^#[0-9A-F]{6}$/i.test(fgColorText.value)) {
-                    fgColor.value = fgColorText.value;
-                    fgPreview.style.backgroundColor = fgColorText.value;
+                let val = fgColorText.value;
+                if (!val.startsWith('#')) val = '#' + val;
+                if (/^#[0-9A-F]{6}$/i.test(val)) {
+                    fgColor.value = val;
+                    fgPreview.style.backgroundColor = val;
                 }
             });
 
             bgColorText.addEventListener('input', function() {
-                if (/^#[0-9A-F]{6}$/i.test(bgColorText.value)) {
-                    bgColor.value = bgColorText.value;
-                    bgPreview.style.backgroundColor = bgColorText.value;
+                let val = bgColorText.value;
+                if (!val.startsWith('#')) val = '#' + val;
+                if (/^#[0-9A-F]{6}$/i.test(val)) {
+                    bgColor.value = val;
+                    bgPreview.style.backgroundColor = val;
                 }
             });
 
@@ -361,25 +459,27 @@
             // Update logo coverage percentage
             function updateLogoCoverage() {
                 if (!logoImage) {
-                    logoCoverage.textContent = 'Logo covers: 0%';
+                    if (logoCoverage) logoCoverage.textContent = 'Logo covers: 0%';
                     return;
                 }
                 const sizePercent = parseInt(logoSize.value) / 100;
                 const coverage = Math.round((sizePercent * sizePercent) * 100);
-                logoCoverage.textContent = `Logo covers: ${coverage}%`;
+                if (logoCoverage) logoCoverage.textContent = `Logo covers: ${coverage}%`;
                 
                 // Update scannability indicator
-                if (coverage < 15) {
-                    scannabilityText.textContent = 'Good';
-                    scannabilityText.className = 'scannable-indicator scannable-yes';
-                } else if (coverage < 25) {
-                    scannabilityText.textContent = 'Fair';
-                    scannabilityText.className = 'scannable-indicator scannable-warning';
-                } else {
-                    scannabilityText.textContent = 'Poor';
-                    scannabilityText.className = 'scannable-indicator scannable-no';
+                if (scannabilityText) {
+                    if (coverage < 15) {
+                        scannabilityText.textContent = 'Good';
+                        scannabilityText.className = 'px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500';
+                    } else if (coverage < 25) {
+                        scannabilityText.textContent = 'Fair';
+                        scannabilityText.className = 'px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500';
+                    } else {
+                        scannabilityText.textContent = 'Poor';
+                        scannabilityText.className = 'px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest bg-red-500/10 text-red-500';
+                    }
                 }
-                scannabilityIndicator.classList.remove('hidden');
+                if (scannabilityIndicator) scannabilityIndicator.classList.remove('hidden');
             }
 
             // Remove logo
