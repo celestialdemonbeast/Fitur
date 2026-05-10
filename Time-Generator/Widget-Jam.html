@@ -3,762 +3,295 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Kustomisasi Widget Jam Lengkap</title>
+  <title>Time Engine Pro - Fixed</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 1.5rem;
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .gradient-btn {
-            background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .gradient-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-            filter: brightness(1.1);
-        }
-
-        .input-field {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            border-color: #6366F1;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-        }
-
-        .preview-container {
-            background: #0A0A0A;
-            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
-            background-size: 24px 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 1.5rem;
-        }
-
-        .code-container {
-            background: #050505;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            color: #94A3B8;
-        }
-
-        /* Navbar styles */
-        .navbar {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .nav-item {
-            color: rgba(255, 255, 255, 0.6);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            color: #ffffff;
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, #6366F1, #A855F7);
-        }
-    </style>
-    
-    /* Modal styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      backdrop-filter: blur(5px);
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 700px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #4b5563;
-      transition: all 0.2s ease;
-    }
-    
-    .close-btn:hover {
-      color: #1f2937;
-      transform: scale(1.1);
-    }
-    
-    .step-number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      background-color: #4f46e5;
-      color: white;
-      border-radius: 50%;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-    
-    .obs-step {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 25px;
-      padding-bottom: 25px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    
-    .obs-step:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .step-content {
-      flex: 1;
-    }
-    
-    .step-image {
-      width: 100%;
-      max-width: 300px;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      margin-top: 15px;
-    }
-    
-    .highlight-box {
-      background-color: #f3f4f6;
-      border-left: 4px solid #4f46e5;
-      padding: 15px;
-      border-radius: 0 4px 4px 0;
-      margin-top: 10px;
-    }
-    
-    /* Navbar styles */
-    .navbar {
-      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    
-    .nav-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-    }
-    
-    .nav-logo {
-      color: white;
-      font-weight: bold;
-      font-size: 1.5rem;
-      text-decoration: none;
-    }
-    
-    .nav-menu {
-      display: flex;
-      gap: 2rem;
-    }
-    
-    .nav-item {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-    }
-    
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-    
-    .nav-item.active {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { background-color: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-panel { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 1.5rem; }
+    .gradient-text { background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-btn { background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%); transition: all 0.3s; }
+    .gradient-btn:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+    .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; transition: all 0.3s; }
+    .preview-container { background: #0A0A0A; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 24px 24px; border-radius: 1.5rem; }
   </style>
 </head>
-<body class="font-sans text-gray-800 min-h-screen bg-gradient-to-br from-gray-100 to-gray-300">
-  <!-- Navbar -->
-  <nav class="navbar py-4">
+<body class="min-h-screen">
+  <nav class="border-b border-white/10 py-4 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
     <div class="container mx-auto px-6 flex justify-between items-center">
-      <a href="#" class="flex items-center space-x-3 text-white font-bold text-2xl tracking-tight">
+      <div class="flex items-center space-x-3 text-2xl font-bold">
         <i class="fas fa-clock text-indigo-500"></i>
         <span class="gradient-text">Time Engine</span>
-      </a>
-      <div class="hidden lg:flex items-center space-x-8">
-        <a href="#" class="nav-item active font-semibold">Clock</a>
-        <a href="Widget-tanggal.html" class="nav-item font-semibold">Date</a>
-        <a href="Widget-Sosmed-dan-Waktu.html" class="nav-item font-semibold">Socials</a>
-        <button id="obs-help-btn-nav" class="nav-item font-semibold">Help</button>
+      </div>
+      <div class="flex items-center space-x-6 text-sm font-bold">
+        <a href="#" class="text-white">Clock</a>
+        <a href="Widget-tanggal.html" class="text-white/60">Date</a>
+        <button id="help-btn" class="text-white/60 bg-transparent border-0 cursor-pointer">Help</button>
       </div>
     </div>
   </nav>
 
-  <div class="container mx-auto px-6 py-16 max-w-6xl">
-    <div class="text-center mb-20">
-      <h1 class="main-header text-5xl md:text-6xl font-extrabold mb-4 tracking-tight">Time Widget Pro</h1>
-      <p class="text-gray-400 max-w-2xl mx-auto font-medium">Professional customization engine for time widgets with individual corner controls and multiple format options.</p>
-    </div>
-    
+  <div class="container mx-auto px-6 py-12 max-w-6xl">
     <div class="flex flex-col lg:flex-row gap-8">
-      <!-- Panel Kontrol -->
-      <div class="w-full lg:w-1/3 glass-panel p-6 rounded-2xl shadow-lg" id="editor-panel">
-        <h2 class="text-2xl font-bold mb-10 text-white">Engine Configuration</h2>
-        
-        <div class="mb-10">
-          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Aesthetics</h3>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Widget Background</label>
-            <div class="flex items-center space-x-4">
-              <input type="color" id="bg-color" value="#003152" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
-              <input type="text" value="#003152" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Text Color</label>
-            <div class="flex items-center space-x-4">
-              <input type="color" id="text-color" value="#ffffff" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
-              <input type="text" value="#ffffff" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
-            </div>
-          </div>
-        </div>
-        
-        <div class="mb-10">
-          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Typography</h3>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Font Family</label>
-            <select id="font-family" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="font-sans">Plus Jakarta Sans</option>
-              <option value="font-serif">Elegant Serif</option>
-              <option value="font-mono">Modern Monospace</option>
-            </select>
-          </div>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Scale</label>
-            <select id="font-size" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="text-4xl">Compact</option>
-              <option value="text-6xl" selected>Normal</option>
-              <option value="text-8xl">Ultra-large</option>
+      <!-- Controls -->
+      <div class="w-full lg:w-1/3 glass-panel p-6">
+        <h2 class="text-xl font-bold mb-8">Settings</h2>
+        <div class="space-y-6">
+          <div class="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+            <label class="block mb-2 text-[10px] font-bold text-indigo-400 uppercase">Layout</label>
+            <select id="layout-style" class="input-field w-full p-3 rounded-lg bg-black text-sm outline-none">
+              <option value="standard">Standard Minimal</option>
+              <option value="podcaster" selected>Premium Podcaster</option>
             </select>
           </div>
 
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Time Format</label>
-            <select id="time-format" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="HH:MM">HH:MM</option>
-              <option value="HH:MM:SS">HH:MM:SS</option>
-              <option value="HH:MM:TT">HH:MM:TT</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="mb-10">
-          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Advanced Radius</h3>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Top Left</label>
-              <input type="range" id="radius-tl" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Top Right</label>
-              <input type="range" id="radius-tr" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Bottom Right</label>
-              <input type="range" id="radius-br" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Bottom Left</label>
-              <input type="range" id="radius-bl" min="0" max="100" value="24" class="w-full accent-indigo-500">
+          <div>
+            <label class="block mb-2 text-[10px] font-bold text-gray-500 uppercase">Colors</label>
+            <div class="space-y-3">
+              <div class="flex gap-3">
+                <input type="color" id="bg-color" value="#0a0a1a" class="w-10 h-10 bg-transparent border-0 cursor-pointer">
+                <input type="text" id="bg-color-text" value="#0a0a1a" class="input-field flex-1 px-4 rounded-lg font-mono text-xs uppercase">
+              </div>
+              <div class="flex gap-3">
+                <input type="color" id="text-color" value="#ffffff" class="w-10 h-10 bg-transparent border-0 cursor-pointer">
+                <input type="text" id="text-color-text" value="#ffffff" class="input-field flex-1 px-4 rounded-lg font-mono text-xs uppercase">
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="mt-12 space-y-4">
-          <button id="generate-btn" class="gradient-btn w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest">
+
+          <div>
+            <label class="block mb-2 text-[10px] font-bold text-gray-500 uppercase">Typography</label>
+            <div class="space-y-3">
+              <select id="font-family" class="input-field w-full p-3 rounded-lg bg-black text-sm outline-none">
+                <option value="font-sans">Plus Jakarta Sans</option>
+                <option value="font-serif">Serif Elegant</option>
+                <option value="font-mono">Monospace Modern</option>
+              </select>
+              <select id="font-size" class="input-field w-full p-3 rounded-lg bg-black text-sm outline-none">
+                <option value="text-5xl">Small</option>
+                <option value="text-7xl" selected>Normal</option>
+                <option value="text-9xl">Extra Large</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="radius-container">
+            <label class="block mb-2 text-[10px] font-bold text-gray-500 uppercase">Radius</label>
+            <input type="range" id="radius-global" min="0" max="100" value="40" class="w-full accent-indigo-500">
+          </div>
+
+          <button id="generate-btn" class="gradient-btn w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg">
             Generate Code
           </button>
         </div>
       </div>
-      
+
       <!-- Preview -->
       <div class="w-full lg:w-2/3">
-        <h2 class="text-xl font-bold mb-4 text-indigo-700">Preview</h2>
-        
-        <div class="preview-container glass-panel p-6 rounded-2xl shadow-lg mb-6">
-          <div id="preview-widget" class="inline-block p-10 w-full max-w-2xl mx-auto" 
-               style="background-color: #003152; color: white; 
-                      border-top-left-radius: 12px; border-top-right-radius: 12px;
-                      border-bottom-right-radius: 12px; border-bottom-left-radius: 12px;">
-            <div id="time" class="text-6xl font-mono font-bold text-center">12:34</div>
-          </div>
-        </div>
-        
-        <!-- Code Output -->
-        <div id="code-output" class="hidden glass-panel rounded-2xl p-6 shadow-lg">
-          <h3 class="text-xl font-bold mb-3 text-indigo-700">Kode HTML</h3>
-          <p class="text-gray-600 mb-3">Salin kode di bawah dan simpan sebagai file HTML:</p>
-          <div class="code-container relative" id="html-code"></div>
-          <div class="mt-4 flex gap-3">
-            <button id="copy-btn" class="flex-1 gradient-btn py-3 px-4 rounded-xl font-bold">
-              <i class="fas fa-copy mr-2"></i> Salin ke Clipboard
-            </button>
-            <button id="close-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-xl font-bold">
-              <i class="fas fa-times mr-2"></i> Tutup
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        <h2 class="text-xl font-bold mb-4 text-indigo-400">Live Preview</h2>
+        <div class="preview-container p-8 min-h-[450px] flex items-center justify-center border border-white/5">
+          <div id="preview-wrapper" class="relative">
+            <!-- Glow for Podcaster -->
+            <div id="glow-effect" class="absolute -inset-2 rounded-[40px] opacity-60 blur-md" style="background: linear-gradient(135deg, #6366F1, #A855F7);"></div>
+            
+            <div id="widget-box" class="relative z-10 transition-all duration-300" style="background: #0a0a1a; color: #fff; border-radius: 40px; border: 2px solid rgba(255,255,255,0.1);">
+              <!-- Layout: Podcaster -->
+              <div id="view-podcaster" class="flex items-center gap-8 p-8 min-w-[500px]">
+                <div id="icon-box" class="bg-white/10 p-6 rounded-2xl w-28 h-28 flex items-center justify-center border border-white/5">
+                  <i class="fas fa-moon text-5xl" id="time-icon"></i>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-baseline gap-3">
+                    <span id="time-val" class="text-8xl font-extrabold leading-none tracking-tighter">12:34</span>
+                    <span id="ampm-val" class="text-4xl font-black text-pink-500">PM</span>
+                  </div>
+                  <div id="date-val" class="text-xl font-bold tracking-[0.2em] mt-3 uppercase opacity-60">SUN, 10 MAY 2026</div>
+                </div>
+              </div>
 
-  <!-- Modal Petunjuk OBS -->
-  <div id="obs-help-modal" class="modal-overlay hidden">
-    <div class="modal-content glass-panel">
-      <span class="close-btn" id="close-obs-help">&times;</span>
-      <h2 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Cara Menggunakan Widget di OBS</h2>
-      
-      <div class="obs-steps">
-        <div class="obs-step">
-          <span class="step-number">1</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Salin Kode HTML</h3>
-            <p class="text-gray-600 mt-1">Setelah mengatur widget sesuai keinginan, klik tombol "Tampilkan Kode HTML" lalu tekan "Salin ke Clipboard".</p>
-            <div class="highlight-box">
-              <p>Simpan kode tersebut sebagai file <code>widget.html</code> di komputer Anda.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="obs-step">
-          <span class="step-number">2</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Tambahkan Source Browser</h3>
-            <p class="text-gray-600 mt-1">Di OBS, di panel Sources, klik tombol "+" dan pilih "Browser".</p>
-            <div class="step-image flex items-center justify-center bg-gray-100 p-4">
-              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-64 h-32"></div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="obs-step">
-          <span class="step-number">3</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Konfigurasi Browser Source</h3>
-            <p class="text-gray-600 mt-1">Beri nama untuk source Anda (misal: "Widget Waktu") lalu klik OK.</p>
-            <p class="text-gray-600 mt-2">Di jendela properties:</p>
-            <ul class="list-disc pl-5 text-gray-600 mt-1">
-              <li>Centang opsi <strong>"Local file"</strong></li>
-              <li>Klik "Browse" dan pilih file HTML yang Anda simpan</li>
-              <li>Atur ukuran sesuai kebutuhan (misal: Width: 800, Height: 300)</li>
-            </ul>
-            <div class="highlight-box mt-2">
-              <p>Pastikan opsi "Shutdown source when not visible" tidak dicentang agar widget tetap berjalan.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="obs-step">
-          <span class="step-number">4</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Atur Posisi Widget</h3>
-            <p class="text-gray-600 mt-1">Di preview OBS, drag widget ke posisi yang diinginkan.</p>
-            <p class="text-gray-600 mt-2">Anda dapat mengatur ukuran dengan menarik sudut widget.</p>
-            <div class="step-image flex items-center justify-center bg-gray-100 p-4">
-              <div class="bg-indigo-600 rounded-xl w-48 h-24 flex items-center justify-center text-white font-bold">
-                Widget Waktu
+              <!-- Layout: Standard -->
+              <div id="view-standard" class="hidden p-12 text-center min-w-[350px]">
+                <div id="time-std" class="text-7xl font-bold">12:34</div>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="text-center mt-8">
-          <button id="close-obs-btn" class="gradient-btn px-8 py-3 text-lg rounded-xl font-bold">
-            <i class="fas fa-check mr-2"></i> Mengerti, Tutup Petunjuk
-          </button>
+
+        <!-- Code Area -->
+        <div id="code-panel" class="hidden mt-8 glass-panel p-6 border border-indigo-500/20">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-indigo-400">Widget Code</h3>
+            <button id="copy-btn" class="gradient-btn px-4 py-2 rounded-lg text-xs font-bold">Copy to Clipboard</button>
+          </div>
+          <pre class="bg-black/50 p-4 rounded-xl overflow-x-auto text-[10px] text-gray-400 max-h-64 border border-white/5"><code id="code-text"></code></pre>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Fungsi untuk memperbarui preview
-    function updatePreview() {
-      const bgColor = document.getElementById('bg-color').value;
-      const textColor = document.getElementById('text-color').value;
-      const fontFamily = document.getElementById('font-family').value;
-      const fontSize = document.getElementById('font-size').value;
-      const timeFormat = document.getElementById('time-format').value;
-      
-      // Dapatkan nilai radius untuk setiap sudut
-      const radiusTL = document.getElementById('radius-tl').value;
-      const radiusTR = document.getElementById('radius-tr').value;
-      const radiusBR = document.getElementById('radius-br').value;
-      const radiusBL = document.getElementById('radius-bl').value;
-      
-      // Perbarui tampilan nilai radius
-      document.getElementById('radius-tl-value').textContent = radiusTL;
-      document.getElementById('radius-tr-value').textContent = radiusTR;
-      document.getElementById('radius-br-value').textContent = radiusBR;
-      document.getElementById('radius-bl-value').textContent = radiusBL;
-      
-      const widget = document.getElementById('preview-widget');
-      
-      // Terapkan perubahan
-      widget.style.backgroundColor = bgColor;
-      widget.style.color = textColor;
-      widget.style.borderTopLeftRadius = `${radiusTL}px`;
-      widget.style.borderTopRightRadius = `${radiusTR}px`;
-      widget.style.borderBottomRightRadius = `${radiusBR}px`;
-      widget.style.borderBottomLeftRadius = `${radiusBL}px`;
-      
-      // Perbarui preview warna
-      document.getElementById('bg-preview').style.backgroundColor = bgColor;
-      document.getElementById('text-preview').style.backgroundColor = textColor;
-      
-      // Perbarui font
-      const time = widget.querySelector('#time');
-      
-      if (time) {
-        time.className = `${fontSize} ${fontFamily} font-bold text-center`;
-      }
-      
-      // Perbarui format waktu di preview
-      updatePreviewTime();
-    }
-    
-    // Fungsi untuk menghasilkan kode HTML yang dapat disalin
-    function generateHTML() {
-      const bgColor = document.getElementById('bg-color').value;
-      const textColor = document.getElementById('text-color').value;
-      const fontFamily = document.getElementById('font-family').value;
-      const fontSize = document.getElementById('font-size').value;
-      const timeFormat = document.getElementById('time-format').value;
-      
-      // Dapatkan nilai radius untuk setiap sudut
-      const radiusTL = document.getElementById('radius-tl').value;
-      const radiusTR = document.getElementById('radius-tr').value;
-      const radiusBR = document.getElementById('radius-br').value;
-      const radiusBL = document.getElementById('radius-bl').value;
-      
-      // Kode HTML yang akan disalin
-      return `<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Widget Jam Kustom</title>
-  <script src="https://cdn.tailwindcss.com"><\/script>
-</head>
-<body class="${fontFamily} bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="inline-block p-10 w-full max-w-2xl mx-auto shadow-lg" 
-       style="background-color: ${bgColor}; color: ${textColor}; 
-              border-top-left-radius: ${radiusTL}px; border-top-right-radius: ${radiusTR}px;
-              border-bottom-right-radius: ${radiusBR}px; border-bottom-left-radius: ${radiusBL}px;">
-    <div id="time" class="${fontSize} font-bold text-center">12:34</div>
+    const UI = {
+      get: (id) => document.getElementById(id),
+      update() {
+        const bg = this.get('bg-color').value;
+        const txt = this.get('text-color').value;
+        const layout = this.get('layout-style').value;
+        const font = this.get('font-family').value;
+        const size = this.get('font-size').value;
+        const rad = this.get('radius-global').value;
+
+        // Sync inputs
+        this.get('bg-color-text').value = bg.toUpperCase();
+        this.get('text-color-text').value = txt.toUpperCase();
+
+        const box = this.get('widget-box');
+        const glow = this.get('glow-effect');
+        const radContainer = this.get('radius-container');
+
+        box.style.backgroundColor = bg;
+        box.style.color = txt;
+
+        if (layout === 'podcaster') {
+          this.get('view-podcaster').classList.remove('hidden');
+          this.get('view-podcaster').classList.add('flex');
+          this.get('view-standard').classList.add('hidden');
+          glow.classList.remove('hidden');
+          radContainer.classList.add('opacity-30', 'pointer-events-none');
+          box.style.borderRadius = '40px';
+          
+          this.get('time-val').className = `${size} ${font} font-extrabold leading-none tracking-tighter`;
+          this.get('date-val').className = `text-xl ${font} font-bold tracking-[0.2em] mt-3 uppercase opacity-60`;
+          this.get('time-icon').style.color = txt;
+        } else {
+          this.get('view-podcaster').classList.add('hidden');
+          this.get('view-podcaster').classList.remove('flex');
+          this.get('view-standard').classList.remove('hidden');
+          glow.classList.add('hidden');
+          radContainer.classList.remove('opacity-30', 'pointer-events-none');
+          box.style.borderRadius = rad + 'px';
+          
+          this.get('time-std').className = `${size} ${font} font-bold`;
+        }
+        this.tick();
+      },
+
+      tick() {
+        const now = new Date();
+        const layout = this.get('layout-style').value;
+        let h = now.getHours();
+        const m = now.getMinutes().toString().padStart(2, '0');
+        const ampm = h >= 12 ? 'PM' : 'AM';
+
+        if (layout === 'podcaster') {
+          const h12 = h % 12 || 12;
+          this.get('time-val').textContent = `${h12}:${m}`;
+          this.get('ampm-val').textContent = ampm;
+          const opt = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+          this.get('date-val').textContent = now.toLocaleDateString('en-US', opt).toUpperCase().replace(/,/g, '');
+          const icon = this.get('time-icon');
+          icon.className = (h >= 6 && h < 18) ? 'fas fa-sun text-yellow-400' : 'fas fa-moon text-indigo-300';
+        } else {
+          this.get('time-std').textContent = `${h.toString().padStart(2, '0')}:${m}`;
+        }
+      },
+
+      generate() {
+        const bg = this.get('bg-color').value;
+        const txt = this.get('text-color').value;
+        const layout = this.get('layout-style').value;
+        const font = this.get('font-family').value;
+        const size = this.get('font-size').value;
+        const rad = this.get('radius-global').value;
+
+        let content = '';
+        if (layout === 'podcaster') {
+          content = `
+<div style="position:relative;display:inline-block;font-family:sans-serif;">
+  <div style="position:absolute;inset:-5px;border-radius:40px;background:linear-gradient(135deg,#6366F1,#A855F7);filter:blur(10px);opacity:0.6;"></div>
+  <div style="position:relative;display:flex;align-items:center;gap:30px;padding:35px;background:${bg};color:${txt};border-radius:40px;border:2px solid rgba(255,255,255,0.1);min-width:520px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+    <div style="background:rgba(255,255,255,0.1);padding:25px;border-radius:20px;width:110px;height:110px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.05);">
+      <i id="icon" class="fas fa-moon" style="font-size:55px;"></i>
+    </div>
+    <div>
+      <div style="display:flex;align-items:baseline;gap:12px;">
+        <span id="time" style="font-size:90px;font-weight:900;line-height:1;letter-spacing:-0.05em;">11:18</span>
+        <span id="ampm" style="font-size:35px;font-weight:900;color:#EC4899;">PM</span>
+      </div>
+      <div id="date" style="font-size:18px;font-weight:800;letter-spacing:0.25em;opacity:0.6;margin-top:12px;text-transform:uppercase;">SUN, 10 MAY 2026</div>
+    </div>
   </div>
+</div>`;
+        } else {
+          content = `
+<div style="display:inline-block;padding:50px;background:${bg};color:${txt};border-radius:${rad}px;text-align:center;min-width:350px;box-shadow:0 30px 60px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.05);">
+  <div id="time" style="font-size:90px;font-weight:900;letter-spacing:-0.02em;">12:34</div>
+</div>`;
+        }
 
+        return `<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { margin:0; padding:50px; display:flex; justify-content:center; align-items:center; min-height:100vh; background:transparent; overflow:hidden; }
+    #time { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  ${content}
   <script>
-    function updateTime() {
-      const now = new Date();
-      let hours = now.getHours();
-      let minutes = now.getMinutes().toString().padStart(2, '0');
-      let timeString = '';
-      
-      // Format waktu berdasarkan pilihan
-      const format = "${timeFormat}";
-      
-      if (format === "HH:MM") {
-        // Format 24 jam tanpa detik
-        hours = hours.toString().padStart(2, '0');
-        timeString = \`\${hours}:\${minutes}\`;
-      } 
-      else if (format === "HH:MM:SS") {
-        // Format 24 jam dengan detik
-        hours = hours.toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        timeString = \`\${hours}:\${minutes}:\${seconds}\`;
-      } 
-      else if (format === "HH:MM:TT") {
-        // Format 12 jam dengan AM/PM
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // Jam 0 menjadi 12
-        hours = hours.toString().padStart(2, '0');
-        timeString = \`\${hours}:\${minutes} \${ampm}\`;
+    function u(){
+      const n=new Date(); let h=n.getHours(); const m=n.getMinutes().toString().padStart(2,'0');
+      const t=document.getElementById('time');
+      const am=document.getElementById('ampm');
+      if(am){
+        const p=h>=12?'PM':'AM'; h=h%12||12;
+        t.textContent=h+":"+m; am.textContent=p;
+        const opt={weekday:'short',day:'2-digit',month:'short',year:'numeric'};
+        document.getElementById('date').textContent=n.toLocaleDateString('en-US',opt).toUpperCase().replace(/,/g,'');
+        const i=document.getElementById('icon');
+        const isDay = n.getHours()>=6 && n.getHours()<18;
+        i.className = isDay ? 'fas fa-sun' : 'fas fa-moon';
+        i.style.color = isDay ? '#FBBF24' : '#818CF8';
+      } else {
+        t.textContent=h.toString().padStart(2,'0')+":"+m;
       }
-      
-      document.getElementById('time').textContent = timeString;
     }
-
-    // Atur interval update berdasarkan format
-    const format = "${timeFormat}";
-    const interval = format === "HH:MM:SS" ? 1000 : 60000;
-    
-    setInterval(updateTime, interval);
-    updateTime();
+    setInterval(u,1000); u();
   <\/script>
 </body>
 </html>`;
-    }
-    
-    // Fungsi untuk menyalin teks ke clipboard
-    function copyToClipboard(text) {
-      return new Promise((resolve, reject) => {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(text)
-            .then(() => resolve())
-            .catch(err => reject(err));
-        } else {
-          const textarea = document.createElement('textarea');
-          textarea.value = text;
-          textarea.style.position = 'fixed';
-          textarea.style.top = '0';
-          textarea.style.left = '0';
-          textarea.style.opacity = '0';
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-          
-          try {
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textarea);
-            if (successful) {
-              resolve();
-            } else {
-              reject(new Error('Gagal menyalin teks'));
-            }
-          } catch (err) {
-            document.body.removeChild(textarea);
-            reject(err);
-          }
-        }
-      });
-    }
-    
-    // Fungsi untuk menampilkan waktu nyata di preview
-    function updatePreviewTime() {
-      const now = new Date();
-      const timeFormat = document.getElementById('time-format').value;
-      let hours = now.getHours();
-      let minutes = now.getMinutes().toString().padStart(2, '0');
-      let timeString = '';
-      
-      if (timeFormat === "HH:MM") {
-        // Format 24 jam tanpa detik
-        hours = hours.toString().padStart(2, '0');
-        timeString = `${hours}:${minutes}`;
-      } 
-      else if (timeFormat === "HH:MM:SS") {
-        // Format 24 jam dengan detik
-        hours = hours.toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        timeString = `${hours}:${minutes}:${seconds}`;
-      } 
-      else if (timeFormat === "HH:MM:TT") {
-        // Format 12 jam dengan AM/PM
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // Jam 0 menjadi 12
-        hours = hours.toString().padStart(2, '0');
-        timeString = `${hours}:${minutes} ${ampm}`;
       }
-      
-      document.getElementById('time').textContent = timeString;
-    }
-    
-    // Fungsi untuk navigasi menu
-    function setupNavigation() {
-      const navEditor = document.getElementById('nav-editor');
-      const navCode = document.getElementById('nav-code');
-      const navHelp = document.getElementById('nav-help');
-      const editorPanel = document.getElementById('editor-panel');
-      const codeOutput = document.getElementById('code-output');
-      
-      // Set active nav item
-      function setActiveNav(item) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        item.classList.add('active');
-      }
-      
-      // Editor menu
-      navEditor.addEventListener('click', function(e) {
-        e.preventDefault();
-        setActiveNav(this);
-        editorPanel.classList.remove('hidden');
-        codeOutput.classList.add('hidden');
-      });
-      
-      // Code menu
-      navCode.addEventListener('click', function(e) {
-        e.preventDefault();
-        setActiveNav(this);
-        editorPanel.classList.add('hidden');
-        codeOutput.classList.remove('hidden');
-        if (!document.getElementById('html-code').textContent) {
-          const htmlContent = generateHTML();
-          document.getElementById('html-code').textContent = htmlContent;
-        }
-      });
-      
-      // Help menu
-      navHelp.addEventListener('click', function(e) {
-        e.preventDefault();
-        setActiveNav(this);
-        editorPanel.classList.add('hidden');
-        codeOutput.classList.add('hidden');
-        document.getElementById('obs-help-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-      });
-    }
-    
-    // Event listeners untuk kontrol
-    document.getElementById('bg-color').addEventListener('input', updatePreview);
-    document.getElementById('text-color').addEventListener('input', updatePreview);
-    document.getElementById('font-family').addEventListener('change', updatePreview);
-    document.getElementById('font-size').addEventListener('change', updatePreview);
-    document.getElementById('time-format').addEventListener('change', updatePreview);
-    
-    // Event listeners untuk kontrol radius
-    document.getElementById('radius-tl').addEventListener('input', updatePreview);
-    document.getElementById('radius-tr').addEventListener('input', updatePreview);
-    document.getElementById('radius-br').addEventListener('input', updatePreview);
-    document.getElementById('radius-bl').addEventListener('input', updatePreview);
-    
-    // Event listener untuk tombol Generate
-    document.getElementById('generate-btn').addEventListener('click', function() {
-      const htmlContent = generateHTML();
-      document.getElementById('html-code').textContent = htmlContent;
-      document.getElementById('code-output').classList.remove('hidden');
-      document.getElementById('code-output').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Listeners
+    const inputs = ['bg-color', 'text-color', 'layout-style', 'font-family', 'font-size', 'radius-global'];
+    inputs.forEach(id => {
+      const el = UI.get(id);
+      el.addEventListener('input', () => UI.update());
+      el.addEventListener('change', () => UI.update());
     });
-    
-    // Event listener untuk tombol Salin
-    document.getElementById('copy-btn').addEventListener('click', function() {
-      const code = document.getElementById('html-code').textContent;
-      const btn = this;
-      
-      copyToClipboard(code)
-        .then(() => {
-          const indicator = document.createElement('div');
-          indicator.className = 'clipboard-indicator';
-          indicator.innerHTML = '<div class="clipboard-message">✓ Kode Berhasil Disalin!</div>';
-          document.querySelector('.code-container').appendChild(indicator);
-          
-          setTimeout(() => {
-            indicator.remove();
-          }, 2000);
-        })
-        .catch(err => {
-          console.error('Gagal menyalin kode:', err);
-          btn.classList.add('shake', 'error');
-          btn.innerHTML = '<i class="fas fa-times mr-2"></i> Gagal Menyalin!';
-          
-          setTimeout(() => {
-            btn.classList.remove('shake', 'error');
-            btn.innerHTML = '<i class="fas fa-copy mr-2"></i> Salin ke Clipboard';
-          }, 2000);
-        });
-    });
-    
-    // Event listener untuk tombol Tutup
-    document.getElementById('close-btn').addEventListener('click', function() {
-      document.getElementById('code-output').classList.add('hidden');
-    });
-    
-    // Event listeners untuk petunjuk OBS
-    document.getElementById('obs-help-btn').addEventListener('click', function() {
-      document.getElementById('obs-help-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    });
-    
-    document.getElementById('close-obs-help').addEventListener('click', function() {
-      document.getElementById('obs-help-modal').classList.add('hidden');
-      document.body.style.overflow = '';
-    });
-    
-    document.getElementById('close-obs-btn').addEventListener('click', function() {
-      document.getElementById('obs-help-modal').classList.add('hidden');
-      document.body.style.overflow = '';
-    });
-    
-    document.getElementById('obs-help-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        this.classList.add('hidden');
-        document.body.style.overflow = '';
-      }
-    });
-    
-    // Inisialisasi preview
-    updatePreview();
-    setupNavigation();
-    
-    // Perbarui waktu di preview
-    const timeFormat = document.getElementById('time-format').value;
-    const interval = timeFormat === "HH:MM:SS" ? 1000 : 60000;
-    setInterval(updatePreviewTime, interval);
+
+    UI.get('generate-btn').onclick = () => {
+      UI.get('code-text').textContent = UI.generate();
+      UI.get('code-panel').classList.remove('hidden');
+    };
+
+    UI.get('copy-btn').onclick = () => {
+      navigator.clipboard.writeText(UI.get('code-text').textContent);
+      const btn = UI.get('copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+    };
+
+    UI.get('bg-color-text').oninput = (e) => { UI.get('bg-color').value = e.target.value; UI.update(); };
+    UI.get('text-color-text').oninput = (e) => { UI.get('text-color').value = e.target.value; UI.update(); };
+    UI.get('help-btn').onclick = () => UI.get('help-modal').classList.remove('hidden');
+    UI.get('close-help').onclick = () => UI.get('help-modal').classList.add('hidden');
+
+    setInterval(() => UI.tick(), 1000);
+    window.onload = () => UI.update();
   </script>
 </body>
 </html>
