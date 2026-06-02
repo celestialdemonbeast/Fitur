@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Jam – OBS Render</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #widget-root {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Standard Layout ── */
+    .standard-widget {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 48px;
+    }
+
+    .standard-time {
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    /* ── Podcaster Layout ── */
+    .podcaster-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .podcaster-glow {
+      position: absolute;
+      inset: -4px;
+      border-radius: 44px;
+      background: linear-gradient(135deg, #6366F1, #A855F7, #EC4899);
+      opacity: 0.6;
+      filter: blur(10px);
+      transform: translate(4px, 6px);
+      z-index: 0;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.5; filter: blur(10px); }
+      50% { opacity: 0.8; filter: blur(14px); }
+    }
+
+    .podcaster-widget {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 24px 40px;
+      border-radius: 40px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+    }
+
+    .podcaster-icon-box {
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .podcaster-icon-box i {
+      font-size: 2.2rem;
+    }
+
+    .podcaster-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .podcaster-time-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .podcaster-time {
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .podcaster-ampm {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #F472B6;
+      line-height: 1;
+    }
+
+    .podcaster-date {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      opacity: 0.65;
+      text-transform: uppercase;
+    }
+
+    /* ── Neon Layout ── */
+    .neon-widget {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 56px;
+    }
+
+    .neon-time {
+      font-family: 'Space Mono', monospace !important;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      text-shadow:
+        0 0 7px currentColor,
+        0 0 21px currentColor,
+        0 0 42px currentColor;
+      animation: neonFlicker 5s infinite;
+    }
+
+    @keyframes neonFlicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 0 0 7px currentColor, 0 0 21px currentColor, 0 0 42px currentColor;
+      }
+      20%, 24%, 55% {
+        text-shadow: none;
+        opacity: 0.8;
+      }
+    }
+
+    /* Size scale */
+    .size-sm  { font-size: 2.5rem; }
+    .size-md  { font-size: 4rem; }
+    .size-lg  { font-size: 6rem; }
+    .size-xl  { font-size: 8rem; }
+
+    /* Font families */
+    .ff-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .ff-mono    { font-family: 'Space Mono', monospace; }
+    .ff-serif   { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body>
+<div id="widget-root"></div>
+
+<script>
+  const p = new URLSearchParams(window.location.search);
+
+  const layout  = p.get('layout')  || 'standard';
+  const bg      = p.get('bg')      || '#003152';
+  const text    = p.get('text')    || '#ffffff';
+  const font    = p.get('font')    || 'jakarta';
+  const size    = p.get('size')    || 'lg';
+  const format  = p.get('format')  || 'HH:MM';
+  const rtl     = parseInt(p.get('rtl')  || '24');
+  const rtr     = parseInt(p.get('rtr')  || '24');
+  const rbr     = parseInt(p.get('rbr')  || '24');
+  const rbl     = parseInt(p.get('rbl')  || '24');
+
+  const ffClass   = { jakarta: 'ff-jakarta', mono: 'ff-mono', serif: 'ff-serif' }[font] || 'ff-jakarta';
+  const sizeClass = { sm: 'size-sm', md: 'size-md', lg: 'size-lg', xl: 'size-xl' }[size] || 'size-lg';
+
+  const root = document.getElementById('widget-root');
+
+  /* ── Render layouts ── */
+  if (layout === 'podcaster') {
+    root.innerHTML = `
+      <div class="podcaster-wrapper">
+        <div class="podcaster-glow"></div>
+        <div class="podcaster-widget ${ffClass}" style="background:${bg}; color:${text};">
+          <div class="podcaster-icon-box">
+            <i id="pd-icon" class="fas fa-moon" style="color:#818CF8;"></i>
+          </div>
+          <div class="podcaster-info">
+            <div class="podcaster-time-row">
+              <span id="pd-time" class="podcaster-time">00:00</span>
+              <span id="pd-ampm" class="podcaster-ampm">AM</span>
+            </div>
+            <div id="pd-date" class="podcaster-date">...</div>
+          </div>
+        </div>
+      </div>`;
+
+    function tickPodcaster() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      document.getElementById('pd-time').textContent =
+        String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      document.getElementById('pd-ampm').textContent = ampm;
+      const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+      const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      const d = now;
+      document.getElementById('pd-date').textContent =
+        `${days[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+      const icon = document.getElementById('pd-icon');
+      const curH = now.getHours();
+      if (curH >= 6 && curH < 18) {
+        icon.className = 'fas fa-sun'; icon.style.color = '#FBBF24';
+      } else {
+        icon.className = 'fas fa-moon'; icon.style.color = '#818CF8';
+      }
+    }
+    tickPodcaster();
+    setInterval(tickPodcaster, 1000);
+
+  } else if (layout === 'neon') {
+    root.innerHTML = `
+      <div class="neon-widget" style="background:${bg};
+        border-radius: ${rtl}px ${rtr}px ${rbr}px ${rbl}px;">
+        <div id="neon-time" class="neon-time ${ffClass} ${sizeClass}" style="color:${text};">00:00</div>
+      </div>`;
+
+    function tickNeon() {
+      const now = new Date();
+      document.getElementById('neon-time').textContent = formatTime(now);
+    }
+    tickNeon();
+    setInterval(tickNeon, format === 'HH:MM:SS' ? 1000 : 1000);
+
+  } else {
+    /* Standard */
+    root.innerHTML = `
+      <div class="standard-widget" style="background:${bg};
+        border-radius: ${rtl}px ${rtr}px ${rbr}px ${rbl}px;">
+        <div id="std-time" class="standard-time ${ffClass} ${sizeClass}" style="color:${text};">00:00</div>
+      </div>`;
+
+    function tickStandard() {
+      const now = new Date();
+      document.getElementById('std-time').textContent = formatTime(now);
+    }
+    tickStandard();
+    setInterval(tickStandard, format === 'HH:MM:SS' ? 1000 : 1000);
+  }
+
+  /* ── Time formatter ── */
+  function formatTime(now) {
+    let h = now.getHours();
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    if (format === 'HH:MM') {
+      return String(h).padStart(2,'0') + ':' + m;
+    } else if (format === 'HH:MM:SS') {
+      return String(h).padStart(2,'0') + ':' + m + ':' + s;
+    } else if (format === 'HH:MM:TT') {
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return String(h).padStart(2,'0') + ':' + m + ' ' + ampm;
+    }
+    return String(h).padStart(2,'0') + ':' + m;
+  }
+</script>
+</body>
+</html>

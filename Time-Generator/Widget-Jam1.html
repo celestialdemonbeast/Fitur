@@ -3,882 +3,1219 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Kustomisasi Widget Jam Lengkap</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Time Engine – OBS Widget Builder</title>
+  <meta name="description" content="Buat widget jam kustom untuk OBS. Atur gaya, warna, font, dan salin link langsung ke OBS Browser Source.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 1.5rem;
-        }
+  <style>
+    :root {
+      --bg:        #070710;
+      --surface:   #0f0f1e;
+      --panel:     rgba(255,255,255,0.03);
+      --border:    rgba(255,255,255,0.07);
+      --border-hi: rgba(255,255,255,0.14);
+      --text:      #e8e8f0;
+      --muted:     rgba(255,255,255,0.4);
+      --accent:    #6366F1;
+      --accent2:   #A855F7;
+      --pink:      #EC4899;
+      --green:     #22C55E;
+      --radius:    1.25rem;
+    }
 
-        .gradient-text {
-            background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .gradient-btn {
-            background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    html { scroll-behavior: smooth; }
 
-        .gradient-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-            filter: brightness(1.1);
-        }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        .input-field {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            border-color: #6366F1;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-        }
-
-        .preview-container {
-            background: #0A0A0A;
-            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
-            background-size: 24px 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 1.5rem;
-        }
-
-        .code-container {
-            background: #050505;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            color: #94A3B8;
-        }
-
-        /* Navbar styles */
-        .navbar {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .nav-item {
-            color: rgba(255, 255, 255, 0.6);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            color: #ffffff;
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, #6366F1, #A855F7);
-        }
-    </style>
-    
-    /* Modal styles */
-    .modal-overlay {
+    /* ── Ambient background ── */
+    body::before {
+      content: '';
       position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99,102,241,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(168,85,247,0.14) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: sticky;
       top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      background: rgba(7,7,16,0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 64px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      z-index: 1000;
-      backdrop-filter: blur(5px);
+      justify-content: space-between;
+      gap: 1.5rem;
     }
-    
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 700px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
-    
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5rem;
+
+    .nav-brand .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .brand-gradient {
+      background: linear-gradient(135deg, #818CF8, var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-link {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      background: none;
+      border: none;
       cursor: pointer;
-      color: #4b5563;
       transition: all 0.2s ease;
     }
-    
-    .close-btn:hover {
-      color: #1f2937;
-      transform: scale(1.1);
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--text);
+      background: var(--panel);
     }
-    
-    .step-number {
+
+    .nav-link.active {
+      color: #818CF8;
+    }
+
+    /* ── Page layout ── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── Hero header ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .hero-badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      background-color: #4f46e5;
-      color: white;
-      border-radius: 50%;
-      font-weight: bold;
-      margin-right: 10px;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.25);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #818CF8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
     }
-    
-    .obs-step {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 25px;
-      padding-bottom: 25px;
-      border-bottom: 1px solid #e5e7eb;
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 60%, #818CF8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    
-    .obs-step:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 500;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
     }
-    
-    .step-content {
-      flex: 1;
+
+    /* ── Main grid ── */
+    .builder-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.5rem;
+      align-items: start;
     }
-    
-    .step-image {
+
+    @media (max-width: 900px) {
+      .builder-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Panel (glass card) ── */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .panel-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Form controls ── */
+    .field { margin-bottom: 1.1rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .field select,
+    .field input[type="text"] {
       width: 100%;
-      max-width: 300px;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      margin-top: 15px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
     }
-    
-    .highlight-box {
-      background-color: #f3f4f6;
-      border-left: 4px solid #4f46e5;
-      padding: 15px;
-      border-radius: 0 4px 4px 0;
-      margin-top: 10px;
+
+    .field select:focus,
+    .field input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
     }
-    
-    /* Navbar styles */
-    .navbar {
-      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    .field select option { background: #111128; }
+
+    /* Color row */
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    
-    .nav-container {
+
+    .color-swatch {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 2px solid var(--border-hi);
+      cursor: pointer;
+      flex-shrink: 0;
+      background: none;
+      overflow: hidden;
+      padding: 2px;
+    }
+
+    .color-swatch input[type="color"] {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    /* Range / Radius */
+    .radius-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .radius-item label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
+      margin-bottom: 6px;
     }
-    
-    .nav-logo {
+
+    .radius-item label span { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* ── CTA button ── */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
       color: white;
-      font-weight: bold;
-      font-size: 1.5rem;
-      text-decoration: none;
-    }
-    
-    .nav-menu {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       display: flex;
-      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    
-    .nav-item {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-    }
-    
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+
+    .btn-primary:hover {
       transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+      filter: brightness(1.08);
     }
-    
-    .nav-item.active {
-      background-color: rgba(255, 255, 255, 0.2);
+
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── Preview panel ── */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
+
+    .preview-stage {
+      background: #0A0A15;
+      background-image:
+        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.04) 1px, transparent 0);
+      background-size: 22px 22px;
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-label {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    #preview-widget-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Link output box ── */
+    .link-output {
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 1.5rem 1.75rem;
+      animation: fadeSlideUp 0.3s ease;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .link-output.visible { display: block; }
+
+    .link-output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .link-output-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .link-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-hi);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: #94A3B8;
+      word-break: break-all;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      max-height: 80px;
+      overflow-y: auto;
+    }
+
+    .link-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-copy {
+      flex: 1;
+      padding: 11px 16px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .btn-copy:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+    }
+
+    .btn-copy.copied {
+      background: linear-gradient(135deg, #16A34A, #22C55E);
+    }
+
+    .btn-dismiss {
+      padding: 11px 16px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-hi);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-dismiss:hover {
+      background: rgba(255,255,255,0.09);
+      color: var(--text);
+    }
+
+    /* ── OBS Steps ── */
+    .obs-steps {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .obs-steps.visible { display: flex; }
+
+    .obs-step {
+      display: flex;
+      gap: 14px;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .obs-step:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-body h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .step-body p {
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .step-body code {
+      background: rgba(99,102,241,0.15);
+      color: #818CF8;
+      padding: 1px 6px;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(22, 163, 74, 0.95);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 9999;
+      white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Modal OBS Help ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: #0f0f1e;
+      border: 1px solid var(--border-hi);
+      border-radius: 1.5rem;
+      padding: 2rem 2.25rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.94);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.open .modal-box { transform: scale(1); }
+
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      background: linear-gradient(135deg, #818CF8, var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .modal-subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Preview widget styles (mirroring render file) ── */
+    .pw-standard {
+      display: flex; align-items: center; justify-content: center;
+      padding: 28px 48px;
+    }
+
+    .pw-time {
+      font-weight: 800; line-height: 1;
+      letter-spacing: -0.02em; white-space: nowrap;
+    }
+
+    .pw-podcaster-wrap { position: relative; display: inline-block; }
+
+    .pw-glow {
+      position: absolute; inset: -4px;
+      border-radius: 44px;
+      background: linear-gradient(135deg, #6366F1, #A855F7, #EC4899);
+      opacity: 0.55; filter: blur(10px);
+      transform: translate(4px, 6px); z-index: 0;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%,100% { opacity: 0.45; filter: blur(10px); }
+      50%      { opacity: 0.75; filter: blur(14px); }
+    }
+
+    .pw-podcaster {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 28px;
+      padding: 24px 40px; border-radius: 40px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+    }
+
+    .pw-icon-box {
+      background: rgba(255,255,255,0.1); border-radius: 20px;
+      width: 80px; height: 80px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .pw-info { display: flex; flex-direction: column; gap: 6px; }
+
+    .pw-time-row { display: flex; align-items: baseline; gap: 8px; }
+
+    .pw-big { font-size: 4rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+
+    .pw-ampm { font-size: 1.6rem; font-weight: 700; color: #F472B6; }
+
+    .pw-date { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.14em; opacity: 0.6; text-transform: uppercase; }
+
+    .pw-neon {
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px 56px;
+    }
+
+    .pw-neon-time {
+      font-family: 'Space Mono', monospace; font-weight: 700;
+      line-height: 1; letter-spacing: 0.04em; white-space: nowrap;
+      text-shadow: 0 0 7px currentColor, 0 0 21px currentColor, 0 0 42px currentColor;
+      animation: neonFlicker 5s infinite;
+    }
+
+    @keyframes neonFlicker {
+      0%,19%,21%,23%,25%,54%,56%,100% {
+        text-shadow: 0 0 7px currentColor, 0 0 21px currentColor, 0 0 42px currentColor;
+      }
+      20%,24%,55% { text-shadow: none; opacity: 0.8; }
+    }
+
+    .sz-sm  { font-size: 2rem; }
+    .sz-md  { font-size: 3.2rem; }
+    .sz-lg  { font-size: 5rem; }
+    .sz-xl  { font-size: 6.5rem; }
+
+    .ff-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .ff-mono    { font-family: 'Space Mono', monospace; }
+    .ff-serif   { font-family: 'Playfair Display', serif; }
   </style>
 </head>
-<body class="font-sans text-gray-800 min-h-screen bg-gradient-to-br from-gray-100 to-gray-300">
-  <!-- Navbar -->
-  <nav class="navbar py-4">
-    <div class="container mx-auto px-6 flex justify-between items-center">
-      <a href="#" class="flex items-center space-x-3 text-white font-bold text-2xl tracking-tight">
-        <i class="fas fa-clock text-indigo-500"></i>
-        <span class="gradient-text">Time Engine</span>
-      </a>
-      <div class="hidden lg:flex items-center space-x-8">
-        <a href="#" class="nav-item active font-semibold">Clock</a>
-        <a href="Widget-tanggal.html" class="nav-item font-semibold">Date</a>
-        <a href="Widget-Sosmed-dan-Waktu.html" class="nav-item font-semibold">Socials</a>
-        <button id="obs-help-btn-nav" class="nav-item font-semibold">Help</button>
+
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="icon">⏱</div>
+      <span class="brand-gradient">Time Engine</span>
+    </a>
+    <div class="nav-links">
+      <a href="Widget-Jam1.html"  class="nav-link active">Clock</a>
+      <a href="Widget-tanggal.html" class="nav-link">Date</a>
+      <a href="Widget-Sosmed-dan-Waktu.html" class="nav-link">Socials</a>
+      <button class="nav-link" id="help-btn">
+        <i class="fas fa-circle-question"></i> Help
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Page ── -->
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge"><i class="fas fa-broadcast-tower"></i> OBS Ready</div>
+    <h1>Clock Widget Builder</h1>
+    <p>Atur tampilan widget jam kamu, lalu <strong>salin link</strong> dan tempel langsung ke <strong>OBS Browser Source</strong> — tidak perlu download file apapun.</p>
+  </div>
+
+  <!-- Builder -->
+  <div class="builder-grid">
+
+    <!-- LEFT: Controls -->
+    <div style="display:flex; flex-direction:column; gap:1.2rem;">
+
+      <!-- Aesthetics -->
+      <div class="panel">
+        <div class="panel-title"><i class="fas fa-palette"></i> &nbsp;Tampilan</div>
+
+        <div class="field">
+          <label>Layout Style</label>
+          <select id="ctl-layout">
+            <option value="standard">Standard Minimal</option>
+            <option value="podcaster">Premium Podcaster</option>
+            <option value="neon">Neon Glow</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Warna Background</label>
+          <div class="color-row">
+            <div class="color-swatch">
+              <input type="color" id="ctl-bg" value="#003152">
+            </div>
+            <input type="text" id="ctl-bg-text" value="#003152" maxlength="9">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Warna Teks</label>
+          <div class="color-row">
+            <div class="color-swatch">
+              <input type="color" id="ctl-text" value="#ffffff">
+            </div>
+            <input type="text" id="ctl-text-text" value="#ffffff" maxlength="9">
+          </div>
+        </div>
       </div>
+
+      <!-- Typography -->
+      <div class="panel">
+        <div class="panel-title"><i class="fas fa-font"></i> &nbsp;Tipografi</div>
+
+        <div class="field">
+          <label>Font Family</label>
+          <select id="ctl-font">
+            <option value="jakarta">Plus Jakarta Sans</option>
+            <option value="mono">Space Mono</option>
+            <option value="serif">Playfair Display</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Ukuran</label>
+          <select id="ctl-size">
+            <option value="sm">Compact</option>
+            <option value="md">Medium</option>
+            <option value="lg" selected>Large</option>
+            <option value="xl">Ultra Large</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Format Waktu</label>
+          <select id="ctl-format">
+            <option value="HH:MM">HH:MM (24 jam)</option>
+            <option value="HH:MM:SS">HH:MM:SS (detik)</option>
+            <option value="HH:MM:TT">HH:MM AM/PM</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Radius -->
+      <div class="panel" id="radius-panel">
+        <div class="panel-title"><i class="fas fa-vector-square"></i> &nbsp;Border Radius</div>
+        <div class="radius-grid">
+          <div class="radius-item">
+            <label>Top Left <span id="rv-tl">24</span>px</label>
+            <input type="range" id="ctl-rtl" min="0" max="120" value="24">
+          </div>
+          <div class="radius-item">
+            <label>Top Right <span id="rv-tr">24</span>px</label>
+            <input type="range" id="ctl-rtr" min="0" max="120" value="24">
+          </div>
+          <div class="radius-item">
+            <label>Bottom Right <span id="rv-br">24</span>px</label>
+            <input type="range" id="ctl-rbr" min="0" max="120" value="24">
+          </div>
+          <div class="radius-item">
+            <label>Bottom Left <span id="rv-bl">24</span>px</label>
+            <input type="range" id="ctl-rbl" min="0" max="120" value="24">
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <button class="btn-primary" id="generate-btn">
+        <i class="fas fa-link"></i>
+        Generate OBS Link
+      </button>
     </div>
-  </nav>
 
-  <div class="container mx-auto px-6 py-16 max-w-6xl">
-    <div class="text-center mb-20">
-      <h1 class="main-header text-5xl md:text-6xl font-extrabold mb-4 tracking-tight">Time Widget Pro</h1>
-      <p class="text-gray-400 max-w-2xl mx-auto font-medium">Professional customization engine for time widgets with individual corner controls and multiple format options.</p>
-    </div>
-    
-    <div class="flex flex-col lg:flex-row gap-8">
-      <!-- Panel Kontrol -->
-      <div class="w-full lg:w-1/3 glass-panel p-6 rounded-2xl shadow-lg" id="editor-panel">
-        <h2 class="text-2xl font-bold mb-10 text-white">Engine Configuration</h2>
-        
-        <div class="mb-10">
-          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Aesthetics</h3>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Layout Style</label>
-            <select id="layout-style" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="standard">Standard Minimal</option>
-              <option value="podcaster">Premium Podcaster</option>
-            </select>
-          </div>
+    <!-- RIGHT: Preview + Output -->
+    <div class="preview-panel">
 
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Widget Background</label>
-            <div class="flex items-center space-x-4">
-              <input type="color" id="bg-color" value="#003152" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
-              <input type="text" value="#003152" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Text Color</label>
-            <div class="flex items-center space-x-4">
-              <input type="color" id="text-color" value="#ffffff" class="w-12 h-12 rounded-xl border-0 bg-transparent cursor-pointer">
-              <input type="text" value="#ffffff" class="input-field px-4 py-2 rounded-lg text-sm font-mono flex-1">
-            </div>
+      <!-- Preview Stage -->
+      <div class="preview-stage">
+        <span class="preview-label">Live Preview</span>
+        <div id="preview-widget-wrap">
+          <!-- injected by JS -->
+        </div>
+      </div>
+
+      <!-- Link Output -->
+      <div class="link-output" id="link-output">
+        <div class="link-output-header">
+          <div class="link-output-title">
+            <i class="fas fa-circle-check"></i>
+            Link OBS Siap Digunakan!
           </div>
         </div>
-        
-        <div class="mb-10">
-          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Typography</h3>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Font Family</label>
-            <select id="font-family" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="font-sans">Plus Jakarta Sans</option>
-              <option value="font-serif">Elegant Serif</option>
-              <option value="font-mono">Modern Monospace</option>
-            </select>
-          </div>
-          
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Scale</label>
-            <select id="font-size" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="text-4xl">Compact</option>
-              <option value="text-6xl" selected>Normal</option>
-              <option value="text-8xl">Ultra-large</option>
-            </select>
-          </div>
-
-          <div class="mb-6">
-            <label class="block mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Time Format</label>
-            <select id="time-format" class="input-field w-full p-3 rounded-xl bg-[#111] text-sm outline-none">
-              <option value="HH:MM">HH:MM</option>
-              <option value="HH:MM:SS">HH:MM:SS</option>
-              <option value="HH:MM:TT">HH:MM:TT</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="mb-10">
-          <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Advanced Radius</h3>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Top Left</label>
-              <input type="range" id="radius-tl" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Top Right</label>
-              <input type="range" id="radius-tr" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Bottom Right</label>
-              <input type="range" id="radius-br" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-            <div class="radius-control">
-              <label class="text-[10px] font-bold text-gray-600 uppercase mb-2">Bottom Left</label>
-              <input type="range" id="radius-bl" min="0" max="100" value="24" class="w-full accent-indigo-500">
-            </div>
-          </div>
-        </div>
-        
-        <div class="mt-12 space-y-4">
-          <button id="generate-btn" class="gradient-btn w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest">
-            Generate Code
+        <div class="link-box" id="link-box"></div>
+        <div class="link-actions">
+          <button class="btn-copy" id="copy-btn">
+            <i class="fas fa-copy"></i>
+            Copy Link
+          </button>
+          <button class="btn-dismiss" id="dismiss-btn">
+            <i class="fas fa-xmark"></i>
+            Tutup
           </button>
         </div>
       </div>
-      
-      <!-- Preview -->
-      <div class="w-full lg:w-2/3">
-        <h2 class="text-xl font-bold mb-4 text-indigo-700">Preview</h2>
-        
-        <div class="preview-container glass-panel p-6 rounded-2xl shadow-lg mb-6 flex items-center justify-center min-h-[300px]">
-          <div id="preview-container-inner" class="relative">
-            <!-- Style Podcaster Outer Glow -->
-            <div id="podcaster-glow" class="hidden absolute -inset-1 rounded-[40px] opacity-75 blur-sm" style="background: linear-gradient(135deg, #6366F1, #A855F7); transform: translate(4px, 4px); z-index: 0;"></div>
-            
-            <div id="preview-widget" class="relative inline-block p-10 w-full max-w-2xl mx-auto z-10" 
-                 style="background-color: #003152; color: white; 
-                        border-top-left-radius: 12px; border-top-right-radius: 12px;
-                        border-bottom-right-radius: 12px; border-bottom-left-radius: 12px;">
-              <div id="standard-layout" class="text-center">
-                <div id="time" class="text-6xl font-mono font-bold">12:34</div>
-              </div>
-              
-              <div id="podcaster-layout" class="hidden flex items-center gap-8">
-                <div class="bg-white/10 p-4 rounded-2xl w-24 h-24 flex items-center justify-center">
-                  <i class="fas fa-moon text-4xl text-indigo-300" id="podcaster-icon"></i>
-                </div>
-                <div class="flex flex-col">
-                  <div class="flex items-baseline gap-2">
-                    <span id="p-time" class="text-7xl font-bold leading-none tracking-tight">11:18</span>
-                    <span id="p-ampm" class="text-3xl font-bold text-pink-400">PM</span>
-                  </div>
-                  <div id="p-date" class="text-xl font-medium tracking-widest text-gray-300 mt-2">SUN, 10 MAY 2026</div>
-                </div>
-              </div>
-            </div>
+
+      <!-- OBS Steps (show after generate) -->
+      <div class="panel obs-steps" id="obs-steps">
+        <div class="panel-title" style="margin-bottom:1rem;"><i class="fas fa-tv"></i> &nbsp;Cara Pakai di OBS</div>
+        <div class="obs-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Klik "Copy Link" di atas</h4>
+            <p>Link widget sudah dikodekan dengan semua setting yang kamu pilih. Satu link = satu widget.</p>
           </div>
         </div>
-        
-        <!-- Code Output -->
-        <div id="code-output" class="hidden glass-panel rounded-2xl p-6 shadow-lg">
-          <h3 class="text-xl font-bold mb-3 text-indigo-700">Kode HTML</h3>
-          <p class="text-gray-600 mb-3">Salin kode di bawah dan simpan sebagai file HTML:</p>
-          <div class="code-container relative" id="html-code"></div>
-          <div class="mt-4 flex gap-3">
-            <button id="copy-btn" class="flex-1 gradient-btn py-3 px-4 rounded-xl font-bold">
-              <i class="fas fa-copy mr-2"></i> Salin ke Clipboard
-            </button>
-            <button id="close-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-xl font-bold">
-              <i class="fas fa-times mr-2"></i> Tutup
-            </button>
+        <div class="obs-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Buka OBS → Sources → + → Browser</h4>
+            <p>Beri nama source (misal: <code>Widget Jam</code>), klik OK.</p>
           </div>
         </div>
+        <div class="obs-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Paste link di kolom URL</h4>
+            <p>Di OBS, di field <code>URL</code>, paste link yang sudah disalin. Pastikan <strong>Local File</strong> tidak dicentang jika menggunakan path <code>file:///</code>.</p>
+          </div>
+        </div>
+        <div class="obs-step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Atur Width & Height lalu OK</h4>
+            <p>Rekomendasi: Width <code>600</code> px, Height <code>200</code> px untuk Standard. Sesuaikan dengan kebutuhan layout stream kamu.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /builder-grid -->
+</div><!-- /page-wrap -->
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast">
+  <i class="fas fa-circle-check"></i>
+  <span id="toast-msg">Link berhasil disalin!</span>
+</div>
+
+<!-- ── Help Modal ── -->
+<div class="modal-overlay" id="help-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close-btn"><i class="fas fa-xmark"></i></button>
+    <div class="modal-title">Cara Menggunakan Widget di OBS</div>
+    <p class="modal-subtitle">Ikuti langkah berikut untuk menambahkan widget ke stream kamu.</p>
+
+    <div class="obs-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Atur Widget di Builder</h4>
+        <p>Pilih layout, warna, font, dan format waktu sesuai keinginan. Preview akan update otomatis secara realtime.</p>
+      </div>
+    </div>
+    <div class="obs-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Klik "Generate OBS Link"</h4>
+        <p>Sistem akan membuat link unik yang menyimpan semua setting kamu. Klik <code>Copy Link</code>.</p>
+      </div>
+    </div>
+    <div class="obs-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Di OBS: Sources → + → Browser Source</h4>
+        <p>Beri nama, lalu di field <code>URL</code> paste link yang sudah disalin. Atur ukuran dan klik OK.</p>
+      </div>
+    </div>
+    <div class="obs-step" style="border-bottom:none;">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Widget langsung aktif!</h4>
+        <p>Jam akan berjalan real-time di stream kamu. Jika ingin mengubah tampilan, cukup generate link baru dan update URL di OBS.</p>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal Petunjuk OBS -->
-  <div id="obs-help-modal" class="modal-overlay hidden">
-    <div class="modal-content glass-panel">
-      <span class="close-btn" id="close-obs-help">&times;</span>
-      <h2 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Cara Menggunakan Widget di OBS</h2>
-      
-      <div class="obs-steps">
-        <div class="obs-step">
-          <span class="step-number">1</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Salin Kode HTML</h3>
-            <p class="text-gray-600 mt-1">Setelah mengatur widget sesuai keinginan, klik tombol "Tampilkan Kode HTML" lalu tekan "Salin ke Clipboard".</p>
-            <div class="highlight-box">
-              <p>Simpan kode tersebut sebagai file <code>widget.html</code> di komputer Anda.</p>
+<script>
+  /* ──────────────────────────────────────────
+     State
+  ────────────────────────────────────────── */
+  const state = {
+    layout: 'standard',
+    bg:     '#003152',
+    text:   '#ffffff',
+    font:   'jakarta',
+    size:   'lg',
+    format: 'HH:MM',
+    rtl: 24, rtr: 24, rbr: 24, rbl: 24,
+  };
+
+  /* ──────────────────────────────────────────
+     Helpers
+  ────────────────────────────────────────── */
+  const $ = id => document.getElementById(id);
+
+  function formatTime(now, fmt) {
+    let h = now.getHours();
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    if (fmt === 'HH:MM')    return String(h).padStart(2,'0') + ':' + m;
+    if (fmt === 'HH:MM:SS') return String(h).padStart(2,'0') + ':' + m + ':' + s;
+    if (fmt === 'HH:MM:TT') {
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return String(h).padStart(2,'0') + ':' + m + ' ' + ampm;
+    }
+    return String(h).padStart(2,'0') + ':' + m;
+  }
+
+  const ffClass   = f => ({ jakarta:'ff-jakarta', mono:'ff-mono', serif:'ff-serif' })[f] || 'ff-jakarta';
+  const szClass   = s => ({ sm:'sz-sm', md:'sz-md', lg:'sz-lg', xl:'sz-xl' })[s] || 'sz-lg';
+
+  /* ──────────────────────────────────────────
+     Preview
+  ────────────────────────────────────────── */
+  let previewTimer = null;
+
+  function buildPreview() {
+    const wrap = $('preview-widget-wrap');
+    clearInterval(previewTimer);
+
+    const { layout, bg, text, font, size, format, rtl, rtr, rbr, rbl } = state;
+    const ff = ffClass(font);
+    const sz = szClass(size);
+    const rStyle = `border-radius: ${rtl}px ${rtr}px ${rbr}px ${rbl}px;`;
+
+    if (layout === 'podcaster') {
+      wrap.innerHTML = `
+        <div class="pw-podcaster-wrap">
+          <div class="pw-glow"></div>
+          <div class="pw-podcaster" style="background:${bg}; color:${text};">
+            <div class="pw-icon-box">
+              <i id="pw-icon" class="fas fa-moon" style="font-size:2rem; color:#818CF8;"></i>
             </div>
-          </div>
-        </div>
-        
-        <div class="obs-step">
-          <span class="step-number">2</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Tambahkan Source Browser</h3>
-            <p class="text-gray-600 mt-1">Di OBS, di panel Sources, klik tombol "+" dan pilih "Browser".</p>
-            <div class="step-image flex items-center justify-center bg-gray-100 p-4">
-              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-64 h-32"></div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="obs-step">
-          <span class="step-number">3</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Konfigurasi Browser Source</h3>
-            <p class="text-gray-600 mt-1">Beri nama untuk source Anda (misal: "Widget Waktu") lalu klik OK.</p>
-            <p class="text-gray-600 mt-2">Di jendela properties:</p>
-            <ul class="list-disc pl-5 text-gray-600 mt-1">
-              <li>Centang opsi <strong>"Local file"</strong></li>
-              <li>Klik "Browse" dan pilih file HTML yang Anda simpan</li>
-              <li>Atur ukuran sesuai kebutuhan (misal: Width: 800, Height: 300)</li>
-            </ul>
-            <div class="highlight-box mt-2">
-              <p>Pastikan opsi "Shutdown source when not visible" tidak dicentang agar widget tetap berjalan.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="obs-step">
-          <span class="step-number">4</span>
-          <div class="step-content">
-            <h3 class="font-semibold text-lg text-gray-800">Atur Posisi Widget</h3>
-            <p class="text-gray-600 mt-1">Di preview OBS, drag widget ke posisi yang diinginkan.</p>
-            <p class="text-gray-600 mt-2">Anda dapat mengatur ukuran dengan menarik sudut widget.</p>
-            <div class="step-image flex items-center justify-center bg-gray-100 p-4">
-              <div class="bg-indigo-600 rounded-xl w-48 h-24 flex items-center justify-center text-white font-bold">
-                Widget Waktu
+            <div class="pw-info ${ff}">
+              <div class="pw-time-row">
+                <span id="pw-time" class="pw-big">00:00</span>
+                <span id="pw-ampm" class="pw-ampm">AM</span>
               </div>
+              <div id="pw-date" class="pw-date"></div>
             </div>
           </div>
-        </div>
-        
-        <div class="text-center mt-8">
-          <button id="close-obs-btn" class="gradient-btn px-8 py-3 text-lg rounded-xl font-bold">
-            <i class="fas fa-check mr-2"></i> Mengerti, Tutup Petunjuk
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+        </div>`;
 
-  <script>
-    // Fungsi untuk memperbarui preview
-    function updatePreview() {
-      const bgColor = document.getElementById('bg-color').value;
-      const textColor = document.getElementById('text-color').value;
-      const fontFamily = document.getElementById('font-family').value;
-      const fontSize = document.getElementById('font-size').value;
-      const timeFormat = document.getElementById('time-format').value;
-      
-      // Dapatkan nilai radius untuk setiap sudut
-      const radiusTL = document.getElementById('radius-tl').value;
-      const radiusTR = document.getElementById('radius-tr').value;
-      const radiusBR = document.getElementById('radius-br').value;
-      const radiusBL = document.getElementById('radius-bl').value;
-      
-      // Perbarui tampilan nilai radius
-      document.getElementById('radius-tl-value').textContent = radiusTL;
-      document.getElementById('radius-tr-value').textContent = radiusTR;
-      document.getElementById('radius-br-value').textContent = radiusBR;
-      document.getElementById('radius-bl-value').textContent = radiusBL;
-      
-      const layoutStyle = document.getElementById('layout-style').value;
-      const widget = document.getElementById('preview-widget');
-      const standardLayout = document.getElementById('standard-layout');
-      const podcasterLayout = document.getElementById('podcaster-layout');
-      const podcasterGlow = document.getElementById('podcaster-glow');
-      
-      // Terapkan perubahan
-      widget.style.backgroundColor = bgColor;
-      widget.style.color = textColor;
-      
-      if (layoutStyle === 'podcaster') {
-        standardLayout.classList.add('hidden');
-        podcasterLayout.classList.remove('hidden');
-        podcasterLayout.classList.add('flex');
-        podcasterGlow.classList.remove('hidden');
-        
-        // Forced styles for podcaster style
-        widget.style.borderRadius = '40px';
-        widget.style.padding = '24px 40px';
-        widget.style.border = '2px solid rgba(255,255,255,0.1)';
-        
-        // Update components
-        document.getElementById('p-time').style.color = textColor;
-        // Keep AM/PM pinkish or use a variant
-      } else {
-        standardLayout.classList.remove('hidden');
-        podcasterLayout.classList.add('hidden');
-        podcasterLayout.classList.remove('flex');
-        podcasterGlow.classList.add('hidden');
-        
-        widget.style.borderTopLeftRadius = `${radiusTL}px`;
-        widget.style.borderTopRightRadius = `${radiusTR}px`;
-        widget.style.borderBottomRightRadius = `${radiusBR}px`;
-        widget.style.borderBottomLeftRadius = `${radiusBL}px`;
-        widget.style.padding = '40px';
-        widget.style.border = 'none';
-        
-        const time = widget.querySelector('#time');
-        if (time) {
-          time.className = `${fontSize} ${fontFamily} font-bold text-center`;
-        }
+      function tickP() {
+        const now = new Date();
+        let h = now.getHours(), m = now.getMinutes();
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        $('pw-time').textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+        $('pw-ampm').textContent = ampm;
+        const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+        const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        $('pw-date').textContent = `${days[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        const icon = $('pw-icon');
+        const curH = now.getHours();
+        if (curH >= 6 && curH < 18) { icon.className = 'fas fa-sun'; icon.style.color = '#FBBF24'; }
+        else                         { icon.className = 'fas fa-moon'; icon.style.color = '#818CF8'; }
       }
-      
-      // Perbarui format waktu di preview
-      updatePreviewTime();
-    }
-    
-    // Fungsi untuk menghasilkan kode HTML yang dapat disalin
-      const layoutStyle = document.getElementById('layout-style').value;
-      
-      // Dapatkan nilai radius untuk setiap sudut
-      const radiusTL = document.getElementById('radius-tl').value;
-      const radiusTR = document.getElementById('radius-tr').value;
-      const radiusBR = document.getElementById('radius-br').value;
-      const radiusBL = document.getElementById('radius-bl').value;
+      tickP();
+      previewTimer = setInterval(tickP, 1000);
 
-      let contentHTML = '';
-      let scriptLogic = '';
+    } else if (layout === 'neon') {
+      wrap.innerHTML = `
+        <div class="pw-neon" style="background:${bg}; ${rStyle}">
+          <span id="pw-neon-t" class="pw-neon-time ${szClass(size)}" style="color:${text};">00:00</span>
+        </div>`;
 
-      if (layoutStyle === 'podcaster') {
-        contentHTML = `
-  <div class="relative">
-    <div class="absolute -inset-1 rounded-[40px] opacity-75 blur-sm" style="background: linear-gradient(135deg, #6366F1, #A855F7); transform: translate(4px, 4px); z-index: 0;"></div>
-    <div class="relative flex items-center gap-8 p-6 z-10" 
-         style="background-color: ${bgColor}; color: ${textColor}; border-radius: 40px; border: 2px solid rgba(255,255,255,0.1);">
-      <div class="bg-white/10 p-4 rounded-2xl w-24 h-24 flex items-center justify-center">
-        <i class="fas fa-moon text-4xl text-indigo-300" id="icon"></i>
-      </div>
-      <div class="flex flex-col">
-        <div class="flex items-baseline gap-2">
-          <span id="time" class="text-7xl font-bold leading-none tracking-tight">11:18</span>
-          <span id="ampm" class="text-3xl font-bold text-pink-400">PM</span>
-        </div>
-        <div id="date" class="text-xl font-medium tracking-widest text-gray-300 mt-2 uppercase">SUN, 10 MAY 2026</div>
-      </div>
-    </div>
-  </div>`;
+      function tickN() { $('pw-neon-t').textContent = formatTime(new Date(), format); }
+      tickN();
+      previewTimer = setInterval(tickN, 1000);
 
-        scriptLogic = `
-    function updateTime() {
-      const now = new Date();
-      
-      // Update Time
-      let hours = now.getHours();
-      let minutes = now.getMinutes().toString().padStart(2, '0');
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      document.getElementById('time').textContent = \`\${hours}:\${minutes}\`;
-      document.getElementById('ampm').textContent = ampm;
+    } else {
+      wrap.innerHTML = `
+        <div class="pw-standard" style="background:${bg}; ${rStyle}">
+          <span id="pw-std-t" class="pw-time ${ff} ${sz}" style="color:${text};">00:00</span>
+        </div>`;
 
-      // Update Date
-      const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
-      const dateStr = now.toLocaleDateString('en-US', options).replace(/,/g, '');
-      document.getElementById('date').textContent = dateStr;
+      function tickS() { $('pw-std-t').textContent = formatTime(new Date(), format); }
+      tickS();
+      previewTimer = setInterval(tickS, 1000);
+    }
 
-      // Update Icon based on time
-      const icon = document.getElementById('icon');
-      const h = now.getHours();
-      if (h >= 6 && h < 18) {
-        icon.className = 'fas fa-sun text-4xl text-yellow-400';
-      } else {
-        icon.className = 'fas fa-moon text-4xl text-indigo-300';
-      }
-    }
-    setInterval(updateTime, 1000);
-    updateTime();`;
-      } else {
-        contentHTML = `
-  <div class="inline-block p-10 w-full max-w-2xl mx-auto shadow-lg" 
-       style="background-color: ${bgColor}; color: ${textColor}; 
-              border-top-left-radius: ${radiusTL}px; border-top-right-radius: ${radiusTR}px;
-              border-bottom-right-radius: ${radiusBR}px; border-bottom-left-radius: ${radiusBL}px;">
-    <div id="time" class="${fontSize} font-bold text-center">12:34</div>
-  </div>`;
+    // Radius panel visibility
+    $('radius-panel').style.display = (layout === 'podcaster') ? 'none' : 'block';
+  }
 
-        scriptLogic = `
-    function updateTime() {
-      const now = new Date();
-      let hours = now.getHours();
-      let minutes = now.getMinutes().toString().padStart(2, '0');
-      let timeString = '';
-      const format = "${timeFormat}";
-      
-      if (format === "HH:MM") {
-        hours = hours.toString().padStart(2, '0');
-        timeString = \`\${hours}:\${minutes}\`;
-      } 
-      else if (format === "HH:MM:SS") {
-        hours = hours.toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        timeString = \`\${hours}:\${minutes}:\${seconds}\`;
-      } 
-      else if (format === "HH:MM:TT") {
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        hours = hours.toString().padStart(2, '0');
-        timeString = \`\${hours}:\${minutes} \${ampm}\`;
-      }
-      document.getElementById('time').textContent = timeString;
-    }
-    const format = "${timeFormat}";
-    const interval = format === "HH:MM:SS" ? 1000 : 60000;
-    setInterval(updateTime, interval);
-    updateTime();`;
-      }
-      
-      // Kode HTML yang akan disalin
-      return \`<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Widget Jam Kustom</title>
-  <script src="https://cdn.tailwindcss.com"><\\/script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-  </style>
-</head>
-<body class="bg-transparent min-h-screen flex items-center justify-center p-4">
-  \${contentHTML}
+  /* ──────────────────────────────────────────
+     Read all controls → state
+  ────────────────────────────────────────── */
+  function readControls() {
+    state.layout = $('ctl-layout').value;
+    state.bg     = $('ctl-bg').value;
+    state.text   = $('ctl-text').value;
+    state.font   = $('ctl-font').value;
+    state.size   = $('ctl-size').value;
+    state.format = $('ctl-format').value;
+    state.rtl    = +$('ctl-rtl').value;
+    state.rtr    = +$('ctl-rtr').value;
+    state.rbr    = +$('ctl-rbr').value;
+    state.rbl    = +$('ctl-rbl').value;
+  }
 
-  <script>\${scriptLogic}<\\/script>
-</body>
-</html>\`;
+  function update() {
+    readControls();
+    buildPreview();
+  }
+
+  /* ──────────────────────────────────────────
+     Generate link
+  ────────────────────────────────────────── */
+  function generateLink() {
+    readControls();
+    const basePath = window.location.href
+      .replace(/[^/\\]*$/, '')
+      .replace(/\\/g, '/');
+    const renderFile = basePath + 'widget-jam-render.html';
+
+    const params = new URLSearchParams({
+      layout: state.layout,
+      bg:     state.bg,
+      text:   state.text,
+      font:   state.font,
+      size:   state.size,
+      format: state.format,
+      rtl:    state.rtl,
+      rtr:    state.rtr,
+      rbr:    state.rbr,
+      rbl:    state.rbl,
+    });
+
+    return `${renderFile}?${params.toString()}`;
+  }
+
+  /* ──────────────────────────────────────────
+     Toast
+  ────────────────────────────────────────── */
+  let toastTimer;
+  function showToast(msg) {
+    const t = $('toast');
+    $('toast-msg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ──────────────────────────────────────────
+     Copy to clipboard
+  ────────────────────────────────────────── */
+  function copyText(text) {
+    if (navigator.clipboard) {
+      return navigator.clipboard.writeText(text);
     }
-    
-    // Fungsi untuk menyalin teks ke clipboard
-    function copyToClipboard(text) {
-      return new Promise((resolve, reject) => {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(text)
-            .then(() => resolve())
-            .catch(err => reject(err));
-        } else {
-          const textarea = document.createElement('textarea');
-          textarea.value = text;
-          textarea.style.position = 'fixed';
-          textarea.style.top = '0';
-          textarea.style.left = '0';
-          textarea.style.opacity = '0';
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-          
-          try {
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textarea);
-            if (successful) {
-              resolve();
-            } else {
-              reject(new Error('Gagal menyalin teks'));
-            }
-          } catch (err) {
-            document.body.removeChild(textarea);
-            reject(err);
-          }
-        }
-      });
-    }
-    
-    // Fungsi untuk menampilkan waktu nyata di preview
-    function updatePreviewTime() {
-      const now = new Date();
-      const layoutStyle = document.getElementById('layout-style').value;
-      
-      if (layoutStyle === 'podcaster') {
-        let hours = now.getHours();
-        let minutes = now.getMinutes().toString().padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        
-        document.getElementById('p-time').textContent = `${hours}:${minutes}`;
-        document.getElementById('p-ampm').textContent = ampm;
-        
-        const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
-        document.getElementById('p-date').textContent = now.toLocaleDateString('en-US', options).toUpperCase().replace(/,/g, '');
-        
-        const icon = document.getElementById('podcaster-icon');
-        const h = now.getHours();
-        if (h >= 6 && h < 18) {
-          icon.className = 'fas fa-sun text-4xl text-yellow-400';
-        } else {
-          icon.className = 'fas fa-moon text-4xl text-indigo-300';
-        }
-      } else {
-        const timeFormat = document.getElementById('time-format').value;
-        let hours = now.getHours();
-        let minutes = now.getMinutes().toString().padStart(2, '0');
-        let timeString = '';
-        
-        if (timeFormat === "HH:MM") {
-          hours = hours.toString().padStart(2, '0');
-          timeString = `${hours}:${minutes}`;
-        } 
-        else if (timeFormat === "HH:MM:SS") {
-          hours = hours.toString().padStart(2, '0');
-          const seconds = now.getSeconds().toString().padStart(2, '0');
-          timeString = `${hours}:${minutes}:${seconds}`;
-        } 
-        else if (timeFormat === "HH:MM:TT") {
-          const ampm = hours >= 12 ? 'PM' : 'AM';
-          hours = hours % 12;
-          hours = hours ? hours : 12;
-          hours = hours.toString().padStart(2, '0');
-          timeString = `${hours}:${minutes} ${ampm}`;
-        }
-        
-        document.getElementById('time').textContent = timeString;
-      }
-    }
-    
-    // Fungsi untuk navigasi menu
-    function setupNavigation() {
-      const navEditor = document.getElementById('nav-editor');
-      const navCode = document.getElementById('nav-code');
-      const navHelp = document.getElementById('nav-help');
-      const editorPanel = document.getElementById('editor-panel');
-      const codeOutput = document.getElementById('code-output');
-      
-      // Set active nav item
-      function setActiveNav(item) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        item.classList.add('active');
-      }
-      
-      // Editor menu
-      navEditor.addEventListener('click', function(e) {
-        e.preventDefault();
-        setActiveNav(this);
-        editorPanel.classList.remove('hidden');
-        codeOutput.classList.add('hidden');
-      });
-      
-      // Code menu
-      navCode.addEventListener('click', function(e) {
-        e.preventDefault();
-        setActiveNav(this);
-        editorPanel.classList.add('hidden');
-        codeOutput.classList.remove('hidden');
-        if (!document.getElementById('html-code').textContent) {
-          const htmlContent = generateHTML();
-          document.getElementById('html-code').textContent = htmlContent;
-        }
-      });
-      
-      // Help menu
-      navHelp.addEventListener('click', function(e) {
-        e.preventDefault();
-        setActiveNav(this);
-        editorPanel.classList.add('hidden');
-        codeOutput.classList.add('hidden');
-        document.getElementById('obs-help-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-      });
-    }
-    
-    // Event listeners untuk kontrol
-    document.getElementById('layout-style').addEventListener('change', updatePreview);
-    document.getElementById('bg-color').addEventListener('input', updatePreview);
-    document.getElementById('text-color').addEventListener('input', updatePreview);
-    document.getElementById('font-family').addEventListener('change', updatePreview);
-    document.getElementById('font-size').addEventListener('change', updatePreview);
-    document.getElementById('time-format').addEventListener('change', updatePreview);
-    
-    // Event listeners untuk kontrol radius
-    document.getElementById('radius-tl').addEventListener('input', updatePreview);
-    document.getElementById('radius-tr').addEventListener('input', updatePreview);
-    document.getElementById('radius-br').addEventListener('input', updatePreview);
-    document.getElementById('radius-bl').addEventListener('input', updatePreview);
-    
-    // Event listener untuk tombol Generate
-    document.getElementById('generate-btn').addEventListener('click', function() {
-      const htmlContent = generateHTML();
-      document.getElementById('html-code').textContent = htmlContent;
-      document.getElementById('code-output').classList.remove('hidden');
-      document.getElementById('code-output').scrollIntoView({ behavior: 'smooth' });
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  /* ──────────────────────────────────────────
+     Bind controls
+  ────────────────────────────────────────── */
+  // Color sync: picker ↔ text input
+  function syncColor(pickerId, textId) {
+    const picker = $(pickerId), txt = $(textId);
+    picker.addEventListener('input', () => { txt.value = picker.value; update(); });
+    txt.addEventListener('input', () => {
+      const v = txt.value.trim();
+      if (/^#[0-9A-Fa-f]{6}$/.test(v)) { picker.value = v; update(); }
     });
-    
-    // Event listener untuk tombol Salin
-    document.getElementById('copy-btn').addEventListener('click', function() {
-      const code = document.getElementById('html-code').textContent;
-      const btn = this;
-      
-      copyToClipboard(code)
-        .then(() => {
-          const indicator = document.createElement('div');
-          indicator.className = 'clipboard-indicator';
-          indicator.innerHTML = '<div class="clipboard-message">✓ Kode Berhasil Disalin!</div>';
-          document.querySelector('.code-container').appendChild(indicator);
-          
-          setTimeout(() => {
-            indicator.remove();
-          }, 2000);
-        })
-        .catch(err => {
-          console.error('Gagal menyalin kode:', err);
-          btn.classList.add('shake', 'error');
-          btn.innerHTML = '<i class="fas fa-times mr-2"></i> Gagal Menyalin!';
-          
-          setTimeout(() => {
-            btn.classList.remove('shake', 'error');
-            btn.innerHTML = '<i class="fas fa-copy mr-2"></i> Salin ke Clipboard';
-          }, 2000);
-        });
+  }
+
+  syncColor('ctl-bg', 'ctl-bg-text');
+  syncColor('ctl-text', 'ctl-text-text');
+
+  ['ctl-layout','ctl-font','ctl-size','ctl-format'].forEach(id =>
+    $(id).addEventListener('change', update)
+  );
+
+  // Radius sliders
+  const radiusPairs = [
+    ['ctl-rtl','rv-tl'], ['ctl-rtr','rv-tr'],
+    ['ctl-rbr','rv-br'], ['ctl-rbl','rv-bl'],
+  ];
+  radiusPairs.forEach(([sliderId, valueId]) => {
+    $(sliderId).addEventListener('input', () => {
+      $(valueId).textContent = $(sliderId).value;
+      update();
     });
-    
-    // Event listener untuk tombol Tutup
-    document.getElementById('close-btn').addEventListener('click', function() {
-      document.getElementById('code-output').classList.add('hidden');
-    });
-    
-    // Event listeners untuk petunjuk OBS
-    document.getElementById('obs-help-btn').addEventListener('click', function() {
-      document.getElementById('obs-help-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    });
-    
-    document.getElementById('close-obs-help').addEventListener('click', function() {
-      document.getElementById('obs-help-modal').classList.add('hidden');
-      document.body.style.overflow = '';
-    });
-    
-    document.getElementById('close-obs-btn').addEventListener('click', function() {
-      document.getElementById('obs-help-modal').classList.add('hidden');
-      document.body.style.overflow = '';
-    });
-    
-    document.getElementById('obs-help-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        this.classList.add('hidden');
-        document.body.style.overflow = '';
-      }
-    });
-    
-    // Inisialisasi preview
-    updatePreview();
-    setupNavigation();
-    
-    // Perbarui waktu di preview
-    const timeFormat = document.getElementById('time-format').value;
-    const interval = timeFormat === "HH:MM:SS" ? 1000 : 60000;
-    setInterval(updatePreviewTime, interval);
-  </script>
+  });
+
+  // Generate button
+  $('generate-btn').addEventListener('click', () => {
+    const link = generateLink();
+    $('link-box').textContent = link;
+    $('link-output').classList.add('visible');
+    $('obs-steps').classList.add('visible');
+    $('link-output').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  // Copy button
+  $('copy-btn').addEventListener('click', function() {
+    const link = $('link-box').textContent;
+    copyText(link)
+      .then(() => {
+        this.innerHTML = '<i class="fas fa-circle-check"></i> Tersalin!';
+        this.classList.add('copied');
+        showToast('🎉 Link berhasil disalin — paste ke OBS Browser Source!');
+        setTimeout(() => {
+          this.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
+          this.classList.remove('copied');
+        }, 2500);
+      })
+      .catch(() => showToast('⚠️ Gagal menyalin — coba salin manual.'));
+  });
+
+  // Dismiss
+  $('dismiss-btn').addEventListener('click', () => {
+    $('link-output').classList.remove('visible');
+    $('obs-steps').classList.remove('visible');
+  });
+
+  // Help modal
+  $('help-btn').addEventListener('click', () => $('help-modal').classList.add('open'));
+  $('modal-close-btn').addEventListener('click', () => $('help-modal').classList.remove('open'));
+  $('help-modal').addEventListener('click', e => {
+    if (e.target === $('help-modal')) $('help-modal').classList.remove('open');
+  });
+
+  /* ──────────────────────────────────────────
+     Init
+  ────────────────────────────────────────── */
+  update();
+</script>
 </body>
 </html>
