@@ -82,7 +82,7 @@
           </div>
 
           <button id="generate-btn" class="gradient-btn w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg">
-            Generate Code
+            <i class="fas fa-link mr-2"></i>Generate OBS Link
           </button>
         </div>
       </div>
@@ -118,13 +118,21 @@
           </div>
         </div>
 
-        <!-- Code Area -->
-        <div id="code-panel" class="hidden mt-8 glass-panel p-6 border border-indigo-500/20">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-indigo-400">Widget Code</h3>
-            <button id="copy-btn" class="gradient-btn px-4 py-2 rounded-lg text-xs font-bold">Copy to Clipboard</button>
+        <!-- Link Output -->
+        <div id="link-panel" class="hidden mt-8 glass-panel p-6 border border-green-500/20">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-circle-check text-green-400 text-sm"></i>
+            <span class="text-xs font-bold text-green-400 uppercase tracking-widest">Link OBS Siap Digunakan!</span>
           </div>
-          <pre class="bg-black/50 p-4 rounded-xl overflow-x-auto text-[10px] text-gray-400 max-h-64 border border-white/5"><code id="code-text"></code></pre>
+          <div id="link-text" class="bg-black/50 p-3 rounded-xl text-[10px] text-gray-400 border border-white/5 break-all leading-relaxed mb-4 max-h-20 overflow-y-auto font-mono"></div>
+          <div class="flex gap-3">
+            <button id="copy-link-btn" class="flex-1 gradient-btn py-2 px-4 rounded-lg text-xs font-bold">
+              <i class="fas fa-copy mr-2"></i>Copy Link
+            </button>
+            <button id="close-link-btn" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 px-4 rounded-lg text-xs font-bold">
+              <i class="fas fa-xmark mr-2"></i>Tutup
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -273,17 +281,46 @@
       el.addEventListener('change', () => UI.update());
     });
 
-    UI.get('generate-btn').onclick = () => {
-      UI.get('code-text').textContent = UI.generate();
-      UI.get('code-panel').classList.remove('hidden');
+    // Generate OBS Link
+    UI.generateLink = function() {
+      const bg     = this.get('bg-color').value;
+      const txt    = this.get('text-color').value;
+      const layout = this.get('layout-style').value;
+      const font   = this.get('font-family').value;
+      const size   = this.get('font-size').value;
+      const rad    = this.get('radius-global').value;
+      const base   = window.location.href.replace(/[^\/\\]*$/, '').replace(/\\/g, '/');
+      const params = new URLSearchParams({ layout, bg, text: txt, font, size, rad });
+      return base + 'widget-jamv1-render.html?' + params.toString();
     };
 
-    UI.get('copy-btn').onclick = () => {
-      navigator.clipboard.writeText(UI.get('code-text').textContent);
-      const btn = UI.get('copy-btn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+    // Toast helper
+    function showToast(msg) {
+      const t = document.getElementById('obs-toast');
+      t.querySelector('span').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    UI.get('generate-btn').onclick = () => {
+      const link = UI.generateLink();
+      UI.get('link-text').textContent = link;
+      UI.get('link-panel').classList.remove('hidden');
+      UI.get('link-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
     };
+
+    UI.get('copy-link-btn').onclick = function() {
+      const link = UI.get('link-text').textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject())
+        .then(() => {
+          this.innerHTML = '<i class="fas fa-circle-check mr-2"></i>Tersalin!';
+          showToast('🎉 Link disalin — paste ke OBS Browser Source!');
+          setTimeout(() => { this.innerHTML = '<i class="fas fa-copy mr-2"></i>Copy Link'; }, 2500);
+        })
+        .catch(() => showToast('⚠️ Gagal menyalin — salin manual.'));
+    };
+
+    UI.get('close-link-btn').onclick = () => UI.get('link-panel').classList.add('hidden');
 
     UI.get('bg-color-text').oninput = (e) => { UI.get('bg-color').value = e.target.value; UI.update(); };
     UI.get('text-color-text').oninput = (e) => { UI.get('text-color').value = e.target.value; UI.update(); };

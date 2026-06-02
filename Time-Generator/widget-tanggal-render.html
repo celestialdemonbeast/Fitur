@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Widget Tanggal – OBS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'pulse-slow': 'pulse 3s ease-in-out infinite',
+            'spin-slow':  'spin 20s linear infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            glow: {
+              '0%':   { 'box-shadow': '0 0 5px #fde047, 0 0 10px #fde047' },
+              '100%': { 'box-shadow': '0 0 20px #fde047, 0 0 30px #fbbf24' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: transparent;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sun-ray {
+      position: absolute; top: 50%; left: 50%;
+      width: 2px; height: 24px;
+      background: linear-gradient(to bottom, #fef08a, #f59e0b);
+      transform-origin: top center; border-radius: 1px;
+    }
+  </style>
+</head>
+<body>
+<div id="root" class="inline-block p-10 rounded-xl w-full max-w-2xl mx-auto shadow-xl"></div>
+
+<script>
+  const p = new URLSearchParams(window.location.search);
+  const bg     = p.get('bg')     || '#003152';
+  const text   = p.get('text')   || '#ffffff';
+  const line   = p.get('line')   || '#009ddb';
+  const font   = p.get('font')   || 'font-sans';
+  const size   = p.get('size')   || 'text-3xl';
+  const radius = p.get('radius') || '24';
+
+  // Map size to time size (one step up)
+  const timeSizeMap = {
+    'text-base':'text-2xl', 'text-lg':'text-3xl', 'text-xl':'text-4xl',
+    'text-2xl':'text-5xl',  'text-3xl':'text-6xl'
+  };
+  const timeSize = timeSizeMap[size] || 'text-6xl';
+
+  const root = document.getElementById('root');
+  root.style.backgroundColor = bg;
+  root.style.color = text;
+  root.style.borderRadius = radius + 'px';
+
+  root.innerHTML = `
+    <div id="datetime" class="${size} ${font} font-bold mb-3 text-center"></div>
+    <div class="w-full h-1.5 my-5 rounded-full" style="background-color:${line};"></div>
+    <div class="flex items-center justify-center gap-5 ${timeSize}">
+      <div id="time" class="${font} font-mono"></div>
+      <div id="icon" class="w-16 h-16 relative"></div>
+    </div>`;
+
+  function updateDateTime() {
+    const now = new Date();
+    const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+    const dayName = days[now.getDay()];
+    const date  = String(now.getDate()).padStart(2,'0');
+    const month = String(now.getMonth()+1).padStart(2,'0');
+    const year  = now.getFullYear();
+    document.getElementById('datetime').innerHTML = `${dayName}, ${date}/${month}/${year}`;
+
+    const hours   = String(now.getHours()).padStart(2,'0');
+    const minutes = String(now.getMinutes()).padStart(2,'0');
+    const seconds = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('time').innerHTML = `${hours}:${minutes}:${seconds}`;
+
+    const hour = now.getHours();
+    const icon = document.getElementById('icon');
+    icon.innerHTML = '';
+    icon.className = 'w-16 h-16 relative';
+
+    if (hour >= 6 && hour < 18) {
+      icon.innerHTML = `
+        <div class="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 animate-glow"></div>
+        <div class="absolute inset-1 rounded-full bg-gradient-to-br from-yellow-200 to-yellow-400 animate-spin-slow">
+          ${Array(12).fill().map((_,i) => `<div class="sun-ray" style="transform:rotate(${i*30}deg) translateY(-20px);"></div>`).join('')}
+        </div>
+        <div class="absolute inset-2 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-300"></div>`;
+    } else {
+      icon.innerHTML = `
+        <div class="absolute inset-0 rounded-full bg-gray-100 shadow-inner"></div>
+        <div class="absolute inset-0 rounded-full bg-gray-200 opacity-70 animate-pulse-slow" style="clip-path:circle(40% at 30% 30%)"></div>
+        ${Array(5).fill().map((_,i) => {
+          const size = Math.random()*0.3+0.1;
+          const left = Math.random()*0.6+0.2;
+          const top  = Math.random()*0.6+0.2;
+          return `<div class="absolute rounded-full bg-gray-300 opacity-80" style="width:${size*100}%;height:${size*100}%;left:${left*100}%;top:${top*100}%"></div>`;
+        }).join('')}`;
+    }
+  }
+
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Widget Jam – OBS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: transparent;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    #root { display: inline-flex; align-items: center; justify-content: center; }
+
+    /* Podcaster */
+    .pod-wrap { position: relative; display: inline-block; }
+    .pod-glow {
+      position: absolute; inset: -5px; border-radius: 44px;
+      background: linear-gradient(135deg, #6366F1, #A855F7);
+      filter: blur(12px); opacity: 0.65;
+      transform: translate(4px, 6px); z-index: 0;
+    }
+    .pod-box {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 30px; padding: 35px;
+      border-radius: 40px; border: 2px solid rgba(255,255,255,0.1);
+      min-width: 520px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .pod-icon-box {
+      background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px;
+      width: 110px; height: 110px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .pod-icon-box i { font-size: 55px; }
+    .pod-info { display: flex; flex-direction: column; }
+    .pod-time-row { display: flex; align-items: baseline; gap: 12px; }
+    .pod-time { font-size: 90px; font-weight: 900; line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+    .pod-ampm { font-size: 35px; font-weight: 900; color: #EC4899; }
+    .pod-date { font-size: 18px; font-weight: 800; letter-spacing: 0.25em; opacity: 0.6; margin-top: 12px; text-transform: uppercase; }
+
+    /* Standard */
+    .std-box {
+      display: inline-block; padding: 50px; text-align: center;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .std-time { font-weight: 900; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+
+    /* Font helpers */
+    .ff-sans  { font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ff-serif { font-family: ui-serif, Georgia, serif; }
+    .ff-mono  { font-family: ui-monospace, 'Courier New', monospace; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  const p = new URLSearchParams(window.location.search);
+  const layout = p.get('layout') || 'podcaster';
+  const bg     = p.get('bg')     || '#0a0a1a';
+  const text   = p.get('text')   || '#ffffff';
+  const font   = p.get('font')   || 'font-sans';
+  const size   = p.get('size')   || 'text-7xl';
+  const rad    = p.get('rad')    || '40';
+
+  const ffMap = { 'font-sans': 'ff-sans', 'font-serif': 'ff-serif', 'font-mono': 'ff-mono' };
+  const ff = ffMap[font] || 'ff-sans';
+
+  // px size map from TW class
+  const szMap = { 'text-5xl':'3rem', 'text-7xl':'4.5rem', 'text-9xl':'8rem' };
+  const sz = szMap[size] || '4.5rem';
+
+  const root = document.getElementById('root');
+
+  if (layout === 'podcaster') {
+    root.innerHTML = `
+      <div class="pod-wrap">
+        <div class="pod-glow"></div>
+        <div class="pod-box ${ff}" style="background:${bg}; color:${text};">
+          <div class="pod-icon-box">
+            <i id="p-icon" class="fas fa-moon" style="color:#818CF8;"></i>
+          </div>
+          <div class="pod-info">
+            <div class="pod-time-row">
+              <span id="p-time" class="pod-time">00:00</span>
+              <span id="p-ampm" class="pod-ampm">AM</span>
+            </div>
+            <div id="p-date" class="pod-date"></div>
+          </div>
+        </div>
+      </div>`;
+
+    function tick() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      document.getElementById('p-time').textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      document.getElementById('p-ampm').textContent = ampm;
+      const opt = { weekday:'short', day:'2-digit', month:'short', year:'numeric' };
+      document.getElementById('p-date').textContent = now.toLocaleDateString('en-US', opt).toUpperCase().replace(/,/g,'');
+      const icon = document.getElementById('p-icon');
+      const curH = now.getHours();
+      if (curH >= 6 && curH < 18) { icon.className = 'fas fa-sun'; icon.style.color = '#FBBF24'; }
+      else                         { icon.className = 'fas fa-moon'; icon.style.color = '#818CF8'; }
+    }
+    tick(); setInterval(tick, 1000);
+
+  } else {
+    root.innerHTML = `
+      <div class="std-box ${ff}" style="background:${bg}; color:${text}; border-radius:${rad}px;">
+        <div id="s-time" class="std-time" style="font-size:${sz};">00:00</div>
+      </div>`;
+
+    function tickS() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,'0');
+      const m = String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('s-time').textContent = h + ':' + m;
+    }
+    tickS(); setInterval(tickS, 1000);
+  }
+</script>
+</body>
+</html>
